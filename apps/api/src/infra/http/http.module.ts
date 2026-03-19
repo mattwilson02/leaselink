@@ -74,6 +74,22 @@ import { UpdatePropertyUseCase } from '@/domain/property-management/application/
 import { UpdatePropertyStatusUseCase } from '@/domain/property-management/application/use-cases/update-property-status'
 import { DeletePropertyUseCase } from '@/domain/property-management/application/use-cases/delete-property'
 import { UploadPropertyPhotosUseCase } from '@/domain/property-management/application/use-cases/upload-property-photos'
+import { GetClientsController } from './controllers/get-clients/get-clients.controller'
+import { GetClientByIdController } from './controllers/get-client-by-id/get-client-by-id.controller'
+import { GetClientsUseCase } from '@/domain/financial-management/application/use-cases/get-clients'
+import { GetClientByIdUseCase } from '@/domain/financial-management/application/use-cases/get-client-by-id'
+import { CreateLeaseController } from './controllers/create-lease/create-lease.controller'
+import { GetLeasesController } from './controllers/get-leases/get-leases.controller'
+import { GetLeaseByIdController } from './controllers/get-lease-by-id/get-lease-by-id.controller'
+import { UpdateLeaseStatusController } from './controllers/update-lease-status/update-lease-status.controller'
+import { RenewLeaseController } from './controllers/renew-lease/renew-lease.controller'
+import { GetLeaseByPropertyController } from './controllers/get-lease-by-property/get-lease-by-property.controller'
+import { CreateLeaseUseCase } from '@/domain/lease-management/application/use-cases/create-lease'
+import { GetLeasesUseCase } from '@/domain/lease-management/application/use-cases/get-leases'
+import { GetLeaseByIdUseCase } from '@/domain/lease-management/application/use-cases/get-lease-by-id'
+import { UpdateLeaseStatusUseCase } from '@/domain/lease-management/application/use-cases/update-lease-status'
+import { RenewLeaseUseCase } from '@/domain/lease-management/application/use-cases/renew-lease'
+import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application/use-cases/get-lease-by-property'
 
 @Module({
 	imports: [
@@ -120,6 +136,14 @@ import { UploadPropertyPhotosUseCase } from '@/domain/property-management/applic
 		UpdatePropertyStatusController,
 		DeletePropertyController,
 		UploadPropertyPhotosController,
+		GetClientsController,
+		GetClientByIdController,
+		CreateLeaseController,
+		GetLeasesController,
+		GetLeaseByPropertyController,
+		GetLeaseByIdController,
+		UpdateLeaseStatusController,
+		RenewLeaseController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -156,6 +180,14 @@ import { UploadPropertyPhotosUseCase } from '@/domain/property-management/applic
 		UpdatePropertyStatusUseCase,
 		DeletePropertyUseCase,
 		UploadPropertyPhotosUseCase,
+		GetClientsUseCase,
+		GetClientByIdUseCase,
+		CreateLeaseUseCase,
+		GetLeasesUseCase,
+		GetLeaseByIdUseCase,
+		UpdateLeaseStatusUseCase,
+		RenewLeaseUseCase,
+		GetLeaseByPropertyUseCase,
 	],
 })
 export class HttpModule {}

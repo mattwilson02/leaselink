@@ -236,6 +236,7 @@ const ChangePassword = () => {
 									<Form.GroupInput>
 										<TextInput.Root id={field.name}>
 											<TextInput.Control
+												// @ts-expect-error - ref works at runtime, library types incomplete
 												ref={currentPasswordRef}
 												testID='current-password-input'
 												autoCapitalize='none'
@@ -285,6 +286,7 @@ const ChangePassword = () => {
 									<Form.GroupInput>
 										<TextInput.Root id={field.name}>
 											<TextInput.Control
+												// @ts-expect-error - ref works at runtime, library types incomplete
 												ref={newPasswordRef}
 												testID='new-password-input'
 												autoCapitalize='none'
@@ -361,6 +363,7 @@ const ChangePassword = () => {
 									<Form.GroupInput>
 										<TextInput.Root id={field.name}>
 											<TextInput.Control
+												// @ts-expect-error - ref works at runtime, library types incomplete
 												ref={confirmPasswordRef}
 												testID='confirm-password-input'
 												autoCapitalize='none'

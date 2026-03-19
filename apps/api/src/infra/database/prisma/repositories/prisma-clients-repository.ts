@@ -1,6 +1,11 @@
-import type { ClientsRepository } from '@/domain/financial-management/application/repositories/clients-repository'
+import type {
+	ClientsRepository,
+	ClientsFilterParams,
+	ClientsPaginatedResult,
+} from '@/domain/financial-management/application/repositories/clients-repository'
 import type { Client } from '@/domain/financial-management/enterprise/entities/client'
 import { Injectable } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import { PrismaClientMapper } from '../mappers/prisma-client-mapper'
 import { PrismaService } from '../prisma.service'
 
@@ -50,6 +55,40 @@ export class PrismaClientsRepository implements ClientsRepository {
 				id: clientId,
 			},
 		})
+	}
+
+	async findMany(params: ClientsFilterParams): Promise<ClientsPaginatedResult> {
+		const where: Prisma.ClientWhereInput = {}
+
+		if (params.status) {
+			where.status = params.status as any
+		}
+
+		if (params.onboardingStatus) {
+			where.onboardingStatus = params.onboardingStatus as any
+		}
+
+		if (params.search) {
+			where.OR = [
+				{ name: { contains: params.search, mode: 'insensitive' } },
+				{ email: { contains: params.search, mode: 'insensitive' } },
+			]
+		}
+
+		const [clients, totalCount] = await Promise.all([
+			this.prisma.client.findMany({
+				where,
+				orderBy: { createdAt: 'desc' },
+				skip: (params.page - 1) * params.pageSize,
+				take: params.pageSize,
+			}),
+			this.prisma.client.count({ where }),
+		])
+
+		return {
+			clients: clients.map(PrismaClientMapper.toDomain),
+			totalCount,
+		}
 	}
 
 	async update(client: Client): Promise<Client> {

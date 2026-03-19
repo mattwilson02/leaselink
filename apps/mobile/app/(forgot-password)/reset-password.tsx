@@ -172,6 +172,7 @@ const SetPassword = () => {
 												<Form.GroupInput>
 													<TextInput.Root id={field.name}>
 														<TextInput.Control
+															// @ts-expect-error - ref works at runtime, library types incomplete
 															ref={passwordInputRef}
 															testID='password-input'
 															autoCapitalize='none'
@@ -246,6 +247,7 @@ const SetPassword = () => {
 												<View style={{ gap: 4 }}>
 													<TextInput.Root id={field.name}>
 														<TextInput.Control
+															// @ts-expect-error - ref works at runtime, library types incomplete
 															ref={retypePasswordInputRef}
 															testID='retypepassword-input'
 															autoCapitalize='none'
