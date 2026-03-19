@@ -122,6 +122,7 @@ import { GetPaymentByIdController } from './controllers/get-payment-by-id/get-pa
 import { CreateCheckoutSessionController } from './controllers/create-checkout-session/create-checkout-session.controller'
 import { StripeModule } from '../stripe/stripe.module'
 import { StripeServiceImpl } from '../stripe/stripe.service'
+import { GetDashboardSummaryController } from './controllers/get-dashboard-summary/get-dashboard-summary.controller'
 
 @Module({
 	imports: [
@@ -186,6 +187,8 @@ import { StripeServiceImpl } from '../stripe/stripe.service'
 		UpdateMaintenanceRequestStatusController,
 		UploadMaintenancePhotosController,
 		ConfirmMaintenancePhotosController,
+		// Dashboard
+		GetDashboardSummaryController,
 		// Payments — static routes before :id to avoid route conflicts
 		StripeWebhookController,
 		GeneratePaymentsController,
