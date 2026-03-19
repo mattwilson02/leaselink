@@ -268,8 +268,9 @@ export default {
 		download_to_view_file: 'Bitte herunterladen, um diese Datei anzuzeigen',
 	},
 	main_footer: {
-		documents: 'Dokumente',
+		home: 'Startseite',
 		maintenance: 'Wartung',
+		payments: 'Zahlungen',
 		notifications: 'Benachrichtigungen',
 	},
 	maintenance: {

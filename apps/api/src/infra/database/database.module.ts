@@ -2,6 +2,7 @@ import { IdentityProviderRepository } from '@/domain/authentication/application/
 import { ClientsRepository } from '@/domain/financial-management/application/repositories/clients-repository'
 import { LeasesRepository } from '@/domain/lease-management/application/repositories/leases-repository'
 import { MaintenanceRequestsRepository } from '@/domain/maintenance/application/repositories/maintenance-requests-repository'
+import { PaymentsRepository } from '@/domain/payment/application/repositories/payments-repository'
 import { PropertiesRepository } from '@/domain/property-management/application/repositories/properties-repository'
 import { Module } from '@nestjs/common'
 import { PrismaService } from './prisma/prisma.service'
@@ -9,6 +10,7 @@ import { PrismaClientsRepository } from './prisma/repositories/prisma-clients-re
 import { PrismaIdentityProviderRepository } from './prisma/repositories/prisma-provider-repository'
 import { PrismaLeasesRepository } from './prisma/repositories/prisma-leases-repository'
 import { PrismaMaintenanceRequestsRepository } from './prisma/repositories/prisma-maintenance-requests-repository'
+import { PrismaPaymentsRepository } from './prisma/repositories/prisma-payments-repository'
 import { PrismaPropertiesRepository } from './prisma/repositories/prisma-properties-repository'
 import { NotificationRepository } from '@/domain/notification/application/repositories/notification-repository'
 import { PrismaNotificationRepository } from './prisma/repositories/prisma-notification-repository'
@@ -52,6 +54,10 @@ import { PrismaDocumentRequestRepository } from './prisma/repositories/prisma-do
 			provide: MaintenanceRequestsRepository,
 			useClass: PrismaMaintenanceRequestsRepository,
 		},
+		{
+			provide: PaymentsRepository,
+			useClass: PrismaPaymentsRepository,
+		},
 	],
 	exports: [
 		PrismaService,
@@ -63,6 +69,7 @@ import { PrismaDocumentRequestRepository } from './prisma/repositories/prisma-do
 		PropertiesRepository,
 		LeasesRepository,
 		MaintenanceRequestsRepository,
+		PaymentsRepository,
 	],
 })
 export class DatabaseModule {}

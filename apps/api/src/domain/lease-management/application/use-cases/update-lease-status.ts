@@ -1,5 +1,5 @@
 import { Either, left, right } from '@/core/either'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Optional } from '@nestjs/common'
 import { PropertiesRepository } from '@/domain/property-management/application/repositories/properties-repository'
 import { LEASE_STATUS_TRANSITIONS, isValidTransition } from '@leaselink/shared'
 import { LeaseStatus as SharedLeaseStatus } from '@leaselink/shared'
@@ -8,6 +8,7 @@ import { LeasesRepository } from '../repositories/leases-repository'
 import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { InvalidLeaseStatusTransitionError } from './errors/invalid-lease-status-transition-error'
 import { LeaseStatusType } from '../../enterprise/entities/value-objects/lease-status'
+import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
 
 export interface UpdateLeaseStatusUseCaseRequest {
 	leaseId: string
@@ -24,6 +25,8 @@ export class UpdateLeaseStatusUseCase {
 	constructor(
 		private leasesRepository: LeasesRepository,
 		private propertiesRepository: PropertiesRepository,
+		@Optional()
+		private generateLeasePaymentsUseCase?: GenerateLeasePaymentsUseCase,
 	) {}
 
 	async execute({
@@ -68,6 +71,11 @@ export class UpdateLeaseStatusUseCase {
 		}
 
 		const updatedLease = await this.leasesRepository.update(lease)
+
+		// Side effect: generate payment records when lease becomes ACTIVE
+		if (status === 'ACTIVE' && this.generateLeasePaymentsUseCase) {
+			await this.generateLeasePaymentsUseCase.execute({ leaseId })
+		}
 
 		return right({ lease: updatedLease })
 	}

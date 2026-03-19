@@ -261,8 +261,9 @@ export default {
 		download_to_view_file: 'Please download to view this file',
 	},
 	main_footer: {
-		documents: 'Documents',
+		home: 'Home',
 		maintenance: 'Maintenance',
+		payments: 'Payments',
 		notifications: 'Notifications',
 	},
 	maintenance: {

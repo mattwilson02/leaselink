@@ -265,8 +265,9 @@ export default {
 		download_to_view_file: 'Veuillez télécharger pour afficher ce fichier',
 	},
 	main_footer: {
-		documents: 'Documents',
+		home: 'Accueil',
 		maintenance: 'Maintenance',
+		payments: 'Paiements',
 		notifications: 'Notifications',
 	},
 	maintenance: {

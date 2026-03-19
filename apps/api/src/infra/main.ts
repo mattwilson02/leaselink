@@ -26,6 +26,7 @@ interface SwaggerResponse {
 async function bootstrap() {
 	const app = await NestFactory.create(AppModule, {
 		bodyParser: false, // Disable the default body parser to use raw body for betterAuth
+		rawBody: true, // Enable raw body for Stripe webhook signature verification
 	})
 
 	const config = new DocumentBuilder()

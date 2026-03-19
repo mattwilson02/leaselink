@@ -106,6 +106,22 @@ import { GetMaintenanceRequestsByTenantController } from './controllers/get-main
 import { UpdateMaintenanceRequestStatusController } from './controllers/update-maintenance-request-status/update-maintenance-request-status.controller'
 import { UploadMaintenancePhotosController } from './controllers/upload-maintenance-photos/upload-maintenance-photos.controller'
 import { ConfirmMaintenancePhotosController } from './controllers/confirm-maintenance-photos/confirm-maintenance-photos.controller'
+import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
+import { GetPaymentsUseCase } from '@/domain/payment/application/use-cases/get-payments'
+import { GetPaymentsByTenantUseCase } from '@/domain/payment/application/use-cases/get-payments-by-tenant'
+import { GetPaymentByIdUseCase } from '@/domain/payment/application/use-cases/get-payment-by-id'
+import { CreateCheckoutSessionUseCase } from '@/domain/payment/application/use-cases/create-checkout-session'
+import { HandleCheckoutCompletedUseCase } from '@/domain/payment/application/use-cases/handle-checkout-completed'
+import { MarkOverduePaymentsUseCase } from '@/domain/payment/application/use-cases/mark-overdue-payments'
+import { StripeWebhookController } from './controllers/stripe-webhook/stripe-webhook.controller'
+import { GeneratePaymentsController } from './controllers/generate-payments/generate-payments.controller'
+import { MarkOverduePaymentsController } from './controllers/mark-overdue-payments/mark-overdue-payments.controller'
+import { GetPaymentsByTenantController } from './controllers/get-payments-by-tenant/get-payments-by-tenant.controller'
+import { GetPaymentsController } from './controllers/get-payments/get-payments.controller'
+import { GetPaymentByIdController } from './controllers/get-payment-by-id/get-payment-by-id.controller'
+import { CreateCheckoutSessionController } from './controllers/create-checkout-session/create-checkout-session.controller'
+import { StripeModule } from '../stripe/stripe.module'
+import { StripeServiceImpl } from '../stripe/stripe.service'
 
 @Module({
 	imports: [
@@ -114,6 +130,7 @@ import { ConfirmMaintenancePhotosController } from './controllers/confirm-mainte
 		DatabaseModule,
 		EnvModule,
 		BlobStorageModule,
+		StripeModule,
 	],
 	controllers: [
 		CreateClientController,
@@ -169,6 +186,14 @@ import { ConfirmMaintenancePhotosController } from './controllers/confirm-mainte
 		UpdateMaintenanceRequestStatusController,
 		UploadMaintenancePhotosController,
 		ConfirmMaintenancePhotosController,
+		// Payments — static routes before :id to avoid route conflicts
+		StripeWebhookController,
+		GeneratePaymentsController,
+		MarkOverduePaymentsController,
+		GetPaymentsByTenantController,
+		GetPaymentsController,
+		GetPaymentByIdController,
+		CreateCheckoutSessionController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -221,6 +246,14 @@ import { ConfirmMaintenancePhotosController } from './controllers/confirm-mainte
 		UpdateMaintenanceRequestStatusUseCase,
 		UploadMaintenancePhotosUseCase,
 		ConfirmMaintenancePhotosUseCase,
+		GenerateLeasePaymentsUseCase,
+		GetPaymentsUseCase,
+		GetPaymentsByTenantUseCase,
+		GetPaymentByIdUseCase,
+		CreateCheckoutSessionUseCase,
+		HandleCheckoutCompletedUseCase,
+		MarkOverduePaymentsUseCase,
+		StripeServiceImpl,
 	],
 })
 export class HttpModule {}

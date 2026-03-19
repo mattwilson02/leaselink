@@ -26,6 +26,9 @@ export class PrismaNotificationMapper {
 				linkedTransactionId: raw.linkedMaintenanceRequestId
 					? new UniqueEntityId(raw.linkedMaintenanceRequestId)
 					: undefined,
+				linkedPaymentId: raw.linkedPaymentId
+					? new UniqueEntityId(raw.linkedPaymentId)
+					: undefined,
 				isRead: raw.isRead,
 				isActionComplete: raw.isActionComplete,
 				createdAt: raw.createdAt,
@@ -49,6 +52,7 @@ export class PrismaNotificationMapper {
 			actionType: notification.actionType as string as PrismaActionType,
 			linkedDocumentId: notification.linkedDocumentId?.toString(),
 			linkedMaintenanceRequestId: notification.linkedTransactionId?.toString(),
+			linkedPaymentId: notification.linkedPaymentId?.toString(),
 			isRead: notification.isRead,
 			isActionComplete: notification.isActionComplete,
 			createdAt: notification.createdAt,
@@ -68,6 +72,7 @@ export class PrismaNotificationMapper {
 			actionType: notification.actionType as string as PrismaActionType,
 			linkedDocumentId: notification.linkedDocumentId?.toString(),
 			linkedMaintenanceRequestId: notification.linkedTransactionId?.toString(),
+			linkedPaymentId: notification.linkedPaymentId?.toString(),
 			isRead: notification.isRead,
 			isActionComplete: notification.isActionComplete,
 			createdAt: notification.createdAt,
