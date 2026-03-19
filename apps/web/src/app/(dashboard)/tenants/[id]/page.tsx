@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Mail, Phone, User } from "lucide-react";
+import { ArrowLeft, Mail, Phone, Plus, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,10 +12,25 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { TenantStatusBadge } from "@/components/tenants/tenant-status-badge";
 import { OnboardingProgress } from "@/components/tenants/onboarding-progress";
+import { DocumentRequestStatusBadge } from "@/components/documents/document-request-status-badge";
 import { useTenant } from "@/hooks/use-tenants";
-import { TenantStatus, OnboardingStatus } from "@leaselink/shared";
+import { useDocumentRequests } from "@/hooks/use-document-requests";
+import {
+  TenantStatus,
+  OnboardingStatus,
+  DocumentRequestType,
+  DOCUMENT_REQUEST_TYPE_LABELS,
+} from "@leaselink/shared";
 
 export default function TenantDetailPage() {
   const params = useParams();
@@ -23,6 +38,9 @@ export default function TenantDetailPage() {
 
   const { data, isLoading } = useTenant(id);
   const tenant = data?.data;
+
+  const { data: requestsData, isLoading: requestsLoading } =
+    useDocumentRequests({ limit: 50 });
 
   if (isLoading) {
     return (
@@ -170,12 +188,75 @@ export default function TenantDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Documents</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Documents</CardTitle>
+                <Link href={`/documents/requests/new?tenantId=${id}`}>
+                  <Button variant="outline" size="sm">
+                    <Plus className="mr-1 h-3 w-3" />
+                    Request
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Document management coming in Sprint 4.
-              </p>
+              {requestsLoading ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              ) : (() => {
+                const tenantRequests = (
+                  requestsData?.documentRequests ?? []
+                ).filter((r) => r.clientId === id);
+
+                if (tenantRequests.length === 0) {
+                  return (
+                    <p className="text-sm text-muted-foreground">
+                      No document requests for this tenant.
+                    </p>
+                  );
+                }
+
+                return (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Request Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="hidden sm:table-cell">
+                          Created
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {tenantRequests.map((request) => (
+                        <TableRow key={request.id}>
+                          <TableCell className="text-sm">
+                            {DOCUMENT_REQUEST_TYPE_LABELS[
+                              request.requestType as DocumentRequestType
+                            ] ?? request.requestType}
+                          </TableCell>
+                          <TableCell>
+                            <DocumentRequestStatusBadge
+                              status={request.status}
+                            />
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                            {new Date(request.createdAt).toLocaleDateString(
+                              "en-US",
+                              {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              }
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                );
+              })()}
             </CardContent>
           </Card>
         </div>

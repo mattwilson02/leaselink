@@ -33,7 +33,7 @@ interface TenantLeasesResponse {
 	leases: LeaseWithProperty[]
 }
 
-export const useMyActiveLease = () => {
+export const useMyLeases = () => {
 	const { data, isLoading, isError } = useQuery({
 		queryKey: ['leases', 'tenant'],
 		queryFn: async () => {
@@ -43,9 +43,13 @@ export const useMyActiveLease = () => {
 		retry: false,
 	})
 
-	const activeLease = data?.leases?.find(
-		(l) => l.status === LeaseStatus.ACTIVE,
-	)
+	return { leases: data?.leases ?? [], isLoading, isError }
+}
+
+export const useMyActiveLease = () => {
+	const { leases, isLoading, isError } = useMyLeases()
+
+	const activeLease = leases.find((l) => l.status === LeaseStatus.ACTIVE)
 
 	return { activeLease: activeLease ?? null, isLoading, isError }
 }

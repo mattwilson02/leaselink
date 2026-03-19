@@ -15,6 +15,7 @@ import {
 import { GetDocumentRequestsByClientIdUseCase } from '@/domain/document/application/use-cases/get-document-requests-by-client-id'
 import { ZodValidationPipe } from 'nestjs-zod'
 import { z } from 'zod'
+import { DocumentRequestType } from '@leaselink/shared'
 import { DocumentRequestsDto } from '../../DTOs/document-request/document-requests-dto'
 import { HttpDocumentRequestsPresenter } from '../../presenters/http-document-requests-presenter'
 import { ClientNotFoundError } from '@/domain/financial-management/application/use-cases/errors/client-not-found-error'
@@ -25,7 +26,7 @@ import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
 const getDocumentRequestQuerySchema = z.object({
 	limit: z.string().optional(),
 	offset: z.string().optional(),
-	requestType: z.enum(['PROOF_OF_ADDRESS', 'PROOF_OF_IDENTITY']).optional(),
+	requestType: z.nativeEnum(DocumentRequestType).optional(),
 })
 
 type GetDocumentRequestsQuerySchema = z.infer<
@@ -53,7 +54,7 @@ export class GetDocumentRequestsByClientIdController {
 	@ApiQuery({
 		name: 'requestType',
 		required: false,
-		enum: ['PROOF_OF_ADDRESS', 'PROOF_OF_IDENTITY'],
+		enum: DocumentRequestType,
 		description: 'Type of the document request',
 		example: 'PROOF_OF_IDENTITY',
 	})
