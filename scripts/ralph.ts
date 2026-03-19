@@ -144,6 +144,44 @@ async function runAgentOnce(
   return { result, subtype, turns, cost, sessionId };
 }
 
+// ─── Sprint State Persistence ────────────────────────────────────────────────
+
+type SprintPhase =
+  | "spec"           // Phase 1: writing spec
+  | "backend"        // Phase 2a: backend builder
+  | "backend_verify" // Phase 2b: backend verification gate
+  | "frontend"       // Phase 2c: frontend builders
+  | "full_verify"    // Phase 3: full verification
+  | "audit"          // Phase 3b: spec compliance audit
+  | "pr";            // Phase 4: commit, push, PR
+
+interface SprintState {
+  sprint: number;
+  phase: SprintPhase;
+  specName?: string;
+  specPath?: string;
+  branchName?: string;
+}
+
+const STATE_FILE = join(ROOT, ".ralph-state.json");
+
+function saveState(state: SprintState) {
+  writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+}
+
+function loadState(): SprintState | null {
+  if (!existsSync(STATE_FILE)) return null;
+  try {
+    return JSON.parse(readFileSync(STATE_FILE, "utf-8"));
+  } catch {
+    return null;
+  }
+}
+
+function clearState() {
+  try { unlinkSync(STATE_FILE); } catch {}
+}
+
 /** Load existing sprint spec files sorted by number */
 function getExistingSprintSpecs(): { number: number; name: string; content: string }[] {
   if (!existsSync(SPRINTS_DIR)) return [];
@@ -658,131 +696,172 @@ async function main() {
     log(`${"═".repeat(60)}`);
 
     try {
-      // ── Checkout latest base branch
-      run(`git checkout ${BASE_BRANCH}`);
-      run(`git pull origin ${BASE_BRANCH}`);
+      // ── Check for interrupted sprint state
+      const savedState = loadState();
+      let resumePhase: SprintPhase = "spec";
+      let sprintName = "";
+      let specPath = "";
+      let branchName = "";
 
-      // ── Create sprint branch
-      const tempBranch = `sprint/${sprint}`;
-      const { ok } = runSafe(`git checkout -b ${tempBranch}`);
-      if (!ok) {
-        // Branch exists, reset it
-        run(`git checkout ${tempBranch}`);
-        run(`git reset --hard ${BASE_BRANCH}`);
-      }
+      if (savedState && savedState.sprint === sprint) {
+        resumePhase = savedState.phase;
+        sprintName = savedState.specName ?? "";
+        specPath = savedState.specPath ?? "";
+        branchName = savedState.branchName ?? "";
+        log(`\n🔄 Resuming interrupted sprint ${sprint} from phase: ${resumePhase}`);
+        log(`   Branch: ${branchName}`);
 
-      // ── Phase 1: Write spec
-      const { name: sprintName, path: specPath } = await writeSprintSpec(sprint);
+        // Checkout the existing branch with partial work
+        runSafe(`git checkout ${branchName}`);
+      } else {
+        // Fresh sprint — checkout base and create branch
+        run(`git checkout ${BASE_BRANCH}`);
+        run(`git pull origin ${BASE_BRANCH}`);
 
-      // Commit the spec before building
-      run("git add -A");
-      runSafe(`git commit -m "docs: add ${sprintName} spec"`);
+        const tempBranch = `sprint/${sprint}`;
+        const { ok } = runSafe(`git checkout -b ${tempBranch}`);
+        if (!ok) {
+          run(`git checkout ${tempBranch}`);
+          run(`git reset --hard ${BASE_BRANCH}`);
+        }
 
-      // Rename branch to include the spec name
-      const branchName = `sprint/${sprintName}`;
-      if (branchName !== tempBranch) {
-        run(`git branch -m ${tempBranch} ${branchName}`);
+        // ── Phase 1: Write spec
+        saveState({ sprint, phase: "spec" });
+        const spec = await writeSprintSpec(sprint);
+        sprintName = spec.name;
+        specPath = spec.path;
+
+        run("git add -A");
+        runSafe(`git commit -m "docs: add ${sprintName} spec"`);
+
+        branchName = `sprint/${sprintName}`;
+        if (branchName !== tempBranch) {
+          run(`git branch -m ${tempBranch} ${branchName}`);
+        }
+
+        resumePhase = "backend";
       }
 
       // ── Phase 2a: Backend build
-      await runBackendBuilder(specPath);
-
-      // ── Phase 2b: Backend verification gate — catch issues before frontend agents waste time
-      log("\n🔍 Phase 2b: Backend verification gate...");
-      let { passed, output } = verify("backend");
-      let fixAttempt = 0;
-
-      while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
-        fixAttempt++;
-        await fixErrors(output, fixAttempt);
-        ({ passed, output } = verify("backend"));
+      if (resumePhase === "backend" || resumePhase === "spec") {
+        saveState({ sprint, phase: "backend", specName: sprintName, specPath, branchName });
+        await runBackendBuilder(specPath);
+        resumePhase = "backend_verify";
       }
 
-      if (!passed) {
-        log(`\n❌ Sprint ${sprint} backend failed verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
-        log("Stopping. Fix manually and re-run with --start-sprint=" + sprint);
-        process.exit(1);
-      }
+      // ── Phase 2b: Backend verification gate
+      if (resumePhase === "backend_verify") {
+        saveState({ sprint, phase: "backend_verify", specName: sprintName, specPath, branchName });
+        log("\n🔍 Phase 2b: Backend verification gate...");
+        let { passed, output } = verify("backend");
+        let fixAttempt = 0;
 
-      log("\n✅ Backend verification passed — safe to start frontend work");
+        while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
+          fixAttempt++;
+          await fixErrors(output, fixAttempt);
+          ({ passed, output } = verify("backend"));
+        }
+
+        if (!passed) {
+          log(`\n❌ Sprint ${sprint} backend failed verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
+          log("Stopping. Re-run ralph to resume from backend_verify phase.");
+          process.exit(1);
+        }
+
+        log("\n✅ Backend verification passed — safe to start frontend work");
+        resumePhase = "frontend";
+      }
 
       // ── Phase 2c: Frontend build
-      await runFrontendBuilders(specPath);
+      if (resumePhase === "frontend") {
+        saveState({ sprint, phase: "frontend", specName: sprintName, specPath, branchName });
+        await runFrontendBuilders(specPath);
+        resumePhase = "full_verify";
+      }
 
       // ── Phase 3: Full verification
-      ({ passed, output } = verify("full"));
-      fixAttempt = 0;
+      let passed = false;
+      let output = "";
+      let fixAttempt = 0;
 
-      while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
-        fixAttempt++;
-        await fixErrors(output, fixAttempt);
+      if (resumePhase === "full_verify") {
+        saveState({ sprint, phase: "full_verify", specName: sprintName, specPath, branchName });
         ({ passed, output } = verify("full"));
-      }
 
-      if (!passed) {
-        log(`\n❌ Sprint ${sprint} failed full verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
-        log("Stopping. Fix manually and re-run with --start-sprint=" + sprint);
-        process.exit(1);
-      }
+        while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
+          fixAttempt++;
+          await fixErrors(output, fixAttempt);
+          ({ passed, output } = verify("full"));
+        }
 
-      log(`\n✅ Sprint ${sprint} full verification passed!`);
-
-      // ── Phase 3b: Spec compliance audit — did we actually build everything?
-      const audit = await auditSpecCompliance(specPath);
-
-      if (!audit.complete) {
-        log(`\n⚠ Spec audit found ${audit.missing.length} missing item(s) — sending builder back in`);
-
-        const missingList = audit.missing.map((m, i) => `${i + 1}. ${m}`).join("\n");
-        await runAgent(
-          `The spec compliance audit found these items were NOT implemented:\n\n${missingList}\n\nImplement the missing items now. The sprint spec is at: ${specPath}\nRead the spec and the existing code, then fill in the gaps. Run verification checks after.`,
-          {
-            cwd: ROOT,
-            model: MODELS.builder,
-            allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
-            permissionMode: "bypassPermissions",
-            allowDangerouslySkipPermissions: true,
-            maxTurns: 150,
-            systemPrompt: {
-              type: "preset",
-              preset: "claude_code",
-              append: "\nYou are a builder fixing missing sprint items. Implement only what's listed as missing. Run checks after.",
-            },
-          },
-        );
-
-        // Re-verify after filling gaps
-        ({ passed, output } = verify("full"));
         if (!passed) {
-          fixAttempt = 0;
-          while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
-            fixAttempt++;
-            await fixErrors(output, fixAttempt);
-            ({ passed, output } = verify("full"));
-          }
+          log(`\n❌ Sprint ${sprint} failed full verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
+          log("Stopping. Re-run ralph to resume from full_verify phase.");
+          process.exit(1);
+        }
+
+        log(`\n✅ Sprint ${sprint} full verification passed!`);
+        resumePhase = "audit";
+      }
+
+      // ── Phase 3b: Spec compliance audit
+      if (resumePhase === "audit") {
+        saveState({ sprint, phase: "audit", specName: sprintName, specPath, branchName });
+        const audit = await auditSpecCompliance(specPath);
+
+        if (!audit.complete) {
+          log(`\n⚠ Spec audit found ${audit.missing.length} missing item(s) — sending builder back in`);
+
+          const missingList = audit.missing.map((m, i) => `${i + 1}. ${m}`).join("\n");
+          await runAgent(
+            `The spec compliance audit found these items were NOT implemented:\n\n${missingList}\n\nImplement the missing items now. The sprint spec is at: ${specPath}\nRead the spec and the existing code, then fill in the gaps. Run verification checks after.`,
+            {
+              cwd: ROOT,
+              model: MODELS.builder,
+              allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+              permissionMode: "bypassPermissions",
+              allowDangerouslySkipPermissions: true,
+              maxTurns: 150,
+              systemPrompt: {
+                type: "preset",
+                preset: "claude_code",
+                append: "\nYou are a builder fixing missing sprint items. Implement only what's listed as missing. Run checks after.",
+              },
+            },
+          );
+
+          ({ passed, output } = verify("full"));
           if (!passed) {
-            log(`\n❌ Sprint ${sprint} failed verification after gap-fill.`);
-            log(`Stopping. Fix manually and re-run with --start-sprint=${sprint}`);
-            process.exit(1);
+            fixAttempt = 0;
+            while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
+              fixAttempt++;
+              await fixErrors(output, fixAttempt);
+              ({ passed, output } = verify("full"));
+            }
+            if (!passed) {
+              log(`\n❌ Sprint ${sprint} failed verification after gap-fill.`);
+              log("Stopping. Re-run ralph to resume from audit phase.");
+              process.exit(1);
+            }
+          }
+
+          const reaudit = await auditSpecCompliance(specPath);
+          if (!reaudit.complete) {
+            log(`\n⚠ Still ${reaudit.missing.length} missing item(s) after gap-fill — proceeding with partial sprint`);
           }
         }
 
-        // Re-audit to confirm
-        const reaudit = await auditSpecCompliance(specPath);
-        if (!reaudit.complete) {
-          log(`\n⚠ Still ${reaudit.missing.length} missing item(s) after gap-fill — proceeding with partial sprint`);
-        }
+        resumePhase = "pr";
       }
 
       // ── Phase 4: Commit, Push, PR
+      saveState({ sprint, phase: "pr", specName: sprintName, specPath, branchName });
       commitAndPR(sprint, sprintName, branchName);
 
       // ── Wait for merge, then pull
       log("  Waiting for PR merge...");
-      // Give auto-merge a moment, then poll
       await new Promise((r) => setTimeout(r, 10_000));
 
-      // Poll for merge (max 5 min)
       let merged = false;
       for (let i = 0; i < 30; i++) {
         const { output: state } = runSafe(`gh pr view ${branchName} --json state -q .state`);
@@ -794,11 +873,12 @@ async function main() {
       }
 
       if (!merged) {
-        // Force merge if auto-merge didn't kick in (no CI required on dev)
         runSafe(`gh pr merge --squash --admin`);
         log("  → Force merged via --admin");
       }
 
+      // Sprint done — clear state and move on
+      clearState();
       run(`git checkout ${BASE_BRANCH}`);
       run(`git pull origin ${BASE_BRANCH}`);
 
@@ -806,7 +886,7 @@ async function main() {
       log(`\n✅ Sprint ${sprint} complete! (${elapsed} min)\n`);
     } catch (e: any) {
       log(`\n❌ Sprint ${sprint} failed with error: ${e.message}`);
-      log("Stopping. Fix and re-run with --start-sprint=" + sprint);
+      log("State saved — re-run ralph to resume from where it crashed.");
       process.exit(1);
     }
   }

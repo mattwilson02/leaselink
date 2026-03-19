@@ -34,6 +34,7 @@ coverage/
 # temp
 .temp
 .tmp
+.ralph-state.json
 
 # runtime
 *.pid

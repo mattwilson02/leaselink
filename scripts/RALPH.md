@@ -108,7 +108,9 @@ npm run ralph -- --start-sprint=3 --max-sprints=2
 
 ## Resilience
 
-Ralph doesn't die when he runs out of context. Every agent call tracks its session ID, turn count, and cost. If an agent hits `maxTurns`:
+### Agent-level: session resumption
+
+Ralph doesn't die when an agent runs out of context. Every agent call tracks its session ID, turn count, and cost. If an agent hits `maxTurns`:
 
 1. Ralph logs a warning with turn count and spend so far
 2. Captures the session ID from the interrupted run
@@ -117,6 +119,17 @@ Ralph doesn't die when he runs out of context. Every agent call tracks its sessi
 5. Verification gate catches anything the agent missed
 
 This means a 200-turn backend builder that runs out of gas gets 3 more 200-turn windows to finish the job — 800 turns total before Ralph gives up and lets the fix agent clean up.
+
+### Sprint-level: crash recovery
+
+If Ralph itself dies mid-sprint (killed, machine sleeps, OOM), he writes a `.ralph-state.json` checkpoint before each phase. On restart:
+
+1. Ralph checks for a saved state file
+2. If found, skips to the interrupted phase — spec, backend, frontend, verify, audit, or PR
+3. The existing branch with partial work is preserved (no `git reset --hard`)
+4. After the sprint completes, the state file is cleared
+
+You can walk away for 3 hours, come back, run `npm run ralph` and he picks up exactly where he left off.
 
 ## Why "Ralph"
 
