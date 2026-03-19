@@ -63,7 +63,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Old Notification',
+					title: 'Old Notification',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -73,7 +74,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Recent Notification',
+					title: 'Recent Notification',
+					body: '',
 					notificationType: 'ACTION',
 					isRead: true,
 					isActionComplete: true,
@@ -83,7 +85,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Middle Notification',
+					title: 'Middle Notification',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -107,21 +110,21 @@ describe('GetNotificationsController (E2E)', () => {
 		const notifications = response.body.notifications
 		expect(notifications[0]).toEqual(
 			expect.objectContaining({
-				text: 'Recent Notification',
+				title: 'Recent Notification',
 				isRead: true,
 			}),
 		)
 
 		expect(notifications[1]).toEqual(
 			expect.objectContaining({
-				text: 'Middle Notification',
+				title: 'Middle Notification',
 				isRead: false,
 			}),
 		)
 
 		expect(notifications[2]).toEqual(
 			expect.objectContaining({
-				text: 'Old Notification',
+				title: 'Old Notification',
 				isRead: false,
 			}),
 		)
@@ -137,7 +140,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Active Notification',
+					title: 'Active Notification',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -148,7 +152,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Archived Notification 1',
+					title: 'Archived Notification 1',
+					body: '',
 					notificationType: 'ACTION',
 					isRead: true,
 					isActionComplete: true,
@@ -159,7 +164,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Archived Notification 2',
+					title: 'Archived Notification 2',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -184,20 +190,20 @@ describe('GetNotificationsController (E2E)', () => {
 		expect(response.body.notifications).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
-					text: 'Archived Notification 1',
+					title: 'Archived Notification 1',
 					isRead: true,
 				}),
 				expect.objectContaining({
-					text: 'Archived Notification 2',
+					title: 'Archived Notification 2',
 					isRead: false,
 				}),
 			]),
 		)
 
-		// Ensure we only get archived notifications (none with text 'Active Notification')
+		// Ensure we only get archived notifications (none with title 'Active Notification')
 		const activeNotifications = response.body.notifications.filter(
-			(notification: { text: string }) =>
-				notification.text === 'Active Notification',
+			(notification: { title: string }) =>
+				notification.title === 'Active Notification',
 		)
 		expect(activeNotifications).toHaveLength(0)
 	})
@@ -212,7 +218,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Active Notification 1',
+					title: 'Active Notification 1',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -223,7 +230,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Active Notification 2',
+					title: 'Active Notification 2',
+					body: '',
 					notificationType: 'ACTION',
 					isRead: true,
 					isActionComplete: true,
@@ -234,7 +242,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Archived Notification',
+					title: 'Archived Notification',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -259,11 +268,11 @@ describe('GetNotificationsController (E2E)', () => {
 		expect(response.body.notifications).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
-					text: 'Active Notification 1',
+					title: 'Active Notification 1',
 					isRead: false,
 				}),
 				expect.objectContaining({
-					text: 'Active Notification 2',
+					title: 'Active Notification 2',
 					isRead: true,
 				}),
 			]),
@@ -279,7 +288,8 @@ describe('GetNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Active Notification',
+					title: 'Active Notification',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,

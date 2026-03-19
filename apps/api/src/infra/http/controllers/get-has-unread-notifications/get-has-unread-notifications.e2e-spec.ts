@@ -45,14 +45,16 @@ describe('GetHasUnreadNotificationsController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId: person.id,
-					text: 'Test Notification 1',
+					title: 'Test Notification 1',
+					body: '',
 					isRead: false,
 					notificationType: 'INFO',
 				},
 				{
 					id: faker.string.uuid(),
 					personId: person.id,
-					text: 'Test Notification 2',
+					title: 'Test Notification 2',
+					body: '',
 					isRead: false,
 					notificationType: 'INFO',
 				},

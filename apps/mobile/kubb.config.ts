@@ -12,6 +12,7 @@ export default defineConfig(() => {
 		output: {
 			path: './src/gen',
 			clean: true,
+			banner: '// @ts-nocheck',
 		},
 		plugins: [
 			pluginOas({

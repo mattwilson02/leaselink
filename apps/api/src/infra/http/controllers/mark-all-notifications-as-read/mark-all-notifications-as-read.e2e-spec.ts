@@ -59,7 +59,8 @@ describe('MarkAllNotificationsAsReadController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Unread Notification 1',
+					title: 'Unread Notification 1',
+					body: '',
 					notificationType: 'INFO',
 					isRead: false,
 					isActionComplete: false,
@@ -69,7 +70,8 @@ describe('MarkAllNotificationsAsReadController (E2E)', () => {
 				{
 					id: faker.string.uuid(),
 					personId,
-					text: 'Unread Notification 2',
+					title: 'Unread Notification 2',
+					body: '',
 					notificationType: 'ACTION',
 					isRead: false,
 					isActionComplete: false,

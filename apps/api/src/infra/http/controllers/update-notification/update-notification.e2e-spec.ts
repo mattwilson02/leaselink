@@ -40,7 +40,8 @@ describe('UpdateNotificationController (E2E)', () => {
 			data: {
 				id: faker.string.uuid(),
 				personId: faker.string.uuid(),
-				text: 'Original notification',
+				title: 'Original notification',
+				body: '',
 				notificationType: 'ACTION',
 				actionType: 'BASIC_COMPLETE',
 				isRead: false,
@@ -66,7 +67,7 @@ describe('UpdateNotificationController (E2E)', () => {
 			notificationId: notification.id,
 			isRead: true,
 			isActionComplete: true,
-			text: 'Original notification',
+			title: 'Original notification',
 			notificationType: 'ACTION',
 			actionType: 'BASIC_COMPLETE',
 			archivedAt: null,
@@ -84,7 +85,8 @@ describe('UpdateNotificationController (E2E)', () => {
 			data: {
 				id: faker.string.uuid(),
 				personId: faker.string.uuid(),
-				text: 'Original notification',
+				title: 'Original notification',
+				body: '',
 				notificationType: 'ACTION',
 				actionType: 'BASIC_COMPLETE',
 				isRead: false,
@@ -110,7 +112,8 @@ describe('UpdateNotificationController (E2E)', () => {
 			data: {
 				id: faker.string.uuid(),
 				personId: faker.string.uuid(),
-				text: 'Original notification',
+				title: 'Original notification',
+				body: '',
 				notificationType: 'ACTION',
 				actionType: 'SIGN_DOCUMENT',
 				isRead: false,

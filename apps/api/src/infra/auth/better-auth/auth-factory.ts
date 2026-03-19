@@ -70,5 +70,5 @@ export function createAuthInstance(prismaClient: PrismaClient) {
 			},
 		},
 	})
-	return betterAuthInstance as ReturnType<typeof betterAuth>
+	return betterAuthInstance as unknown as ReturnType<typeof betterAuth>
 }
