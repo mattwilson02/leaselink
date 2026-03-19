@@ -2511,10 +2511,15 @@
             "example": "a37bf2c9-9f1f-4eea-924b-4d6617cd5aff",
             "description": "Unique identifier of the person associated with the notification"
           },
-          "text": {
+          "title": {
             "type": "string",
-            "example": "Notification text",
-            "description": "Text of the notification"
+            "example": "Notification title",
+            "description": "Title of the notification"
+          },
+          "body": {
+            "type": "string",
+            "example": "Notification body",
+            "description": "Body of the notification"
           },
           "notificationType": {
             "type": "string",
@@ -2584,7 +2589,8 @@
         "required": [
           "id",
           "personId",
-          "text",
+          "title",
+          "body",
           "notificationType",
           "actionType",
           "linkedDocumentId",
@@ -2647,10 +2653,15 @@
             "example": "person-uuid",
             "description": "Person unique identifier"
           },
-          "text": {
+          "title": {
             "type": "string",
-            "example": "Notification text",
-            "description": "The notification message text"
+            "example": "Notification title",
+            "description": "The notification title"
+          },
+          "body": {
+            "type": "string",
+            "example": "Notification body",
+            "description": "The notification body text"
           },
           "notificationType": {
             "type": "string",
@@ -2718,7 +2729,8 @@
         "required": [
           "notificationId",
           "personId",
-          "text",
+          "title",
+          "body",
           "notificationType",
           "isRead",
           "isActionComplete",
