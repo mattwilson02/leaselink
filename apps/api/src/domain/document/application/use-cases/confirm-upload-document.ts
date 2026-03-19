@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either'
 
-import { Injectable } from '@nestjs/common'
+import { Injectable, Optional } from '@nestjs/common'
 import { Document } from '../../enterprise/entities/document'
 import { DocumentRepository } from '../repositories/document-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
@@ -10,6 +10,11 @@ import { StorageRepository } from '../repositories/storage-repository'
 import { DocumentRequestStatus } from '../../enterprise/entities/value-objects/document-request-status'
 import { DocumentRequestNotFoundError } from './errors/document-request-not-found-error'
 import { BlobDoesNotExistError } from './errors/blob-does-not-exist-error'
+import { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import {
+	ActionType,
+	NotificationType,
+} from '@/domain/notification/enterprise/entities/notification'
 
 export interface ConfirmUploadDocumentUseCaseRequest {
 	blobName: string
@@ -36,6 +41,8 @@ export class ConfirmUploadDocumentUseCase {
 		private documentRepository: DocumentRepository,
 		private documentRequestRepository: DocumentRequestRepository,
 		private blobStorageRepository: StorageRepository,
+		@Optional()
+		private createNotificationUseCase?: CreateNotificationUseCase,
 	) {}
 
 	async execute({
@@ -101,6 +108,16 @@ export class ConfirmUploadDocumentUseCase {
 
 		if (updateDocumentRequestResult.isLeft()) {
 			return left(updateDocumentRequestResult.value)
+		}
+
+		if (this.createNotificationUseCase) {
+			await this.createNotificationUseCase.execute({
+				personId: documentRequest.requestedBy.toString(),
+				text: 'A document has been uploaded.',
+				notificationType: NotificationType.INFO,
+				actionType: ActionType.BASIC_COMPLETE,
+				linkedDocumentId: result.value.id.toString(),
+			})
 		}
 
 		return right({

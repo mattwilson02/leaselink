@@ -93,6 +93,16 @@ export class InMemoryPaymentsRepository implements PaymentsRepository {
 		)
 	}
 
+	async findPendingDueWithin(days: number): Promise<Payment[]> {
+		const now = new Date()
+		const future = new Date()
+		future.setDate(future.getDate() + days)
+
+		return this.items.filter(
+			(p) => p.status === 'PENDING' && p.dueDate >= now && p.dueDate <= future,
+		)
+	}
+
 	async update(payment: Payment): Promise<Payment> {
 		const index = this.items.findIndex(
 			(p) => p.id.toString() === payment.id.toString(),

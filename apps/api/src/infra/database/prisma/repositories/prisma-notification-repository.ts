@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import type {
+	ExistsByActionTypeAndLinkedIdParams,
 	NotificationRepository,
 	UpdateManyByPersonIdParams,
 } from '@/domain/notification/application/repositories/notification-repository'
@@ -95,6 +96,25 @@ export class PrismaNotificationRepository implements NotificationRepository {
 			},
 		})
 
+		return count > 0
+	}
+
+	async existsByActionTypeAndLinkedId(
+		params: ExistsByActionTypeAndLinkedIdParams,
+	): Promise<boolean> {
+		const count = await this.prisma.notification.count({
+			where: {
+				actionType: params.actionType as any,
+				personId: params.personId,
+				...(params.linkedTransactionId && {
+					linkedMaintenanceRequestId: params.linkedTransactionId,
+				}),
+				...(params.linkedPaymentId && {
+					linkedPaymentId: params.linkedPaymentId,
+				}),
+				createdAt: { gte: params.createdAfter },
+			},
+		})
 		return count > 0
 	}
 }

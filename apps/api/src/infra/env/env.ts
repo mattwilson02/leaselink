@@ -51,6 +51,8 @@ export const envSchema = z.object({
 	STRIPE_SUCCESS_URL: z.string().url(),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
 	STRIPE_CANCEL_URL: z.string().url(),
+	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
+	SCHEDULER_ENABLED: z.coerce.boolean().default(true),
 })
 
 export type Env = z.infer<typeof envSchema>

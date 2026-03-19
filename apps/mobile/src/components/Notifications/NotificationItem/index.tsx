@@ -9,7 +9,20 @@ import Animated, {
 	useAnimatedStyle,
 	useSharedValue,
 } from 'react-native-reanimated'
-import { ArrowLeftRight, Info } from 'lucide-react-native'
+import {
+	ArrowLeftRight,
+	Bell,
+	Calendar,
+	CheckCircle,
+	Clock,
+	CreditCard,
+	FileText,
+	Info,
+	RefreshCw,
+	TriangleAlert,
+	Upload,
+	Wrench,
+} from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useSetAtom } from 'jotai'
 import { useTranslation } from 'react-i18next'
@@ -30,87 +43,124 @@ type Props = {
 }
 
 const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
-	switch (notification.notificationType) {
-		case 'ACTION':
-			if (notification.actionType === 'SIGN_DOCUMENT') {
-				return {
-					backgroundColor: colors.warning['50'],
-					icon: (
-						<Icon.Icon
-							name='edit-04'
-							stroke={colors.warning['600']}
-							strokeWidth={2}
-							size={24}
-						/>
-					),
-				}
+	switch (notification.actionType) {
+		case 'MAINTENANCE_UPDATE':
+			return {
+				backgroundColor: colors.warning['50'],
+				icon: <Wrench size={24} color={colors.warning['600']} />,
 			}
-			if (notification.actionType === 'UPLOAD_DOCUMENT') {
-				return {
-					backgroundColor: colors.warning['50'],
-					icon: (
-						<Icon.Icon
-							name='file-05'
-							size={24}
-							strokeWidth={2}
-							stroke={colors.warning['600']}
-						/>
-					),
-				}
-			}
-			if (notification.actionType === 'BASIC_COMPLETE') {
-				return {
-					backgroundColor: colors.warning['50'],
-					icon: (
-						<Info testID='icon-info' size={24} color={colors.warning['600']} />
-					),
-				}
-			}
-			break
 
-		case 'INFO':
-			if (notification.linkedTransactionId) {
-				return {
-					backgroundColor: colors.success['50'],
-					icon: (
-						<ArrowLeftRight
-							testID='arrow-left-right-icon'
-							size={24}
-							color={colors.success['600']}
-						/>
-					),
-				}
+		case 'PAYMENT_RECEIVED':
+			return {
+				backgroundColor: colors.success['50'],
+				icon: <CheckCircle size={24} color={colors.success['600']} />,
 			}
-			if (notification.linkedDocumentId) {
-				return {
-					backgroundColor: colors.success['50'],
-					icon: (
-						<Icon.Icon
-							name='folder'
-							size={24}
-							strokeWidth={2}
-							stroke={colors.success['600']}
-						/>
-					),
-				}
-			}
-			if (!notification.linkedTransactionId && !notification.linkedDocumentId) {
-				return {
-					backgroundColor: colors.neutral['20'],
-					icon: (
-						<Info testID='icon-info' size={24} color={colors.neutral['300']} />
-					),
-				}
-			}
-			break
 
-		default:
+		case 'PAYMENT_OVERDUE':
+			return {
+				backgroundColor: colors.error['50'],
+				icon: <TriangleAlert size={24} color={colors.error['600']} />,
+			}
+
+		case 'RENT_REMINDER':
+			return {
+				backgroundColor: colors['secondary-blue']['50'],
+				icon: <Clock size={24} color={colors['secondary-blue']['600']} />,
+			}
+
+		case 'UPLOAD_DOCUMENT':
 			return {
 				backgroundColor: colors.neutral['20'],
+				icon: <Upload size={24} color={colors.neutral['500']} />,
+			}
+
+		case 'SIGN_LEASE':
+			return {
+				backgroundColor: colors['secondary-blue']['50'],
+				icon: <FileText size={24} color={colors['secondary-blue']['600']} />,
+			}
+
+		case 'LEASE_EXPIRY':
+			return {
+				backgroundColor: colors.warning['50'],
+				icon: <Calendar size={24} color={colors.warning['600']} />,
+			}
+
+		case 'LEASE_RENEWAL':
+			return {
+				backgroundColor: colors['secondary-blue']['50'],
+				icon: <RefreshCw size={24} color={colors['secondary-blue']['600']} />,
+			}
+
+		case 'SIGN_DOCUMENT':
+			return {
+				backgroundColor: colors.warning['50'],
 				icon: (
-					<Info testID='icon-info' size={24} color={colors.neutral['300']} />
+					<Icon.Icon
+						name='edit-04'
+						stroke={colors.warning['600']}
+						strokeWidth={2}
+						size={24}
+					/>
 				),
 			}
+
+		case 'BASIC_COMPLETE':
+			return {
+				backgroundColor: colors.warning['50'],
+				icon: (
+					<Info testID='icon-info' size={24} color={colors.warning['600']} />
+				),
+			}
+
+		case 'INSPECTION_SCHEDULED':
+			return {
+				backgroundColor: colors['secondary-blue']['50'],
+				icon: <Calendar size={24} color={colors['secondary-blue']['600']} />,
+			}
+
+		default:
+			break
+	}
+
+	// Fallback: use linked entity context for INFO notifications without a specific actionType
+	if (notification.linkedPaymentId) {
+		return {
+			backgroundColor: colors.success['50'],
+			icon: (
+				<CreditCard size={24} color={colors.success['600']} />
+			),
+		}
+	}
+	if (notification.linkedTransactionId) {
+		return {
+			backgroundColor: colors.success['50'],
+			icon: (
+				<ArrowLeftRight
+					testID='arrow-left-right-icon'
+					size={24}
+					color={colors.success['600']}
+				/>
+			),
+		}
+	}
+	if (notification.linkedDocumentId) {
+		return {
+			backgroundColor: colors.success['50'],
+			icon: (
+				<Icon.Icon
+					name='folder'
+					size={24}
+					strokeWidth={2}
+					stroke={colors.success['600']}
+				/>
+			),
+		}
+	}
+
+	return {
+		backgroundColor: colors.neutral['20'],
+		icon: <Bell testID='icon-bell' size={24} color={colors.neutral['300']} />,
 	}
 }
 
@@ -155,8 +205,18 @@ const NotificationItem = ({ notification }: Props) => {
 			})
 		}
 
-		if (notification.linkedDocumentId) {
+		if (notification.linkedPaymentId) {
+			router.push(`/payments/${notification.linkedPaymentId}`)
+		} else if (notification.linkedTransactionId) {
+			router.push(`/maintenance/${notification.linkedTransactionId}`)
+		} else if (notification.linkedDocumentId) {
 			router.push(`/documents/${notification.linkedDocumentId}`)
+		} else if (
+			notification.actionType === 'LEASE_EXPIRY' ||
+			notification.actionType === 'SIGN_LEASE' ||
+			notification.actionType === 'LEASE_RENEWAL'
+		) {
+			router.push('/home/lease-detail')
 		}
 	}
 	const onArchive = async () => {
@@ -366,8 +426,12 @@ const NotificationItem = ({ notification }: Props) => {
 						}}
 					/>
 
-					{(notification.linkedTransactionId ||
-						notification.linkedDocumentId) && (
+					{(notification.linkedPaymentId ||
+						notification.linkedTransactionId ||
+						notification.linkedDocumentId ||
+						notification.actionType === 'LEASE_EXPIRY' ||
+						notification.actionType === 'SIGN_LEASE' ||
+						notification.actionType === 'LEASE_RENEWAL') && (
 						<Button.Root
 							testID='linked-item-button'
 							size='sm'

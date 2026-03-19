@@ -77,4 +77,18 @@ export class InMemoryLeasesRepository implements LeasesRepository {
 		}
 		return lease
 	}
+
+	async findActiveExpiringBetween(
+		startDate: Date,
+		endDate: Date,
+	): Promise<Lease[]> {
+		return this.items.filter(
+			(l) =>
+				l.status === 'ACTIVE' && l.endDate >= startDate && l.endDate <= endDate,
+		)
+	}
+
+	async findAllActive(): Promise<Lease[]> {
+		return this.items.filter((l) => l.status === 'ACTIVE')
+	}
 }

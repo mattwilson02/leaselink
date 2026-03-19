@@ -1,5 +1,5 @@
 import { Either, left, right } from '@/core/either'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Optional } from '@nestjs/common'
 import { DocumentRequest } from '../../enterprise/entities/document-request'
 import { DocumentRequestRepository } from '../repositories/document-request-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
@@ -8,6 +8,11 @@ import { DocumentRequestStatus } from '../../enterprise/entities/value-objects/d
 import { CreateDocumentRequestError } from './errors/create-document-request-error'
 import { ClientNotFoundError } from '@/domain/financial-management/application/use-cases/errors/client-not-found-error'
 import { ClientsRepository } from '@/domain/financial-management/application/repositories/clients-repository'
+import { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import {
+	ActionType,
+	NotificationType,
+} from '@/domain/notification/enterprise/entities/notification'
 
 interface CreateDocumentRequestUseCaseRequest {
 	clientId: string
@@ -25,6 +30,8 @@ export class CreateDocumentRequestUseCase {
 	constructor(
 		private documentRequestRepository: DocumentRequestRepository,
 		private clientsRepository: ClientsRepository,
+		@Optional()
+		private createNotificationUseCase?: CreateNotificationUseCase,
 	) {}
 
 	async execute({
@@ -49,6 +56,16 @@ export class CreateDocumentRequestUseCase {
 
 		if (!created) {
 			return left(new CreateDocumentRequestError())
+		}
+
+		if (this.createNotificationUseCase) {
+			await this.createNotificationUseCase.execute({
+				personId: clientId,
+				text: `You have a new document request: ${requestType}. Please upload the required document.`,
+				notificationType: NotificationType.ACTION,
+				actionType: ActionType.UPLOAD_DOCUMENT,
+				linkedDocumentId: created.id.toString(),
+			})
 		}
 
 		return right({ documentRequest: created })

@@ -21,4 +21,9 @@ export abstract class LeasesRepository {
 	abstract findActiveByTenant(tenantId: string): Promise<Lease | null>
 	abstract findPendingRenewalByLeaseId(leaseId: string): Promise<Lease | null>
 	abstract update(lease: Lease): Promise<Lease>
+	abstract findActiveExpiringBetween(
+		startDate: Date,
+		endDate: Date,
+	): Promise<Lease[]>
+	abstract findAllActive(): Promise<Lease[]>
 }

@@ -9,6 +9,14 @@ export interface UpdateManyByPersonIdParams {
 	updates: Partial<Notification>
 }
 
+export interface ExistsByActionTypeAndLinkedIdParams {
+	actionType: string
+	personId: string
+	linkedTransactionId?: string
+	linkedPaymentId?: string
+	createdAfter: Date
+}
+
 export abstract class NotificationRepository {
 	abstract create(notification: Notification): Promise<void>
 	abstract getManyByPersonId(
@@ -24,4 +32,7 @@ export abstract class NotificationRepository {
 	abstract updateManyByPersonId(
 		params: UpdateManyByPersonIdParams,
 	): Promise<number>
+	abstract existsByActionTypeAndLinkedId(
+		params: ExistsByActionTypeAndLinkedIdParams,
+	): Promise<boolean>
 }

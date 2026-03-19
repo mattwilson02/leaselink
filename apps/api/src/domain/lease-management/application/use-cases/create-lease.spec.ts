@@ -12,21 +12,35 @@ import { ClientNotFoundError } from '@/domain/financial-management/application/u
 import { LeasePropertyNotAvailableError } from './errors/lease-property-not-available-error'
 import { LeasePropertyHasActiveLeaseError } from './errors/lease-property-has-active-lease-error'
 import { LeaseTenantHasActiveLeaseError } from './errors/lease-tenant-has-active-lease-error'
+import type { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import { right } from '@/core/either'
+import { ActionType } from '@/domain/notification/enterprise/entities/notification'
+
+class MockCreateNotificationUseCase {
+	calls: any[] = []
+	async execute(input: any) {
+		this.calls.push(input)
+		return right({ notification: {} as any })
+	}
+}
 
 describe('CreateLeaseUseCase', () => {
 	let inMemoryLeasesRepository: InMemoryLeasesRepository
 	let inMemoryPropertiesRepository: InMemoryPropertiesRepository
 	let inMemoryClientsRepository: InMemoryClientsRepository
+	let mockCreateNotificationUseCase: MockCreateNotificationUseCase
 	let sut: CreateLeaseUseCase
 
 	beforeEach(() => {
 		inMemoryLeasesRepository = new InMemoryLeasesRepository()
 		inMemoryPropertiesRepository = new InMemoryPropertiesRepository()
 		inMemoryClientsRepository = new InMemoryClientsRepository()
+		mockCreateNotificationUseCase = new MockCreateNotificationUseCase()
 		sut = new CreateLeaseUseCase(
 			inMemoryLeasesRepository,
 			inMemoryPropertiesRepository,
 			inMemoryClientsRepository,
+			mockCreateNotificationUseCase as unknown as CreateNotificationUseCase,
 		)
 	})
 
@@ -154,6 +168,33 @@ describe('CreateLeaseUseCase', () => {
 
 		expect(result.isLeft()).toBe(true)
 		expect(result.value).toBeInstanceOf(LeasePropertyHasActiveLeaseError)
+	})
+
+	it('should send SIGN_LEASE notification to tenant on creation', async () => {
+		const property = makeProperty({
+			status: PropertyStatus.create('LISTED'),
+		})
+		inMemoryPropertiesRepository.items.push(property)
+
+		const tenant = makeClient()
+		inMemoryClientsRepository.items.push(tenant)
+
+		await sut.execute({
+			propertyId: property.id.toString(),
+			tenantId: tenant.id.toString(),
+			startDate: new Date('2026-04-01').toISOString(),
+			endDate: new Date('2027-04-01').toISOString(),
+			monthlyRent: 2000,
+			securityDeposit: 4000,
+		})
+
+		expect(mockCreateNotificationUseCase.calls).toHaveLength(1)
+		expect(mockCreateNotificationUseCase.calls[0].personId).toBe(
+			tenant.id.toString(),
+		)
+		expect(mockCreateNotificationUseCase.calls[0].actionType).toBe(
+			ActionType.SIGN_LEASE,
+		)
 	})
 
 	it('should reject if tenant already has an active lease', async () => {

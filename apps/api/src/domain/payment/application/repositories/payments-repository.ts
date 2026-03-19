@@ -38,5 +38,6 @@ export abstract class PaymentsRepository {
 		leaseId: string,
 		dueDate: Date,
 	): Promise<Payment | null>
+	abstract findPendingDueWithin(days: number): Promise<Payment[]>
 	abstract update(payment: Payment): Promise<Payment>
 }

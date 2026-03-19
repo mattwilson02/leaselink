@@ -7,14 +7,30 @@ import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { LeaseRenewalInvalidSourceError } from './errors/lease-renewal-invalid-source-error'
 import { LeaseRenewalStartDateInvalidError } from './errors/lease-renewal-start-date-invalid-error'
 import { LeaseRenewalAlreadyExistsError } from './errors/lease-renewal-already-exists-error'
+import type { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import { right } from '@/core/either'
+import { ActionType } from '@/domain/notification/enterprise/entities/notification'
+
+class MockCreateNotificationUseCase {
+	calls: any[] = []
+	async execute(input: any) {
+		this.calls.push(input)
+		return right({ notification: {} as any })
+	}
+}
 
 describe('RenewLeaseUseCase', () => {
 	let inMemoryLeasesRepository: InMemoryLeasesRepository
+	let mockCreateNotificationUseCase: MockCreateNotificationUseCase
 	let sut: RenewLeaseUseCase
 
 	beforeEach(() => {
 		inMemoryLeasesRepository = new InMemoryLeasesRepository()
-		sut = new RenewLeaseUseCase(inMemoryLeasesRepository)
+		mockCreateNotificationUseCase = new MockCreateNotificationUseCase()
+		sut = new RenewLeaseUseCase(
+			inMemoryLeasesRepository,
+			mockCreateNotificationUseCase as unknown as CreateNotificationUseCase,
+		)
 	})
 
 	it('should create renewal from ACTIVE lease', async () => {
@@ -139,6 +155,31 @@ describe('RenewLeaseUseCase', () => {
 
 		expect(result.isLeft()).toBe(true)
 		expect(result.value).toBeInstanceOf(LeaseRenewalAlreadyExistsError)
+	})
+
+	it('should send LEASE_RENEWAL notification to tenant on renewal', async () => {
+		const endDate = new Date('2027-04-01')
+		const tenantId = new UniqueEntityId('tenant-1')
+		const originalLease = makeLease({
+			status: LeaseStatus.create('ACTIVE'),
+			endDate,
+			tenantId,
+		})
+		inMemoryLeasesRepository.items.push(originalLease)
+
+		await sut.execute({
+			leaseId: originalLease.id.toString(),
+			startDate: new Date('2027-04-01').toISOString(),
+			endDate: new Date('2028-04-01').toISOString(),
+			monthlyRent: 2200,
+			securityDeposit: 4400,
+		})
+
+		expect(mockCreateNotificationUseCase.calls).toHaveLength(1)
+		expect(mockCreateNotificationUseCase.calls[0].personId).toBe('tenant-1')
+		expect(mockCreateNotificationUseCase.calls[0].actionType).toBe(
+			ActionType.LEASE_RENEWAL,
+		)
 	})
 
 	it('should return error if lease not found', async () => {

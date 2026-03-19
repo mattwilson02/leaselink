@@ -1,6 +1,6 @@
 import { Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Optional } from '@nestjs/common'
 import { ClientsRepository } from '@/domain/financial-management/application/repositories/clients-repository'
 import { PropertiesRepository } from '@/domain/property-management/application/repositories/properties-repository'
 import { PropertyNotFoundError } from '@/domain/property-management/application/use-cases/errors/property-not-found-error'
@@ -10,6 +10,11 @@ import { LeasesRepository } from '../repositories/leases-repository'
 import { LeasePropertyNotAvailableError } from './errors/lease-property-not-available-error'
 import { LeasePropertyHasActiveLeaseError } from './errors/lease-property-has-active-lease-error'
 import { LeaseTenantHasActiveLeaseError } from './errors/lease-tenant-has-active-lease-error'
+import { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import {
+	ActionType,
+	NotificationType,
+} from '@/domain/notification/enterprise/entities/notification'
 
 export interface CreateLeaseUseCaseRequest {
 	propertyId: string
@@ -35,6 +40,8 @@ export class CreateLeaseUseCase {
 		private leasesRepository: LeasesRepository,
 		private propertiesRepository: PropertiesRepository,
 		private clientsRepository: ClientsRepository,
+		@Optional()
+		private createNotificationUseCase?: CreateNotificationUseCase,
 	) {}
 
 	async execute(
@@ -79,6 +86,15 @@ export class CreateLeaseUseCase {
 		})
 
 		await this.leasesRepository.create(lease)
+
+		if (this.createNotificationUseCase) {
+			await this.createNotificationUseCase.execute({
+				personId: request.tenantId,
+				text: 'A new lease has been created for you. Please review the details.',
+				notificationType: NotificationType.ACTION,
+				actionType: ActionType.SIGN_LEASE,
+			})
+		}
 
 		return right({ lease })
 	}
