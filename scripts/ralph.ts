@@ -364,12 +364,16 @@ function verify(scope: "backend" | "full" = "full"): VerifyResult {
     { name: "API Boot Smoke Test", cmd: "__BOOT_SMOKE__", cwd: "" },
   ];
 
+  const e2eChecks = [
+    { name: "API E2E Tests", cmd: "npm run test:e2e", cwd: join(ROOT, "apps/api") },
+  ];
+
   const frontendChecks = [
     { name: "Web Build", cmd: "npm run build", cwd: join(ROOT, "apps/web") },
     { name: "Mobile Type Check", cmd: "npx tsc --noEmit", cwd: join(ROOT, "apps/mobile") },
   ];
 
-  const checks = scope === "backend" ? backendChecks : [...backendChecks, ...frontendChecks];
+  const checks = scope === "backend" ? backendChecks : [...backendChecks, ...e2eChecks, ...frontendChecks];
 
   const results: string[] = [];
   let allPassed = true;
