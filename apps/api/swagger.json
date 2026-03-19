@@ -1685,6 +1685,306 @@
           "Clients"
         ]
       }
+    },
+    "/properties": {
+      "post": {
+        "operationId": "CreatePropertyController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePropertyRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Property created"
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new property",
+        "tags": [
+          "Properties"
+        ]
+      },
+      "get": {
+        "operationId": "GetPropertiesController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 20
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "VACANT",
+                "LISTED",
+                "OCCUPIED",
+                "MAINTENANCE"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of properties"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List properties for the authenticated manager",
+        "tags": [
+          "Properties"
+        ]
+      }
+    },
+    "/properties/{id}": {
+      "get": {
+        "operationId": "GetPropertyByIdController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Property UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Property details"
+          },
+          "404": {
+            "description": "Property not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get property details by ID",
+        "tags": [
+          "Properties"
+        ]
+      },
+      "put": {
+        "operationId": "UpdatePropertyController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Property UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePropertyRequestDTO"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Property updated"
+          },
+          "404": {
+            "description": "Property not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update property details",
+        "tags": [
+          "Properties"
+        ]
+      },
+      "delete": {
+        "operationId": "DeletePropertyController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Property UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Property deleted"
+          },
+          "404": {
+            "description": "Property not found"
+          },
+          "409": {
+            "description": "Property has active lease"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a property",
+        "tags": [
+          "Properties"
+        ]
+      }
+    },
+    "/properties/{id}/status": {
+      "patch": {
+        "operationId": "UpdatePropertyStatusController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Property UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          },
+          "400": {
+            "description": "Invalid status transition"
+          },
+          "404": {
+            "description": "Property not found"
+          },
+          "409": {
+            "description": "Property has active lease"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update property status",
+        "tags": [
+          "Properties"
+        ]
+      }
+    },
+    "/properties/{id}/photos": {
+      "post": {
+        "operationId": "UploadPropertyPhotosController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Property UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fileNames"
+                ],
+                "properties": {
+                  "fileNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of file names to upload",
+                    "example": [
+                      "photo1.jpg",
+                      "photo2.png"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload URLs generated"
+          },
+          "400": {
+            "description": "Invalid request or photo limit exceeded"
+          },
+          "404": {
+            "description": "Property not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate upload URLs for property photos",
+        "tags": [
+          "Properties"
+        ]
+      }
     }
   },
   "info": {
@@ -2211,10 +2511,15 @@
             "example": "a37bf2c9-9f1f-4eea-924b-4d6617cd5aff",
             "description": "Unique identifier of the person associated with the notification"
           },
-          "text": {
+          "title": {
             "type": "string",
-            "example": "Notification text",
-            "description": "Text of the notification"
+            "example": "Notification title",
+            "description": "Title of the notification"
+          },
+          "body": {
+            "type": "string",
+            "example": "Notification body",
+            "description": "Body of the notification"
           },
           "notificationType": {
             "type": "string",
@@ -2284,7 +2589,8 @@
         "required": [
           "id",
           "personId",
-          "text",
+          "title",
+          "body",
           "notificationType",
           "actionType",
           "linkedDocumentId",
@@ -2347,10 +2653,15 @@
             "example": "person-uuid",
             "description": "Person unique identifier"
           },
-          "text": {
+          "title": {
             "type": "string",
-            "example": "Notification text",
-            "description": "The notification message text"
+            "example": "Notification title",
+            "description": "The notification title"
+          },
+          "body": {
+            "type": "string",
+            "example": "Notification body",
+            "description": "The notification body text"
           },
           "notificationType": {
             "type": "string",
@@ -2418,7 +2729,8 @@
         "required": [
           "notificationId",
           "personId",
-          "text",
+          "title",
+          "body",
           "notificationType",
           "isRead",
           "isActionComplete",
@@ -3300,6 +3612,122 @@
           "receivesNotificationsForPortfolio",
           "receivesNotificationsForDocuments"
         ]
+      },
+      "CreatePropertyRequestDTO": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "123 Main St"
+          },
+          "city": {
+            "type": "string",
+            "example": "New York"
+          },
+          "state": {
+            "type": "string",
+            "example": "NY"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": "10001"
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": [
+              "APARTMENT",
+              "HOUSE",
+              "CONDO",
+              "TOWNHOUSE",
+              "STUDIO"
+            ],
+            "example": "APARTMENT"
+          },
+          "bedrooms": {
+            "type": "number",
+            "example": 2
+          },
+          "bathrooms": {
+            "type": "number",
+            "example": 1.5
+          },
+          "sqft": {
+            "type": "number",
+            "example": 1200
+          },
+          "rentAmount": {
+            "type": "number",
+            "example": 2500
+          },
+          "description": {
+            "type": "string",
+            "example": "Spacious 2BR apartment with city views"
+          }
+        },
+        "required": [
+          "address",
+          "city",
+          "state",
+          "zipCode",
+          "propertyType",
+          "bedrooms",
+          "bathrooms",
+          "rentAmount"
+        ]
+      },
+      "UpdatePropertyRequestDTO": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "456 Oak Ave"
+          },
+          "city": {
+            "type": "string",
+            "example": "Los Angeles"
+          },
+          "state": {
+            "type": "string",
+            "example": "CA"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": "90001"
+          },
+          "propertyType": {
+            "type": "string",
+            "enum": [
+              "APARTMENT",
+              "HOUSE",
+              "CONDO",
+              "TOWNHOUSE",
+              "STUDIO"
+            ],
+            "example": "APARTMENT"
+          },
+          "bedrooms": {
+            "type": "number",
+            "example": 3
+          },
+          "bathrooms": {
+            "type": "number",
+            "example": 2
+          },
+          "sqft": {
+            "type": "object",
+            "example": 1500,
+            "nullable": true
+          },
+          "rentAmount": {
+            "type": "number",
+            "example": 3000
+          },
+          "description": {
+            "type": "object",
+            "example": "Updated description",
+            "nullable": true
+          }
+        }
       }
     }
   }

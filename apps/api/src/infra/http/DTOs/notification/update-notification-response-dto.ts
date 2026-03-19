@@ -18,10 +18,16 @@ export class UpdateNotificationResponseDTO {
 	personId: string
 
 	@ApiProperty({
-		example: 'Notification text',
-		description: 'The notification message text',
+		example: 'Notification title',
+		description: 'The notification title',
 	})
-	text: string
+	title: string
+
+	@ApiProperty({
+		example: 'Notification body',
+		description: 'The notification body text',
+	})
+	body: string
 
 	@ApiProperty({
 		example: NotificationType.INFO,

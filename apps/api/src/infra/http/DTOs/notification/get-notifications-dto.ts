@@ -15,10 +15,16 @@ export class GetNotificationsDTO {
 	personId: string
 
 	@ApiProperty({
-		example: 'Notification text',
-		description: 'Text of the notification',
+		example: 'Notification title',
+		description: 'Title of the notification',
 	})
-	text: string
+	title: string
+
+	@ApiProperty({
+		example: 'Notification body',
+		description: 'Body of the notification',
+	})
+	body: string
 
 	@ApiProperty({
 		example: 'INFO',

@@ -6,7 +6,8 @@ export class HttpNotificationsPresenter {
 		return notifications.map((notification) => ({
 			id: notification.id.toString(),
 			personId: notification.personId.toString(),
-			text: notification.text,
+			title: notification.text,
+			body: notification.body || '',
 			notificationType: notification.notificationType,
 			actionType: notification.actionType ?? null,
 			linkedDocumentId: notification.linkedDocumentId?.toString() ?? null,
