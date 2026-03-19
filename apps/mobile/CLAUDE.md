@@ -255,7 +255,7 @@ Two env files are required:
 
 See `.env.example` and `.env.backend.example` for templates.
 
-Refer to the [SF-Mobile Environment Variables Wiki](https://dev.azure.com/StonehageFleming/SF-Digital/_wiki/wikis/SF-InHouseDev.wiki/162/SF-Mobile) for setup instructions.
+See `.env.example` and `.env.backend.example` for required values.
 
 ## Development Workflow
 

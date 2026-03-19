@@ -29,7 +29,7 @@ This app is built on top of [Expo](https://expo.dev).
 
 2. Set up environment variables
 
-   - Follow the instructions provided in the [SF-Mobile Environment Variables Wiki](https://dev.azure.com/StonehageFleming/SF-Digital/_wiki/wikis/SF-InHouseDev.wiki/162/SF-Mobile) to configure the required environment variables.
+   - See `.env.example` and `.env.backend.example` for required environment variable values.
    - Ensure the `.env.backend` file is correctly set up for the backend.
 
 3. Start the JSON Server Backend

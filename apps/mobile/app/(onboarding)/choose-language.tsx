@@ -1,7 +1,7 @@
 import { Button, Select, Text } from '@sf-digital-ui/react-native'
 import { colors } from '@sf-digital-ui/tokens'
 import { useTranslation } from 'react-i18next'
-import SfLogoVertical from '@/assets/images/sf-logo-vertical.svg'
+import LogoVertical from '@/assets/images/sf-logo-vertical.svg'
 import { StyleSheet, View } from 'react-native'
 import { z } from 'zod'
 import { useForm } from '@tanstack/react-form'
@@ -38,7 +38,7 @@ const ChooseLanguage = () => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.logoContainer}>
-				<SfLogoVertical width={190} height={90} />
+				<LogoVertical width={190} height={90} />
 			</View>
 			<View style={styles.formContainer}>
 				<Field

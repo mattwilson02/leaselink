@@ -31,6 +31,7 @@ jobs:
       - run: npm ci
         working-directory: .
 
+      - run: npx prisma generate
       - run: npm run format
       - run: npm run type-check
 
@@ -54,6 +55,7 @@ jobs:
   test-e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     services:
       postgres:

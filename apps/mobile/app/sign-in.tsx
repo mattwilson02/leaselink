@@ -4,7 +4,7 @@ import { View, StyleSheet, Pressable } from 'react-native'
 import { z } from 'zod'
 import { useForm } from '@tanstack/react-form'
 import { colors } from '@sf-digital-ui/tokens'
-import SfLogoVertical from '@/assets/images/sf-logo-vertical.svg'
+import LogoVertical from '@/assets/images/sf-logo-vertical.svg'
 import { Layout } from '@/components/Layout'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
@@ -135,7 +135,7 @@ const SignIn = () => {
 				<Layout.KeyboardAvoidingView>
 					<Layout.KeyboardDismiss>
 						<View style={styles.headingContainer} testID='sign-in-heading'>
-							<SfLogoVertical width={160} height={80} />
+							<LogoVertical width={160} height={80} />
 							<View style={styles.headerContainer}>
 								<Heading fontWeight='bold' style={styles.boldText} size='h5'>
 									{t('login_title')}
