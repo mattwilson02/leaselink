@@ -10,6 +10,7 @@ const SPRINTS_DIR = join(ROOT, "docs", "sprints");
 const PRODUCT_SPEC = join(ROOT, "PRODUCT_SPEC.md");
 const BASE_BRANCH = "dev";
 const MAX_FIX_ATTEMPTS = 3;
+const MAX_RESUME_ATTEMPTS = 3;
 
 // Model allocation — Opus for high-leverage decisions, Sonnet for execution
 const MODELS = {
@@ -54,18 +55,93 @@ function runSafe(cmd: string, cwd = ROOT): { ok: boolean; output: string } {
   }
 }
 
-/** Collect all agent output text */
+interface AgentResult {
+  result: string;
+  subtype: string;
+  turns: number;
+  cost: number;
+  sessionId?: string;
+}
+
+/** Run an agent with automatic resumption on max_turns / context exhaustion */
 async function runAgent(
   prompt: string,
   opts: Parameters<typeof query>[0]["options"],
 ): Promise<string> {
+  let sessionId: string | undefined;
+  let totalTurns = 0;
+  let totalCost = 0;
+
+  for (let attempt = 0; attempt <= MAX_RESUME_ATTEMPTS; attempt++) {
+    const isResume = attempt > 0 && sessionId;
+    const currentPrompt = isResume
+      ? "You were interrupted because you ran out of turns. Continue exactly where you left off — do NOT restart or re-read files you already processed. Pick up the task and finish it."
+      : prompt;
+
+    const currentOpts = isResume
+      ? { ...opts, sessionId, maxTurns: opts?.maxTurns }
+      : opts;
+
+    if (isResume) {
+      log(`  ⚡ Resuming agent (attempt ${attempt + 1}/${MAX_RESUME_ATTEMPTS}, session: ${sessionId})`);
+    }
+
+    const { result, subtype, turns, cost } = await runAgentOnce(currentPrompt, currentOpts);
+
+    totalTurns += turns;
+    totalCost += cost;
+
+    if (subtype === "success") {
+      log(`  ✓ Agent completed (${totalTurns} turns, $${totalCost.toFixed(4)})`);
+      return result;
+    }
+
+    if (subtype === "error_max_turns") {
+      log(`  ⚠ Agent hit max turns (${totalTurns} total so far, $${totalCost.toFixed(4)})`);
+      if (attempt === MAX_RESUME_ATTEMPTS) {
+        log("  ✗ Agent exhausted all resume attempts — continuing with partial work");
+        return result;
+      }
+      continue;
+    }
+
+    // Any other error — don't retry, just warn and return
+    log(`  ⚠ Agent stopped with: ${subtype} (${totalTurns} turns, $${totalCost.toFixed(4)})`);
+    return result;
+  }
+
+  return "";
+}
+
+/** Single agent invocation — returns structured result */
+async function runAgentOnce(
+  prompt: string,
+  opts: Parameters<typeof query>[0]["options"],
+): Promise<AgentResult> {
+  let sessionId: string | undefined;
   let result = "";
+  let subtype = "success";
+  let turns = 0;
+  let cost = 0;
+
   for await (const message of query({ prompt, options: opts })) {
-    if ("result" in message) {
-      result = message.result;
+    const msg = message as Record<string, unknown>;
+
+    // Capture session ID for potential resumption
+    if (msg.type === "system" && msg.subtype === "init" && typeof msg.session_id === "string") {
+      sessionId = msg.session_id;
+    }
+
+    // Capture final result
+    if (msg.type === "result") {
+      result = typeof msg.result === "string" ? msg.result : "";
+      subtype = typeof msg.subtype === "string" ? msg.subtype : "success";
+      turns = typeof msg.num_turns === "number" ? msg.num_turns : 0;
+      cost = typeof msg.total_cost_usd === "number" ? msg.total_cost_usd : 0;
     }
   }
-  return result;
+
+  return { result, subtype, turns, cost, sessionId };
 }
 
 /** Load existing sprint spec files sorted by number */

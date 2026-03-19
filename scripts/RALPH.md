@@ -99,6 +99,18 @@ npm run ralph -- --start-sprint=3
 npm run ralph -- --start-sprint=3 --max-sprints=2
 ```
 
+## Resilience
+
+Ralph doesn't die when he runs out of context. Every agent call tracks its session ID, turn count, and cost. If an agent hits `maxTurns`:
+
+1. Ralph logs a warning with turn count and spend so far
+2. Captures the session ID from the interrupted run
+3. Resumes the same session with a continuation prompt — full context preserved
+4. Up to 3 resume attempts per agent before falling back to partial work
+5. Verification gate catches anything the agent missed
+
+This means a 200-turn backend builder that runs out of gas gets 3 more 200-turn windows to finish the job — 800 turns total before Ralph gives up and lets the fix agent clean up.
+
 ## Why "Ralph"
 
 He works the night shift at the dark factory.
