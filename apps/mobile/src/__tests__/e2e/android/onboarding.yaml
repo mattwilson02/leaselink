@@ -1,0 +1,109 @@
+appId: "com.leaselink.android"
+---
+# Launch app and navigate to sign-in screen
+- launchApp:
+    clearState: true
+    appId: "com.leaselink.android"
+- runFlow: # Optional: handle the development build URL screen as well
+    when:
+      visible: "http.*" # Check for the development server URL
+    commands:
+      - tapOn: "http.*" # Tap the URL to load the app
+- runFlow: # Use runFlow with a 'when' condition
+    when:
+      visible: "Continue" # Check if the "Continue" button is visible
+    commands:
+      - tapOn: "Continue" # Tap the "Continue" button if it appears
+- runFlow: # Use runFlow with a 'when' condition
+    when:
+      visible: "Reload" # Check if the "Continue" button is visible
+    commands:
+      - tapOn: "Reload" # Tap the "Continue" button if it appears
+- tapOn:  
+    id: "register-now-button"
+- tapOn:
+    id: "select-language"
+- assertVisible:
+    id: "language-options-list"
+- assertVisible:
+    id: "select-language-gb"
+- tapOn:
+    id: "select-language-gb"
+- tapOn:
+    id: "next-button"
+- tapOn:
+    id: "email-input"
+- inputText: "test+invited@example.com"
+- scroll
+- tapOn:
+    id: "enter-email"
+- inputText: "1"
+- inputText: "2"
+- inputText: "3"
+- inputText: "4"
+- inputText: "5"
+- inputText: "6"
+- scroll
+- tapOn:
+    id: "verify-email"
+- tapOn:
+    id: "continue-button"
+- tapOn:
+    id: 'select-country-code'
+- assertVisible:
+    id: "country-options-list"
+- assertVisible:
+    id: "country-code-US"
+- tapOn:
+    id: "country-code-US"
+- tapOn:
+    id: 'input-select-text-control'
+- inputText: "5551111111"
+- tapOn:
+    id: 'keyboard-dismiss'
+- tapOn:
+    id: "send-verification-code-button"
+- inputText: "1"
+- inputText: "2"
+- inputText: "3"
+- inputText: "4"
+- inputText: "5"
+- inputText: "6"
+- tapOn:
+    id: 'keyboard-dismiss'
+- tapOn:
+    id: "verify-your-number-button"
+- tapOn:
+    id: "continue-button"
+- tapOn:
+    id: "password-input"
+- inputText: "P@ssw0rd!"
+- scroll
+- tapOn:
+    id: "retypepassword-input"
+- inputText: "P@ssw0rd!"
+- tapOn:
+    id: 'keyboard-dismiss'
+- tapOn:
+    id: "submit-password"
+- tapOn:
+    id: 'continue-biometrics'
+- assertVisible:
+    id: "home-screen-heading"
+- scrollUntilVisible:
+    id: "sign-out-button"
+    direction: DOWN
+- tapOn:
+    id: "sign-out-button"
+- assertVisible:
+    id: "sign-in-heading"
+- tapOn:
+    id: "email-input"
+- inputText: "test+invited@example.com"
+- tapOn: 
+    id: "password-input"
+- inputText: "P@ssw0rd!"
+- tapOn:
+    id: "sign-in-button"
+- assertVisible:
+    id: "home-screen-heading"

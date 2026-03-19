@@ -1,0 +1,42 @@
+{
+  "Base Component": {
+    "prefix": [
+      "rc",
+      "component"
+    ],
+    "scope": "typescriptreact",
+    "body": [
+      "import { StyleSheet, View } from 'react-native'",
+      "import { useRouter } from 'expo-router'",
+      "",
+      "// Types and Interfaces, and Zod Schemas",
+      "",
+      "const ComponentName = () => {",
+      "\t// Hooks",
+      "\tconst router = useRouter()",
+      "",
+      "\t// Variables",
+      "",
+      "\t// Functions and logic",
+      "",
+      "\treturn (",
+      "\t\t<View style={styles.container}>",
+      "\t\t\t{/* Content inside this page / template can be in here */}",
+      "\t\t</View>",
+      "\t)",
+      "}",
+      "",
+      "// Styles",
+      "const styles = StyleSheet.create({",
+      "\tcontainer: {",
+      "\t\tflex: 1,",
+      "\t\tjustifyContent: 'center',",
+      "\t\talignItems: 'center',",
+      "\t},",
+      "})",
+      "",
+      "export default ComponentName"
+    ],
+    "description": "Our standard base component"
+  }
+}

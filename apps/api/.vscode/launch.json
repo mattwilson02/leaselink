@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug NestJS",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "start:debug", "--", "--inspect-brk"],
+      "sourceMaps": true,
+      "autoAttachChildProcesses": true,
+      "restart": true,
+      "stopOnEntry": false,
+      "envFile": "${workspaceFolder}/.env",
+      "cwd": "${workspaceRoot}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Vitest",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["run", "test:debug"],
+      "sourceMaps": true,
+      "autoAttachChildProcesses": true,
+      "restart": true,
+      "stopOnEntry": false,
+      "envFile": "${workspaceFolder}/.env",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ]
+}

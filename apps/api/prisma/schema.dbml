@@ -1,0 +1,95 @@
+Project sf_digital_backend {
+  database_type: "PostgreSQL"
+}
+
+// Enums
+Enum ROLE {
+  ADMIN
+  SUPPORT
+}
+
+Enum STATUS {
+  INVITED
+  ACTIVE
+  INACTIVE
+}
+
+Enum UserType {
+  CLIENT
+  EMPLOYEE
+}
+
+// Tables
+Table employees {
+  id          uuid [pk, default: "uuid_generate_v4()"]
+  email       varchar [unique]
+  name        varchar
+  created_at  timestamp [default: "now()"]
+  updated_at  timestamp [default: "now()", note: "nullable"]
+  role        ROLE [default: "SUPPORT"]
+
+  Note: "Table for storing employee data"
+}
+
+Table clients {
+  id            uuid [pk, default: "uuid_generate_v4()"]
+  email         varchar [unique]
+  name          varchar
+  phone_number  varchar
+  created_at    timestamp [default: "now()"]
+  updated_at    timestamp [default: "now()", note: "nullable"]
+  status        STATUS [default: "INVITED"]
+
+  Note: "Table for storing client data"
+}
+
+Table employee_clients {
+  employee_id  uuid
+  client_id    uuid
+  
+  indexes {
+    (employee_id, client_id) [pk]
+  }
+
+  Note: "Join table for many-to-many relationship between employees and clients"
+}
+
+Table identity_providers {
+  id               uuid [pk, default: "uuid_generate_v4()"]
+  user_id          varchar
+  user_type        UserType
+  provider         varchar
+  provider_user_id varchar [unique]
+  created_at       timestamp [default: "now()"]
+  updated_at       timestamp [default: "now()", note: "nullable"]
+
+  indexes {
+    (user_id, user_type)
+  }
+
+  Note: "Table for storing identity provider data"
+}
+
+Table documents {
+  id            uuid [pk, default: "uuid_generate_v4()"]
+  name          varchar
+  storage_path  varchar
+  content_type  varchar
+  size          integer [note: "nullable"]
+  created_at    timestamp [default: "now()"]
+  updated_at    timestamp [default: "now()", note: "nullable"]
+  deleted_at    timestamp [note: "nullable"]
+  client_id     uuid
+
+  Note: "Table for storing document data"
+}
+
+// Main relationships
+Ref: employee_clients.employee_id > employees.id
+Ref: employee_clients.client_id > clients.id
+Ref: documents.client_id > clients.id
+
+// Conditional relationships (based on user_type)
+Ref: identity_providers.user_id - employees.id [note: 'When user_type is EMPLOYEE']
+Ref: identity_providers.user_id - clients.id [note: 'When user_type is CLIENT']
+

@@ -1,0 +1,23 @@
+{
+  "name": "leaselink",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "turbo run dev --filter=@leaselink/api",
+    "dev:web": "turbo run dev --filter=@leaselink/web",
+    "dev:mobile": "turbo run dev --filter=@leaselink/mobile",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+  },
+  "devDependencies": {
+    "turbo": "^2",
+    "prettier": "^3"
+  },
+  "packageManager": "npm@10.0.0"
+}

@@ -1,0 +1,31 @@
+trigger:
+  - none
+
+jobs:
+  - job: Run_Tests
+    displayName: Run Tests on PR
+    pool:
+      vmImage: "ubuntu-latest"
+    timeoutInMinutes: 30
+
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "20.x"
+        displayName: "Set Node.js Version"
+
+      - script: |
+          echo "Checking npm and node versions..."
+          node --version
+          npm --version
+        displayName: Check Versions
+
+      - script: |
+          echo "Installing dependencies..."
+          npm ci
+        displayName: Install Dependencies
+
+      - script: |
+          echo "Running unit tests..."
+          npm run test:unit
+        displayName: Run Unit Tests

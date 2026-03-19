@@ -1,0 +1,58 @@
+services:
+  backend:
+    container_name: leaselink-api
+    image: ghcr.io/mattwilson02/leaselink-api:latest
+
+    ports:
+      - "3333:3333"
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env.backend
+    restart: always
+    command: >
+      sh -c "
+        echo 'Installing OpenSSL and updating packages...' &&
+        apt-get update -y && apt-get install -y openssl &&
+        echo 'Running migrations and seed if needed...' &&
+        npx prisma generate &&
+        npx prisma migrate deploy && npx prisma db seed &&
+        echo 'Starting json-server in background...' &&
+        npx json-server ./data/client-valuation-mock-data/db.json --port 3000 &
+        echo 'Starting application...' &&
+        node dist/src/infra/main.js
+      "
+  postgres:
+    container_name: backend-pg
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: backend-pg
+      PG_DATA: /data/postgres
+    volumes:
+      - ./data/postgres:/data/postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:3.31.0
+    container_name: backend-blob-storage
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+      - "10002:10002"
+    volumes:
+      - azurite-data:/data
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --skipApiVersionCheck --loose
+    restart: unless-stopped
+volumes:
+  azurite-data:
+    driver: local

@@ -1,0 +1,221 @@
+appId: "com.leaselink.android"
+---
+# Documents E2E Test - Upload and View Document Flow
+# This test covers:
+# 1. Navigating to documents
+# 2. Opening the upload document screen for a document request
+# 3. Selecting a file from the photo library
+# 4. Uploading the document
+# 5. Verifying the uploaded document appears in the documents list
+# 6. Viewing the uploaded document details
+
+# Sign in with test@example.com
+- launchApp:
+    clearState: true
+    appId: "com.leaselink.android"
+- runFlow:
+    when:
+      visible: "http.*"
+    commands:
+      - tapOn: "http.*"
+- runFlow:
+    when:
+      visible: "Continue"
+    commands:
+      - tapOn: "Continue"
+- runFlow:
+    when:
+      visible: "Reload"
+    commands:
+      - tapOn: "Reload"
+- assertVisible:
+    id: "sign-in-heading"
+- tapOn:
+    id: "email-input"
+- inputText: "test@example.com"
+- tapOn:
+    id: "password-input"
+- inputText: "Password123!"
+- tapOn:
+    id: "sign-in-button"
+
+# Verify we're on the home screen
+- assertVisible:
+    id: "home-screen-heading"
+
+# Navigate to Documents tab
+- tapOn:
+    text: "Documents"
+
+# Wait for documents page to load
+- assertVisible:
+    id: "document-requests-flatlist"
+
+# Verify the "Required documents" section is visible
+- assertVisible:
+    text: "Required documents"
+
+# ============================================
+# PART 1: Upload Document Flow
+# ============================================
+
+# Tap on the first document request item to start upload
+- tapOn:
+    id: "document-request-item-pressable"
+    index: 0
+
+# Verify we're on the upload document screen
+- assertVisible:
+    id: "layout-view"
+
+# Verify upload description is visible
+- assertVisible:
+    text: ".*upload.*"
+
+# Verify the cancel and confirm buttons are visible
+- assertVisible:
+    id: "cancel-button"
+- assertVisible:
+    id: "confirm-button"
+
+# Tap on the upload area to select a file
+- tapOn:
+    id: "upload-pressable"
+
+# Select Source alert should appear - choose Photo Library
+- assertVisible:
+    text: "Select Source"
+- tapOn:
+    text: "Photo Library"
+
+# Android photo permission dialog may appear - allow access
+- runFlow:
+    when:
+      visible: ".*Allow.*"
+    commands:
+      - tapOn:
+          text: "Allow"
+- runFlow:
+    when:
+      visible: ".*ALLOW.*"
+    commands:
+      - tapOn:
+          text: "ALLOW"
+- runFlow:
+    when:
+      visible: ".*While using the app.*"
+    commands:
+      - tapOn:
+          text: "While using the app"
+
+# Wait for the image picker to open
+- waitForAnimationToEnd
+
+# Tap on the first photo in the grid (using point coordinates relative to screen)
+# The photo grid typically starts below the navigation bar
+- tapOn:
+    point: "20%,30%"
+
+# Wait for image editing screen and tap Done/Choose if shown
+- waitForAnimationToEnd
+- runFlow:
+    when:
+      visible: "Done"
+    commands:
+      - tapOn: "Done"
+- runFlow:
+    when:
+      visible: "Choose"
+    commands:
+      - tapOn: "Choose"
+
+# Wait for the image to be selected and return to upload screen
+- waitForAnimationToEnd
+
+# Verify we're back on the upload screen with a file selected
+- assertVisible:
+    id: "layout-view"
+
+# Tap confirm to upload the document
+- tapOn:
+    id: "confirm-button"
+
+# Wait for the upload to complete
+- waitForAnimationToEnd
+
+# Wait for upload to complete and tap continue when modal appears
+- assertVisible:
+    id: "upload-success-continue-button"
+    enabled: true
+- tapOn:
+    id: "upload-success-continue-button"
+
+# # ============================================
+# # PART 2: View Uploaded Document
+# # TODO: Fix this when the documents page cache is invalidated after upload.
+# # ============================================
+
+# # We should be on the document requests page now
+# - assertVisible:
+#     id: "document-requests-flatlist"
+
+# # Go back to the main documents page
+# - tapOn:
+#     id: "back-button"
+
+# # Verify the documents list is visible
+# - assertVisible:
+#     id: "documents-flatlist"
+
+# # Tap on the first document item to view details
+# - tapOn:
+#     id: "document-item-container"
+#     index: 0
+
+# # Verify we're on the document details page
+# - assertVisible:
+#     text: "Document preview"
+
+# # Verify download button is visible
+# - assertVisible:
+#     id: "download-button-container"
+
+# # Go back to documents list
+# - tapOn:
+#     id: "back-button"
+
+# # Verify we're back on the documents page
+# - assertVisible:
+#     id: "documents-flatlist"
+
+# # ============================================
+# # PART 3: Navigate Document Requests
+# # ============================================
+
+# # Navigate to see all document requests
+# - tapOn:
+#     text: "See more"
+
+# # Verify we're on the document requests page (full list)
+# - assertVisible:
+#     id: "document-requests-flatlist"
+
+# # Verify "Required documents" heading is visible
+# - assertVisible:
+#     text: "Required documents"
+
+# # Go back to documents page
+# - tapOn:
+#     id: "back-button"
+
+# # Verify the documents list is visible
+# - assertVisible:
+#     id: "documents-flatlist"
+
+# # Navigate back to home
+# - tapOn:
+#     text: "Dashboard"
+
+# # Verify we're back on the home screen
+# - assertVisible:
+#     id: "home-screen-heading"

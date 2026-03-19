@@ -1,0 +1,69 @@
+appId: "com.leaselink.android"
+---
+# Launch app and navigate to sign-in screen
+- launchApp:
+    clearState: true
+    appId: "com.leaselink.android"
+- runFlow: # Optional: handle the development build URL screen as well
+    when:
+      visible: "http.*" # Check for the development server URL
+    commands:
+      - tapOn: "http.*" # Tap the URL to load the app
+- runFlow: # Use runFlow with a 'when' condition
+    when:
+      visible: "Continue" # Check if the "Continue" button is visible
+    commands:
+      - tapOn: "Continue" # Tap the "Continue" button if it appears
+- runFlow: # Use runFlow with a 'when' condition
+    when:
+      visible: "Reload" # Check if the "Continue" button is visible
+    commands:
+      - tapOn: "Reload" # Tap the "Continue" button if it appears
+- assertVisible:
+    id: "sign-in-heading"
+- tapOn:
+    id: "email-input"
+- inputText: "test+newdevice@example.com"
+- tapOn:
+    id: "password-input"
+- inputText: "Password123!"
+- tapOn:
+    id: "sign-in-button"
+- assertVisible:    
+    id: "new-device-confirm-email-screen"
+- inputText: "1"
+- inputText: "2"
+- inputText: "3"
+- inputText: "4"
+- inputText: "5"
+- inputText: "6"
+- tapOn:
+    id: 'keyboard-dismiss'
+- tapOn:
+    id: "verify-email"
+- tapOn:
+    id: "continue-button"
+- assertVisible:
+    id: 'new-device-confirm-mobile-number-screen'
+- inputText: "1"
+- inputText: "2"
+- inputText: "3"
+- inputText: "4"
+- inputText: "5"
+- inputText: "6"
+- tapOn:
+    id: 'keyboard-dismiss'
+- tapOn:
+    id: "verify-your-number-button"
+- tapOn:
+    id: "continue-button"
+- assertVisible:
+    id: "switch-device-confirm-container"
+- tapOn:
+    id: "continue-button"
+- assertVisible:
+    id: "enable-biometrics-screen"
+- tapOn:
+    id: 'continue-biometrics'
+- assertVisible:
+    id: "home-screen-heading"

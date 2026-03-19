@@ -1,0 +1,417 @@
+import { memo, useRef } from 'react'
+import { Dimensions, Pressable, StyleSheet, View } from 'react-native'
+import Swipeable, {
+	type SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable'
+import Animated, {
+	interpolate,
+	type SharedValue,
+	useAnimatedStyle,
+	useSharedValue,
+} from 'react-native-reanimated'
+import { ArrowLeftRight, Info } from 'lucide-react-native'
+import { useRouter } from 'expo-router'
+import { useSetAtom } from 'jotai'
+import { useTranslation } from 'react-i18next'
+import { Text, Button } from '@sf-digital-ui/react-native'
+import { colors } from '@sf-digital-ui/tokens'
+import { notificationSnackbarAtom } from '@/atoms/notification-snackbar-atom'
+import { queryClient } from '@/app/_layout'
+import { Icon } from '@/components/Icon'
+import {
+	useUpdateNotificationControllerUpdate,
+	type GetNotificationsDTO,
+} from '@/gen/index'
+import { formatDate } from '@/utils/format-date'
+
+type Props = {
+	notification: GetNotificationsDTO
+	isArchived?: boolean
+}
+
+const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
+	switch (notification.notificationType) {
+		case 'ACTION':
+			if (notification.actionType === 'SIGN_DOCUMENT') {
+				return {
+					backgroundColor: colors.warning['50'],
+					icon: (
+						<Icon.Icon
+							name='edit-04'
+							stroke={colors.warning['600']}
+							strokeWidth={2}
+							size={24}
+						/>
+					),
+				}
+			}
+			if (notification.actionType === 'UPLOAD_DOCUMENT') {
+				return {
+					backgroundColor: colors.warning['50'],
+					icon: (
+						<Icon.Icon
+							name='file-05'
+							size={24}
+							strokeWidth={2}
+							stroke={colors.warning['600']}
+						/>
+					),
+				}
+			}
+			if (notification.actionType === 'BASIC_COMPLETE') {
+				return {
+					backgroundColor: colors.warning['50'],
+					icon: (
+						<Info testID='icon-info' size={24} color={colors.warning['600']} />
+					),
+				}
+			}
+			break
+
+		case 'INFO':
+			if (notification.linkedTransactionId) {
+				return {
+					backgroundColor: colors.success['50'],
+					icon: (
+						<ArrowLeftRight
+							testID='arrow-left-right-icon'
+							size={24}
+							color={colors.success['600']}
+						/>
+					),
+				}
+			}
+			if (notification.linkedDocumentId) {
+				return {
+					backgroundColor: colors.success['50'],
+					icon: (
+						<Icon.Icon
+							name='folder'
+							size={24}
+							strokeWidth={2}
+							stroke={colors.success['600']}
+						/>
+					),
+				}
+			}
+			if (!notification.linkedTransactionId && !notification.linkedDocumentId) {
+				return {
+					backgroundColor: colors.neutral['20'],
+					icon: (
+						<Info testID='icon-info' size={24} color={colors.neutral['300']} />
+					),
+				}
+			}
+			break
+
+		default:
+			return {
+				backgroundColor: colors.neutral['20'],
+				icon: (
+					<Info testID='icon-info' size={24} color={colors.neutral['300']} />
+				),
+			}
+	}
+}
+
+const NotificationItem = ({ notification }: Props) => {
+	const setAtom = useSetAtom(notificationSnackbarAtom)
+	const isArchived = notification.archivedAt !== null
+	const swipeProgress = useSharedValue(0)
+	const swipeableRef = useRef<SwipeableMethods>(null)
+	const { t } = useTranslation('notifications')
+	const { t: dateT } = useTranslation('format_date')
+	const router = useRouter()
+
+	const screenWidth = Dimensions.get('window').width
+
+	const { mutateAsync: updateNotification } =
+		useUpdateNotificationControllerUpdate({
+			mutation: {
+				onSuccess: () => {
+					queryClient.invalidateQueries({
+						queryKey: ['notifications'],
+					})
+				},
+				onError: (error) => {
+					if (error.status === 422) {
+						setAtom({
+							isVisible: true,
+							message: t('required_actions_must_be_solved'),
+							type: 'error',
+						})
+					}
+				},
+			},
+		})
+
+	const onRead = async () => {
+		if (!notification.isRead) {
+			await updateNotification({
+				id: notification.id,
+				data: {
+					isRead: true,
+				},
+			})
+		}
+
+		if (notification.linkedDocumentId) {
+			router.push(`/documents/${notification.linkedDocumentId}`)
+		}
+	}
+	const onArchive = async () => {
+		const wasArchived = isArchived
+
+		try {
+			await updateNotification({
+				id: notification.id,
+				data: {
+					isArchived: !isArchived,
+				},
+			})
+
+			setAtom({
+				isVisible: true,
+				message: isArchived
+					? t('notification_unarchived')
+					: t('notification_archived'),
+				type: isArchived ? 'unarchived' : 'archived',
+				notificationId: notification.id,
+				wasArchived: wasArchived,
+			})
+		} catch {
+			swipeableRef.current?.close()
+		}
+	}
+
+	const renderRightActions = (progress: SharedValue<number>) => {
+		const canArchive = notification.notificationType !== 'ACTION'
+
+		const iconAnimatedStyle = useAnimatedStyle(() => {
+			swipeProgress.value = progress.value
+
+			if (!canArchive) {
+				return {}
+			}
+
+			const translateX = interpolate(
+				progress.value,
+				[0, 1],
+				[0, -(screenWidth / 2 - 37 - 24)],
+				'clamp',
+			)
+
+			return {
+				transform: [{ translateX }],
+			}
+		})
+
+		const maxWidth =
+			notification.notificationType === 'ACTION'
+				? screenWidth * 0.25
+				: undefined
+
+		const backgroundColor =
+			notification.notificationType === 'ACTION'
+				? colors.neutral['50']
+				: isArchived
+					? colors['secondary-blue']['500']
+					: colors.success['500']
+
+		return (
+			<View
+				style={{
+					justifyContent: 'center',
+					alignItems: 'flex-end',
+					backgroundColor,
+					borderTopLeftRadius: !canArchive ? 0 : 8,
+					borderBottomLeftRadius: !canArchive ? 0 : 8,
+					borderTopRightRadius: 8,
+					borderBottomRightRadius: 8,
+					flex: 1,
+					maxWidth,
+				}}
+			>
+				<Animated.View style={[{ marginRight: 37 }, iconAnimatedStyle]}>
+					<Icon.Icon
+						name={isArchived ? 'inbox-01' : 'archive'}
+						stroke='white'
+						strokeWidth={2}
+						size={24}
+						fill={backgroundColor}
+					/>
+				</Animated.View>
+			</View>
+		)
+	}
+
+	const notificationAnimatedStyle = useAnimatedStyle(() => {
+		const canArchive = notification.notificationType !== 'ACTION'
+
+		const borderTopRightRadius = interpolate(
+			swipeProgress.value,
+			[0, 0.1],
+			[8, 0],
+			'clamp',
+		)
+
+		const borderBottomRightRadius = interpolate(
+			swipeProgress.value,
+			[0, 0.1],
+			[8, 0],
+			'clamp',
+		)
+
+		const borderTopLeftRadius = !canArchive
+			? interpolate(swipeProgress.value, [0, 0.9, 1], [8, 8, 0], 'clamp')
+			: 8
+
+		const borderBottomLeftRadius = !canArchive
+			? interpolate(swipeProgress.value, [0, 0.9, 1], [8, 8, 0], 'clamp')
+			: 8
+
+		return {
+			borderTopRightRadius,
+			borderBottomRightRadius,
+			borderTopLeftRadius,
+			borderBottomLeftRadius,
+		}
+	})
+
+	const notificationContent = (
+		<Animated.View
+			testID='notification-animated-container'
+			style={[
+				styles.notificationContainer,
+				{
+					backgroundColor: notification.isRead ? 'white' : colors.neutral['10'],
+				},
+				notificationAnimatedStyle,
+			]}
+		>
+			<Pressable
+				testID={`notification-${notification.id}`}
+				accessibilityLabel={notification.text}
+				onPress={onRead}
+				style={{
+					flexDirection: 'row',
+					justifyContent: 'space-between',
+					flex: 1,
+				}}
+			>
+				<View
+					style={{
+						flexDirection: 'row',
+						gap: 16,
+						alignItems: 'center',
+						flex: 1,
+					}}
+				>
+					<View
+						testID='notification-icon-container'
+						style={[
+							styles.icon,
+							{
+								backgroundColor:
+									getNotificationIconInfo(notification)?.backgroundColor,
+							},
+						]}
+					>
+						{getNotificationIconInfo(notification)?.icon}
+					</View>
+					<View
+						style={{
+							gap: 6,
+						}}
+					>
+						<Text
+							size='lg'
+							fontWeight='bold'
+							testID={`notification-text-${notification.id}`}
+							style={{
+								color: colors.neutral['700'],
+								flexWrap: 'wrap',
+							}}
+						>
+							{notification.text}
+						</Text>
+						<Text
+							size='sm'
+							style={{
+								color: colors.neutral['400'],
+							}}
+						>
+							{formatDate(notification.createdAt).type === 'alias'
+								? dateT(formatDate(notification.createdAt).value)
+								: formatDate(notification.createdAt).value}
+						</Text>
+					</View>
+				</View>
+				<View
+					style={{
+						justifyContent: 'space-between',
+						alignItems: 'flex-end',
+						flex: 1,
+					}}
+				>
+					<View
+						testID='unread-indicator'
+						style={{
+							width: 10,
+							height: 10,
+							borderRadius: 10,
+							backgroundColor: !notification.isRead
+								? colors.success['600']
+								: 'transparent',
+						}}
+					/>
+
+					{(notification.linkedTransactionId ||
+						notification.linkedDocumentId) && (
+						<Button.Root
+							testID='linked-item-button'
+							size='sm'
+							variant='link'
+							color='neutral'
+						>
+							<Button.Text>{t('go_to_page')}</Button.Text>
+						</Button.Root>
+					)}
+				</View>
+			</Pressable>
+		</Animated.View>
+	)
+
+	return (
+		<Swipeable
+			ref={swipeableRef}
+			testID={`swipeable-${notification.id}`}
+			renderRightActions={renderRightActions}
+			onSwipeableOpen={onArchive}
+			rightThreshold={80}
+			overshootRight={false}
+			friction={0.5}
+			enableTrackpadTwoFingerGesture
+		>
+			{notificationContent}
+		</Swipeable>
+	)
+}
+
+export default memo(NotificationItem)
+
+const styles = StyleSheet.create({
+	icon: {
+		width: 48,
+		height: 48,
+		borderRadius: 48,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	notificationContainer: {
+		padding: 10,
+		borderRadius: 8,
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
+})

@@ -1,0 +1,439 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ROLE {
+  ADMIN
+  AGENT
+}
+
+enum STATUS {
+  INVITED
+  ACTIVE
+  INACTIVE
+}
+
+enum ONBOARDING_STATUS {
+  NEW
+  EMAIL_VERIFIED
+  PHONE_VERIFIED
+  PASSWORD_SET
+  ONBOARDED
+}
+
+enum DOCUMENT_FOLDER {
+  IDENTIFICATION
+  LEASE_AGREEMENTS
+  SIGNED_DOCUMENTS
+  INSPECTION_REPORTS
+  INSURANCE
+  OTHER
+}
+
+enum DOCUMENT_REQUEST_STATUS {
+  PENDING
+  UPLOADED
+  CANCELED
+}
+
+enum REQUEST_TYPE {
+  PROOF_OF_ADDRESS
+  PROOF_OF_IDENTITY
+  SIGNED_LEASE
+  MOVE_IN_CHECKLIST
+}
+
+enum NotificationType {
+  INFO
+  ACTION
+}
+
+enum ActionType {
+  SIGN_DOCUMENT
+  SIGN_LEASE
+  UPLOAD_DOCUMENT
+  BASIC_COMPLETE
+  MAINTENANCE_UPDATE
+  LEASE_EXPIRY
+  RENT_REMINDER
+  PAYMENT_RECEIVED
+  PAYMENT_OVERDUE
+  INSPECTION_SCHEDULED
+  LEASE_RENEWAL
+}
+
+enum UserType {
+  CLIENT
+  EMPLOYEE
+}
+
+enum PROPERTY_TYPE {
+  APARTMENT
+  HOUSE
+  CONDO
+  TOWNHOUSE
+  STUDIO
+}
+
+enum PROPERTY_STATUS {
+  VACANT
+  LISTED
+  OCCUPIED
+  MAINTENANCE
+}
+
+enum LEASE_STATUS {
+  PENDING
+  ACTIVE
+  EXPIRED
+  TERMINATED
+}
+
+enum MAINTENANCE_PRIORITY {
+  LOW
+  MEDIUM
+  HIGH
+  EMERGENCY
+}
+
+enum MAINTENANCE_STATUS {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum MAINTENANCE_CATEGORY {
+  PLUMBING
+  ELECTRICAL
+  HVAC
+  APPLIANCE
+  STRUCTURAL
+  PEST_CONTROL
+  OTHER
+}
+
+enum PAYMENT_STATUS {
+  UPCOMING
+  PENDING
+  PAID
+  OVERDUE
+}
+
+model Employee {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  role      ROLE      @default(AGENT)
+  deviceId  String?   @map("device_id")
+
+  clients    EmployeeClients[]
+  properties Property[]
+
+  @@map("employees")
+}
+
+model EmployeeClients {
+  employeeId String @map("employee_id")
+  clientId   String @map("client_id")
+
+  employee Employee @relation(fields: [employeeId], references: [id], map: "employee_id")
+  client   Client   @relation(fields: [clientId], references: [id], map: "client_id")
+
+  @@id([employeeId, clientId])
+  @@map("employee_clients")
+}
+
+model Client {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  name             String
+  phoneNumber      String            @map("phone_number")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime?         @updatedAt @map("updated_at")
+  status           STATUS            @default(INVITED)
+  onboardingStatus ONBOARDING_STATUS @default(NEW) @map("onboarding_status")
+  deviceId         String?           @map("device_id")
+  pushToken        String?           @map("push_token")
+  onboardingToken  String?           @map("onboarding_token")
+  profilePhoto     String?           @map("profile_photo")
+
+  managedBy                           EmployeeClients[]
+  documents                           Document[]
+  DocumentRequest                     DocumentRequest[]
+  receivesEmailNotifications          Boolean              @default(false) @map("receives_email_notifications")
+  receivesPushNotifications           Boolean              @default(false) @map("receives_push_notifications")
+  receivesNotificationsForMaintenance Boolean              @default(false) @map("receives_notifications_for_maintenance")
+  receivesNotificationsForDocuments   Boolean              @default(false) @map("receives_notifications_for_documents")
+  leases                              Lease[]
+  maintenanceRequests                 MaintenanceRequest[]
+  payments                            Payment[]
+
+  @@map("clients")
+}
+
+model IdentityProvider {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  userType       UserType  @map("user_type")
+  provider       String
+  providerUserId String    @unique @map("provider_user_id")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime? @updatedAt @map("updated_at")
+
+  @@index([userId, userType])
+  @@map("identity_providers")
+}
+
+model Document {
+  id                String          @id @default(uuid())
+  contentKey        String          @map("content_key")
+  name              String
+  version           Int             @default(1)
+  blobName          String          @map("blob_name")
+  thumbnailBlobName String?         @map("thumbnail_blob_name")
+  fileSize          Float           @map("file_size")
+  folder            DOCUMENT_FOLDER @map("folder")
+  uploadedBy        String          @map("uploaded_by")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime?       @updatedAt @map("updated_at")
+  clientId          String          @map("client_id")
+  viewedAt          DateTime?       @map("viewed_at")
+  propertyId        String?         @map("property_id")
+
+  client          Client            @relation(fields: [clientId], references: [id], map: "client_id")
+  property        Property?         @relation(fields: [propertyId], references: [id])
+  DocumentRequest DocumentRequest[]
+
+  @@map("documents")
+}
+
+model DocumentRequest {
+  id          String                  @id @default(uuid())
+  clientId    String                  @map("client_id")
+  contentKey  String?                 @map("content_key")
+  requestedBy String                  @map("requested_by")
+  status      DOCUMENT_REQUEST_STATUS @default(PENDING) @map("status")
+  requestType REQUEST_TYPE            @map("request_type")
+  createdAt   DateTime                @default(now()) @map("created_at")
+  updatedAt   DateTime?               @updatedAt @map("updated_at")
+  documentId  String?                 @map("document_id")
+
+  client   Client    @relation(fields: [clientId], references: [id], map: "client_id")
+  document Document? @relation(fields: [documentId], references: [id], map: "document_id")
+
+  @@map("document_requests")
+}
+
+model Notification {
+  id                         String           @id @default(uuid())
+  personId                   String           @map("person_id")
+  title                      String
+  body                       String
+  notificationType           NotificationType @map("notification_type")
+  actionType                 ActionType?      @map("action_type")
+  linkedDocumentId           String?          @map("linked_document_id")
+  linkedMaintenanceRequestId String?          @map("linked_maintenance_request_id")
+  linkedPaymentId            String?          @map("linked_payment_id")
+  isRead                     Boolean          @default(false) @map("is_read")
+  isActionComplete           Boolean          @default(false) @map("is_action_complete")
+  createdAt                  DateTime         @default(now()) @map("created_at")
+  updatedAt                  DateTime?        @updatedAt @map("updated_at")
+  archivedAt                 DateTime?        @map("archived_at")
+
+  @@map("notifications")
+}
+
+model Property {
+  id           String          @id @default(uuid())
+  managerId    String          @map("manager_id")
+  address      String
+  city         String
+  state        String
+  zipCode      String          @map("zip_code")
+  propertyType PROPERTY_TYPE   @map("property_type")
+  bedrooms     Int
+  bathrooms    Float
+  sqft         Int?
+  rentAmount   Float           @map("rent_amount")
+  status       PROPERTY_STATUS @default(VACANT)
+  description  String?
+  photos       String[]        @default([])
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime?       @updatedAt @map("updated_at")
+
+  manager             Employee             @relation(fields: [managerId], references: [id])
+  leases              Lease[]
+  maintenanceRequests MaintenanceRequest[]
+  documents           Document[]
+
+  @@index([managerId])
+  @@index([status])
+  @@map("properties")
+}
+
+model Lease {
+  id                 String       @id @default(uuid())
+  propertyId         String       @map("property_id")
+  tenantId           String       @map("tenant_id")
+  startDate          DateTime     @map("start_date")
+  endDate            DateTime     @map("end_date")
+  monthlyRent        Float        @map("monthly_rent")
+  securityDeposit    Float        @map("security_deposit")
+  status             LEASE_STATUS @default(PENDING)
+  renewedFromLeaseId String?      @map("renewed_from_lease_id")
+  createdAt          DateTime     @default(now()) @map("created_at")
+  updatedAt          DateTime?    @updatedAt @map("updated_at")
+
+  property    Property  @relation(fields: [propertyId], references: [id])
+  tenant      Client    @relation(fields: [tenantId], references: [id])
+  renewedFrom Lease?    @relation("LeaseRenewal", fields: [renewedFromLeaseId], references: [id])
+  renewals    Lease[]   @relation("LeaseRenewal")
+  payments    Payment[]
+
+  @@index([propertyId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([renewedFromLeaseId])
+  @@map("leases")
+}
+
+model MaintenanceRequest {
+  id          String               @id @default(uuid())
+  propertyId  String               @map("property_id")
+  tenantId    String               @map("tenant_id")
+  title       String
+  description String
+  priority    MAINTENANCE_PRIORITY @default(MEDIUM)
+  status      MAINTENANCE_STATUS   @default(OPEN)
+  category    MAINTENANCE_CATEGORY
+  photos      String[]             @default([])
+  resolvedAt  DateTime?            @map("resolved_at")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime?            @updatedAt @map("updated_at")
+
+  property Property @relation(fields: [propertyId], references: [id])
+  tenant   Client   @relation(fields: [tenantId], references: [id])
+
+  @@index([propertyId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([priority])
+  @@map("maintenance_requests")
+}
+
+model Payment {
+  id                      String         @id @default(uuid())
+  leaseId                 String         @map("lease_id")
+  tenantId                String         @map("tenant_id")
+  amount                  Float
+  dueDate                 DateTime       @map("due_date")
+  status                  PAYMENT_STATUS @default(UPCOMING)
+  stripeCheckoutSessionId String?        @map("stripe_checkout_session_id")
+  stripePaymentIntentId   String?        @map("stripe_payment_intent_id")
+  paidAt                  DateTime?      @map("paid_at")
+  createdAt               DateTime       @default(now()) @map("created_at")
+  updatedAt               DateTime?      @updatedAt @map("updated_at")
+
+  lease  Lease  @relation(fields: [leaseId], references: [id])
+  tenant Client @relation(fields: [tenantId], references: [id])
+
+  @@index([leaseId])
+  @@index([tenantId])
+  @@index([status])
+  @@index([dueDate])
+  @@map("payments")
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  phoneNumber         String?
+  phoneNumberVerified Boolean?
+
+  twoFactorEnabled Boolean?    @default(false)
+  twofactors       TwoFactor[]
+
+  @@unique([email])
+  @@unique([phoneNumber])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Jwks {
+  id         String   @id
+  publicKey  String
+  privateKey String
+  createdAt  DateTime
+
+  @@map("jwks")
+}
+
+model TwoFactor {
+  id          String @id
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("twoFactor")
+}

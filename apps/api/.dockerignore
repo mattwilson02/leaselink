@@ -1,0 +1,5 @@
+node_modules
+# dist - COMMENT OUT THIS LINE
+*.log
+*.md
+.git

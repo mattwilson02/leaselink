@@ -1,0 +1,89 @@
+import {
+	DarkTheme,
+	DefaultTheme,
+	ThemeProvider,
+} from '@react-navigation/native'
+import {
+	Lato_100Thin,
+	Lato_300Light,
+	Lato_400Regular,
+	Lato_700Bold,
+	Lato_900Black,
+	useFonts,
+} from '@expo-google-fonts/lato'
+import { Slot } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
+import { useEffect, useState } from 'react'
+import 'react-native-reanimated'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useColorScheme } from '@/hooks/useColorScheme'
+import { PushNotificationProvider } from '../src/context/push-notification-context'
+import '../src/i18n'
+import { initializeI18n } from '../src/i18n'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { LogBox } from 'react-native'
+import ErrorBoundary from '@/components/ErrorBoundary'
+
+// Selectively ignore known non-critical warnings
+LogBox.ignoreLogs([
+	'Non-serializable values were found in the navigation state',
+	'VirtualizedLists should never be nested',
+	'Must use physical device for Push Notifications',
+])
+
+SplashScreen.preventAutoHideAsync()
+
+export const queryClient = new QueryClient()
+
+const RootLayout = () => {
+	const [isI18nInitialized, setIsI18nInitialized] = useState(false)
+	const colorScheme = useColorScheme()
+
+	const tokens = {
+		'thin-100': Lato_100Thin,
+		'light-300': Lato_300Light,
+		'regular-400': Lato_400Regular,
+		'bold-700': Lato_700Bold,
+		'black-900': Lato_900Black,
+	}
+	const [loaded] = useFonts(tokens)
+
+	useEffect(() => {
+		const setup = async () => {
+			await initializeI18n()
+			setIsI18nInitialized(true)
+		}
+
+		setup()
+	}, [])
+
+	if (!loaded || !isI18nInitialized) {
+		return null
+	}
+
+	return (
+		<>
+			<ErrorBoundary>
+				<QueryClientProvider client={queryClient}>
+					<SafeAreaProvider>
+						<GestureHandlerRootView>
+							<PushNotificationProvider>
+								<ThemeProvider
+									value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+								>
+									<Slot screenOptions={{ headerShown: false }} />
+								</ThemeProvider>
+							</PushNotificationProvider>
+						</GestureHandlerRootView>
+					</SafeAreaProvider>
+				</QueryClientProvider>
+			</ErrorBoundary>
+
+			<StatusBar style='auto' />
+		</>
+	)
+}
+
+export default RootLayout

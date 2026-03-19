@@ -1,0 +1,116 @@
+appId: "com.leaselink.ios"
+---
+# Sign in with test@example.com
+# Launch app and navigate to sign-in screen
+- launchApp:
+    clearState: true
+    clearKeychain: true
+    appId: "com.leaselink.ios"
+- runFlow: # Optional: handle the development build URL screen as well
+    when:
+      visible: "http.*" # Check for the development server URL
+    commands:
+      - tapOn: "http.*" # Tap the URL to load the app
+- runFlow: # Use runFlow with a 'when' condition
+    when:
+      visible: "Continue" # Check if the "Continue" button is visible
+    commands:
+      - tapOn: "Continue" # Tap the "Continue" button if it appears
+- runFlow: # Use runFlow with a 'when' condition
+    when:
+      visible: "Reload" # Check if the "Continue" button is visible
+    commands:
+      - tapOn: "Reload" # Tap the "Continue" button if it appears
+- assertVisible:
+    id: "sign-in-heading"
+- tapOn:
+    id: "email-input"
+- inputText: "test@example.com"
+- tapOn:
+    id: "password-input"
+- inputText: "Password123!"
+- tapOn:
+    id: "sign-in-button"
+
+# Check the unread notification circle is visible on home page
+- assertVisible:
+    id: "unread-indicator"
+
+# Open notifications page by tapping the bell icon
+- tapOn:
+    text: ".*"
+    index: 0
+    below:
+      id: "unread-indicator"
+
+# Wait for notifications page to load
+- assertVisible:
+    id: "notifications-heading"
+
+# Scroll down to find the notification
+- scroll
+
+# Tap on the "Please sign the new investment agreement" notification
+- tapOn:
+    text: "Please sign the new investment agreement"
+
+# Wait a moment for the read status to update
+- waitForAnimationToEnd
+
+# The notification is now marked as read (green dot should be gone)
+
+# Switch to INFO tab (Notifications)
+- tapOn:
+    id: "tab-trigger-INFO"
+
+# Verify notifications are displayed
+- assertVisible:
+    id: "notifications-flatlist"
+
+# Switch to ACTION tab (Requires action)
+- tapOn:
+    id: "tab-trigger-ACTION"
+
+# Verify notifications are displayed
+- assertVisible:
+    id: "notifications-flatlist"
+
+# Navigate back to ALL tab
+- tapOn:
+    id: "tab-trigger-ALL"
+
+# Tap "Mark all as read" button
+- tapOn:
+    id: "mark-all-as-read-button"
+
+# Wait for the action to complete
+- waitForAnimationToEnd
+
+# Swipe left on "Important: Review your investment strategy" to archive it
+- swipe:
+    direction: LEFT
+    from:
+      text: "Important: Review your investment strategy"
+    duration: 300
+
+# Wait for archive animation to complete
+- waitForAnimationToEnd
+
+# Verify the notification disappeared from ALL tab
+- assertNotVisible:
+    text: "Important: Review your investment strategy"
+
+# Switch to ARCHIVED tab
+- tapOn:
+    id: "tab-trigger-ARCHIVED"
+
+# Verify the archived notification appears on the ARCHIVED tab
+- assertVisible:
+    text: "Important: Review your investment strategy"
+
+# Go back to home page
+- tapOn:
+    id: "back-button"
+
+- assertVisible:
+    id: "home-screen-heading"
