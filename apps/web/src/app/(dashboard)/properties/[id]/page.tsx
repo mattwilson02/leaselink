@@ -32,9 +32,15 @@ import {
   useDeleteProperty,
   useUpdatePropertyStatus,
 } from "@/hooks/use-properties";
+import { useActiveLeaseByProperty } from "@/hooks/use-leases";
+import { useTenant } from "@/hooks/use-tenants";
+import { LeaseStatusBadge } from "@/components/leases/lease-status-badge";
+import { TenantStatusBadge } from "@/components/tenants/tenant-status-badge";
 import {
   PropertyStatus,
   PROPERTY_TYPE_LABELS,
+  LeaseStatus,
+  TenantStatus,
 } from "@leaselink/shared";
 import type { PropertyType } from "@leaselink/shared";
 import { toast } from "sonner";
@@ -47,6 +53,10 @@ export default function PropertyDetailPage() {
   const { data, isLoading } = useProperty(id);
   const deleteMutation = useDeleteProperty();
   const statusMutation = useUpdatePropertyStatus(id);
+
+  const { data: activeLeaseData } = useActiveLeaseByProperty(id);
+  const activeLease = activeLeaseData?.data;
+  const { data: activeTenantData } = useTenant(activeLease?.tenantId ?? "");
 
   const [showDelete, setShowDelete] = useState(false);
   const [showStatusChange, setShowStatusChange] = useState(false);
@@ -87,6 +97,21 @@ export default function PropertyDetailPage() {
       currency: "USD",
       minimumFractionDigits: 0,
     }).format(amount);
+  }
+
+  function formatDate(isoString: string) {
+    return new Date(isoString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
+
+  function isExpiringWithin60Days(endDate: string) {
+    const now = new Date();
+    const end = new Date(endDate);
+    const days = Math.floor((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    return days <= 60;
   }
 
   if (isLoading) {
@@ -254,9 +279,29 @@ export default function PropertyDetailPage() {
               <CardDescription>Tenant and lease information</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                No active tenant assigned.
-              </p>
+              {activeTenantData?.data ? (
+                <div className="space-y-2">
+                  <Link
+                    href={`/tenants/${activeTenantData.data.id}`}
+                    className="font-medium hover:underline"
+                  >
+                    {activeTenantData.data.name}
+                  </Link>
+                  <p className="text-sm text-muted-foreground">
+                    {activeTenantData.data.email}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {activeTenantData.data.phoneNumber}
+                  </p>
+                  <TenantStatusBadge
+                    status={activeTenantData.data.status as TenantStatus}
+                  />
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No active tenant assigned.
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -265,9 +310,47 @@ export default function PropertyDetailPage() {
               <CardTitle>Active Lease</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                No active lease for this property.
-              </p>
+              {activeLease ? (
+                <div className="space-y-2">
+                  <p className="text-sm text-muted-foreground">
+                    {formatDate(activeLease.startDate)} — {formatDate(activeLease.endDate)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Rent: {formatRent(activeLease.monthlyRent)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Deposit: {formatRent(activeLease.securityDeposit)}
+                  </p>
+                  {isExpiringWithin60Days(activeLease.endDate) && (
+                    <p className="text-sm text-yellow-600 font-medium">
+                      Expiring soon
+                    </p>
+                  )}
+                  <LeaseStatusBadge
+                    status={activeLease.status as LeaseStatus}
+                    endDate={activeLease.endDate}
+                  />
+                  <div className="pt-1">
+                    <Link
+                      href={`/leases/${activeLease.id}`}
+                      className="text-sm hover:underline"
+                    >
+                      View lease details
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    No active lease for this property.
+                  </p>
+                  <Link href={`/leases/new?propertyId=${id}`}>
+                    <Button variant="outline" size="sm">
+                      Create Lease
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

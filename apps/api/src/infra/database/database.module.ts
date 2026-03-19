@@ -1,10 +1,12 @@
 import { IdentityProviderRepository } from '@/domain/authentication/application/repositories/identity-provider-repository'
 import { ClientsRepository } from '@/domain/financial-management/application/repositories/clients-repository'
+import { LeasesRepository } from '@/domain/lease-management/application/repositories/leases-repository'
 import { PropertiesRepository } from '@/domain/property-management/application/repositories/properties-repository'
 import { Module } from '@nestjs/common'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaClientsRepository } from './prisma/repositories/prisma-clients-repository'
 import { PrismaIdentityProviderRepository } from './prisma/repositories/prisma-provider-repository'
+import { PrismaLeasesRepository } from './prisma/repositories/prisma-leases-repository'
 import { PrismaPropertiesRepository } from './prisma/repositories/prisma-properties-repository'
 import { NotificationRepository } from '@/domain/notification/application/repositories/notification-repository'
 import { PrismaNotificationRepository } from './prisma/repositories/prisma-notification-repository'
@@ -40,6 +42,10 @@ import { PrismaDocumentRequestRepository } from './prisma/repositories/prisma-do
 			provide: PropertiesRepository,
 			useClass: PrismaPropertiesRepository,
 		},
+		{
+			provide: LeasesRepository,
+			useClass: PrismaLeasesRepository,
+		},
 	],
 	exports: [
 		PrismaService,
@@ -49,6 +55,7 @@ import { PrismaDocumentRequestRepository } from './prisma/repositories/prisma-do
 		DocumentRepository,
 		DocumentRequestRepository,
 		PropertiesRepository,
+		LeasesRepository,
 	],
 })
 export class DatabaseModule {}

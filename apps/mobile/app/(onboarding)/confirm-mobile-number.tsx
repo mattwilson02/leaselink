@@ -394,6 +394,7 @@ const ConfirmMobileNumber = () => {
 													setVerificationCode(pin)
 													await verifyCode(pin)
 												}}
+												// @ts-expect-error - onFocus works at runtime, library types incomplete
 												onFocus={() => {
 													setTimeout(() => {
 														scrollViewRef.current?.scrollTo({

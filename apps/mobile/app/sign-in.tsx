@@ -161,6 +161,7 @@ const SignIn = () => {
 											<Form.GroupInput>
 												<TextInput.Root id={field.name}>
 													<TextInput.Control
+														// @ts-expect-error - ref works at runtime, library types incomplete
 														ref={emailInputRef}
 														autoCapitalize='none'
 														keyboardType='email-address'
@@ -206,6 +207,7 @@ const SignIn = () => {
 											<Form.GroupInput>
 												<TextInput.Root id={field.name}>
 													<TextInput.Control
+														// @ts-expect-error - ref works at runtime, library types incomplete
 														ref={passwordInputRef}
 														autoCapitalize='none'
 														keyboardType='default'

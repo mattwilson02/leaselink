@@ -243,6 +243,7 @@ const ConfirmEmail = () => {
 													setVerificationCode(pin)
 													await verifyCode(pin, email)
 												}}
+												// @ts-expect-error - onFocus works at runtime, library types incomplete
 												onFocus={() => {
 													setTimeout(() => {
 														scrollViewRef.current?.scrollTo({

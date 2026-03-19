@@ -1,4 +1,8 @@
-import type { ClientsRepository } from '@/domain/financial-management/application/repositories/clients-repository'
+import type {
+	ClientsRepository,
+	ClientsFilterParams,
+	ClientsPaginatedResult,
+} from '@/domain/financial-management/application/repositories/clients-repository'
 import type { Client } from '@/domain/financial-management/enterprise/entities/client'
 
 export class InMemoryClientsRepository implements ClientsRepository {
@@ -22,6 +26,35 @@ export class InMemoryClientsRepository implements ClientsRepository {
 		)
 
 		return Promise.resolve(client ?? null)
+	}
+
+	async findMany(params: ClientsFilterParams): Promise<ClientsPaginatedResult> {
+		let filtered = [...this.items]
+
+		if (params.status) {
+			filtered = filtered.filter((c) => c.status === params.status)
+		}
+
+		if (params.onboardingStatus) {
+			filtered = filtered.filter(
+				(c) => c.onboardingStatus === params.onboardingStatus,
+			)
+		}
+
+		if (params.search) {
+			const search = params.search.toLowerCase()
+			filtered = filtered.filter(
+				(c) =>
+					c.name.toLowerCase().includes(search) ||
+					c.email.toLowerCase().includes(search),
+			)
+		}
+
+		const totalCount = filtered.length
+		const start = (params.page - 1) * params.pageSize
+		const paginated = filtered.slice(start, start + params.pageSize)
+
+		return { clients: paginated, totalCount }
 	}
 
 	async delete(clientId: string): Promise<void> {

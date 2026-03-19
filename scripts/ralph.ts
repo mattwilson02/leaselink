@@ -714,15 +714,13 @@ async function main() {
         // Checkout the existing branch with partial work
         runSafe(`git checkout ${branchName}`);
       } else {
-        // Fresh sprint — checkout base and create branch
-        run(`git checkout ${BASE_BRANCH}`);
-        run(`git pull origin ${BASE_BRANCH}`);
+        // Fresh sprint — branch off current HEAD (may be previous sprint's branch)
+        // PRs target BASE_BRANCH for human review; we keep building forward
 
         const tempBranch = `sprint/${sprint}`;
         const { ok } = runSafe(`git checkout -b ${tempBranch}`);
         if (!ok) {
           run(`git checkout ${tempBranch}`);
-          run(`git reset --hard ${BASE_BRANCH}`);
         }
 
         // ── Phase 1: Write spec
@@ -858,29 +856,9 @@ async function main() {
       saveState({ sprint, phase: "pr", specName: sprintName, specPath, branchName });
       commitAndPR(sprint, sprintName, branchName);
 
-      // ── Wait for merge, then pull
-      log("  Waiting for PR merge...");
-      await new Promise((r) => setTimeout(r, 10_000));
-
-      let merged = false;
-      for (let i = 0; i < 30; i++) {
-        const { output: state } = runSafe(`gh pr view ${branchName} --json state -q .state`);
-        if (state.includes("MERGED")) {
-          merged = true;
-          break;
-        }
-        await new Promise((r) => setTimeout(r, 10_000));
-      }
-
-      if (!merged) {
-        runSafe(`gh pr merge --squash --admin`);
-        log("  → Force merged via --admin");
-      }
-
-      // Sprint done — clear state and move on
+      // Sprint done — PR is up for human review, continue from this branch
       clearState();
-      run(`git checkout ${BASE_BRANCH}`);
-      run(`git pull origin ${BASE_BRANCH}`);
+      log(`  → PR open for review — next sprint branches off ${branchName}`);
 
       const elapsed = Math.round((Date.now() - sprintStart) / 60_000);
       log(`\n✅ Sprint ${sprint} complete! (${elapsed} min)\n`);
