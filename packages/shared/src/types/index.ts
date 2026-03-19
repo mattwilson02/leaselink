@@ -8,3 +8,4 @@ export * from "./notification";
 export * from "./payment";
 export * from "./pagination";
 export * from "./api-responses";
+export * from "./dashboard";

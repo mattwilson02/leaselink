@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Bell, LogOut, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { removeAuthToken } from "@/lib/auth";
+import { NotificationDropdown } from "@/components/layout/notification-dropdown";
 
 export function TopNav() {
   const router = useRouter();
@@ -28,9 +29,7 @@ export function TopNav() {
       <SidebarTrigger />
       <Separator orientation="vertical" className="h-6" />
       <div className="flex-1" />
-      <Button variant="ghost" size="icon" className="relative">
-        <Bell className="h-4 w-4" />
-      </Button>
+      <NotificationDropdown />
       <DropdownMenu>
         <DropdownMenuTrigger
           render={

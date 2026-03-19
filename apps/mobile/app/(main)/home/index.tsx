@@ -2,17 +2,26 @@ import { Heading, Text, Button } from '@sf-digital-ui/react-native'
 import { colors } from '@sf-digital-ui/tokens'
 import { useRouter } from 'expo-router'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
-import { CreditCard, Wrench, ChevronRight } from 'lucide-react-native'
+import { CreditCard, Wrench, ChevronRight, MapPin } from 'lucide-react-native'
 import dayjs from 'dayjs'
-import { PaymentStatus } from '@leaselink/shared'
+import { PaymentStatus, PROPERTY_TYPE_LABELS, LEASE_STATUS_LABELS, LeaseStatus } from '@leaselink/shared'
 import { useNextPaymentDue } from '@/hooks/usePayments'
+import { useMyActiveLease } from '@/hooks/useLeases'
 import PaymentStatusBadge from '@/components/Payments/PaymentStatusBadge'
 import { authClient } from '@/services/auth'
+
+const leaseStatusColor: Record<string, string> = {
+	[LeaseStatus.ACTIVE]: colors.success['600'],
+	[LeaseStatus.PENDING]: colors.warning['600'],
+	[LeaseStatus.EXPIRED]: colors.neutral['500'],
+	[LeaseStatus.TERMINATED]: colors.error['600'],
+}
 
 const Home = () => {
 	const router = useRouter()
 	const user = authClient.useSession().data?.user
-	const { nextPayment, isLoading } = useNextPaymentDue()
+	const { nextPayment, isLoading: isPaymentsLoading } = useNextPaymentDue()
+	const { activeLease, isLoading: isLeaseLoading } = useMyActiveLease()
 
 	const formattedAmount = nextPayment
 		? new Intl.NumberFormat('en-GB', {
@@ -24,6 +33,29 @@ const Home = () => {
 	const isPendingOrOverdue =
 		nextPayment?.status === PaymentStatus.PENDING ||
 		nextPayment?.status === PaymentStatus.OVERDUE
+
+	const formattedMonthlyRent = activeLease
+		? new Intl.NumberFormat('en-GB', {
+				style: 'currency',
+				currency: 'GBP',
+			}).format(activeLease.monthlyRent / 100)
+		: ''
+
+	const formattedLeaseDates = activeLease
+		? `${dayjs(activeLease.startDate).format('D MMM YYYY')} — ${dayjs(activeLease.endDate).format('D MMM YYYY')}`
+		: ''
+
+	const propertyTypeLabel =
+		activeLease?.property?.propertyType
+			? PROPERTY_TYPE_LABELS[activeLease.property.propertyType]
+			: null
+
+	const leaseStatusLabel = activeLease
+		? LEASE_STATUS_LABELS[activeLease.status as LeaseStatus] ?? activeLease.status
+		: null
+
+	const leaseStatusTextColor =
+		activeLease ? (leaseStatusColor[activeLease.status] ?? colors.neutral['500']) : colors.neutral['500']
 
 	return (
 		<ScrollView
@@ -41,13 +73,72 @@ const Home = () => {
 				</Text>
 			</View>
 
+			{/* Lease & Property Card */}
+			<View style={styles.card}>
+				<Text fontWeight='bold' style={styles.cardTitle}>
+					Your Property
+				</Text>
+
+				{isLeaseLoading ? (
+					<View style={styles.skeleton} />
+				) : activeLease ? (
+					<View style={styles.leaseCardContent}>
+						{/* Address row */}
+						<View style={styles.addressRow}>
+							<MapPin size={16} color={colors['primary-green']['500']} style={styles.addressIcon} />
+							<Text fontWeight='bold' style={styles.addressText}>
+								{activeLease.property?.address ?? 'Address unavailable'}
+								{activeLease.property?.city ? `, ${activeLease.property.city}` : ''}
+							</Text>
+						</View>
+
+						{/* Badges row */}
+						<View style={styles.badgesRow}>
+							{propertyTypeLabel && (
+								<View style={styles.typeBadge}>
+									<Text size='sm' style={styles.typeBadgeText}>
+										{propertyTypeLabel}
+									</Text>
+								</View>
+							)}
+							{leaseStatusLabel && (
+								<View style={[styles.statusBadge, { borderColor: leaseStatusTextColor }]}>
+									<Text size='sm' style={[styles.statusBadgeText, { color: leaseStatusTextColor }]}>
+										{leaseStatusLabel}
+									</Text>
+								</View>
+							)}
+						</View>
+
+						{/* Lease dates */}
+						<Text size='sm' style={styles.leaseDates}>
+							{formattedLeaseDates}
+						</Text>
+
+						{/* Monthly rent */}
+						<Text size='sm' style={styles.monthlyRent}>
+							{formattedMonthlyRent}/month
+						</Text>
+					</View>
+				) : (
+					<View style={styles.noLeaseContainer}>
+						<Text fontWeight='bold' style={{ color: colors.neutral['500'] }}>
+							No active lease
+						</Text>
+						<Text size='sm' style={{ color: colors.neutral['400'] }}>
+							Contact your property manager for lease information
+						</Text>
+					</View>
+				)}
+			</View>
+
 			{/* Next Payment Card */}
 			<View style={styles.card}>
 				<Text fontWeight='bold' style={styles.cardTitle}>
 					Next Payment
 				</Text>
 
-				{isLoading ? (
+				{isPaymentsLoading ? (
 					<View style={styles.skeleton} />
 				) : nextPayment ? (
 					<View style={styles.paymentCardContent}>
@@ -147,6 +238,57 @@ const styles = StyleSheet.create({
 		height: 60,
 		borderRadius: 8,
 		backgroundColor: colors.neutral['40'],
+	},
+	leaseCardContent: {
+		gap: 8,
+	},
+	addressRow: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		gap: 6,
+	},
+	addressIcon: {
+		marginTop: 2,
+	},
+	addressText: {
+		fontSize: 16,
+		color: colors.neutral['700'],
+		flex: 1,
+	},
+	badgesRow: {
+		flexDirection: 'row',
+		gap: 8,
+		flexWrap: 'wrap',
+	},
+	typeBadge: {
+		backgroundColor: colors['primary-green']['50'],
+		paddingHorizontal: 8,
+		paddingVertical: 2,
+		borderRadius: 4,
+	},
+	typeBadgeText: {
+		color: colors['primary-green']['700'],
+	},
+	statusBadge: {
+		paddingHorizontal: 8,
+		paddingVertical: 2,
+		borderRadius: 4,
+		borderWidth: 1,
+	},
+	statusBadgeText: {
+		fontWeight: '500',
+	},
+	leaseDates: {
+		color: colors.neutral['500'],
+	},
+	monthlyRent: {
+		color: colors.neutral['700'],
+		fontWeight: '600',
+	},
+	noLeaseContainer: {
+		alignItems: 'center',
+		paddingVertical: 12,
+		gap: 4,
 	},
 	paymentCardContent: {
 		gap: 8,
