@@ -176,35 +176,74 @@ After writing the file, output ONLY the filename (e.g., "sprint-2-property-crud-
 
 // ─── Phase 2: Builder ─────────────────────────────────────────────────────────
 
-async function runBuilder(specPath: string) {
-  log(`\n🔨 Phase 2: Running builder agent...`);
+async function runBackendBuilder(specPath: string) {
+  log("\n🔨 Phase 2a: Running backend builder agent...");
 
   const sprintSpec = readFileSync(specPath, "utf-8");
 
-  const prompt = `You are the lead builder agent for a sprint implementation.
+  const prompt = `You are the backend builder agent for a sprint implementation.
 
-## Your Workflow
-
-1. **First**, implement all backend work yourself:
-   - packages/shared/ (types, enums, constants, validation schemas)
-   - apps/api/ (domain entities, use cases, controllers, repositories, tests)
-   - Follow the existing DDD architecture in apps/api/
-   - Read existing code patterns before writing new code
-   - After backend work, verify: cd apps/api && npx prisma generate && npm run format && npm run type-check && npm run test
-
-2. **Then**, delegate frontend work using the Agent tool to spawn subagents IN PARALLEL:
-   - Spawn a "web" subagent for apps/web/ work (if the sprint has web tasks)
-   - Spawn a "mobile" subagent for apps/mobile/ work (if the sprint has mobile tasks)
-   - These subagents will see your backend/shared changes since they share the filesystem
-   - If there is no web or mobile work in this sprint, skip those subagents
-
-3. **Finally**, do a final verification across all apps
+## Your Scope
+Implement ALL backend and shared-package work:
+- packages/shared/ (types, enums, constants, validation schemas)
+- apps/api/ (domain entities, use cases, controllers, repositories, tests)
 
 ## Rules
-- Read existing code to understand patterns BEFORE writing new code
+- Follow the existing DDD architecture in apps/api/ — read CLAUDE.md and existing code BEFORE writing
 - Every new feature must have unit tests
-- Fix any errors before finishing
-- When delegating to subagents, include the spec's **Architectural Decisions** section in your prompt so they follow the same conventions (e.g. Kubb for API clients, existing UI patterns, shared utilities)
+- After ALL work is done, run these checks and fix any failures:
+  1. cd packages/shared && npm run build
+  2. cd apps/api && npx prisma generate
+  3. cd apps/api && npm run format
+  4. cd apps/api && npm run type-check
+  5. cd apps/api && npm run test
+
+## Sprint Spec
+
+${sprintSpec}`;
+
+  await runAgent(prompt, {
+    cwd: ROOT,
+    model: MODELS.builder,
+    allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+    permissionMode: "bypassPermissions",
+    allowDangerouslySkipPermissions: true,
+    maxTurns: 200,
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append:
+        "\nYou are the backend builder in an automated sprint. Work autonomously. Only modify packages/shared/ and apps/api/.",
+    },
+  });
+
+  log("  ✓ Backend builder finished");
+}
+
+async function runFrontendBuilders(specPath: string) {
+  log("\n🔨 Phase 2c: Running frontend builder agents...");
+
+  const sprintSpec = readFileSync(specPath, "utf-8");
+
+  // Check if the sprint has web/mobile tasks by looking for keywords
+  const specContent = sprintSpec.toLowerCase();
+  const hasWebTasks = specContent.includes("apps/web") || specContent.includes("web agent") || specContent.includes("web dashboard");
+  const hasMobileTasks = specContent.includes("apps/mobile") || specContent.includes("mobile agent") || specContent.includes("mobile app");
+
+  if (!hasWebTasks && !hasMobileTasks) {
+    log("  → No frontend tasks in this sprint, skipping");
+    return;
+  }
+
+  // Spawn a coordinator that delegates to web/mobile subagents in parallel
+  const prompt = `You are the frontend coordinator for a sprint. The backend work is ALREADY DONE.
+
+Your job: spawn web and mobile subagents IN PARALLEL using the Agent tool.
+${hasWebTasks ? '- Spawn a "web" subagent for apps/web/ work' : "- No web tasks in this sprint"}
+${hasMobileTasks ? '- Spawn a "mobile" subagent for apps/mobile/ work' : "- No mobile tasks in this sprint"}
+
+Include the full sprint spec in each subagent's prompt so they know what to build.
+Include any Architectural Decisions from the spec so they follow the same conventions.
 
 ## Sprint Spec
 
@@ -216,7 +255,7 @@ ${sprintSpec}`;
     allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "Agent"],
     permissionMode: "bypassPermissions",
     allowDangerouslySkipPermissions: true,
-    maxTurns: 200,
+    maxTurns: 100,
     agents: {
       web: {
         description: "Web dashboard builder for apps/web/",
@@ -237,11 +276,11 @@ ${sprintSpec}`;
       type: "preset",
       preset: "claude_code",
       append:
-        "\nYou are the lead builder in an automated sprint. Work autonomously. Do backend/shared work first, then delegate web and mobile to subagents in parallel using the Agent tool.",
+        "\nYou are the frontend coordinator. Spawn web and mobile subagents in parallel. Do NOT implement anything yourself.",
     },
   });
 
-  log(`  ✓ Builder finished`);
+  log("  ✓ Frontend builders finished");
 }
 
 // ─── Phase 3: Test & Fix ──────────────────────────────────────────────────────
@@ -251,21 +290,104 @@ interface VerifyResult {
   output: string;
 }
 
-function verify(): VerifyResult {
-  log(`\n🔍 Phase 3: Running verification...`);
+// Dummy env vars for boot smoke test — doesn't need real services, just module resolution
+const BOOT_SMOKE_ENV = [
+  "DATABASE_URL=postgresql://x:x@localhost:5432/x",
+  "BLOB_STORAGE_ACCOUNT_NAME=x",
+  "BLOB_STORAGE_ACCOUNT_KEY=x",
+  "BLOB_STORAGE_CONTAINER_NAME=x",
+  "BLOB_STORAGE_ENDPOINT=http://localhost:10000",
+  "BLOB_STORAGE_CONNECTION_STRING=x",
+  "TWILIO_ACCOUNT_SID=x",
+  "TWILIO_AUTH_TOKEN=x",
+  'TWILIO_PHONE_NUMBER="+10000000000"',
+  "SMTP_HOST=localhost",
+  "SMTP_PORT=587",
+  "SMTP_USER=x",
+  "SMTP_PASSWORD=x",
+  "SMTP_FROM_EMAIL=x@x.com",
+  "APP_NAME=LeaseLink",
+  "AZURE_AD_CLIENT_ID=x",
+  "AZURE_AD_CLIENT_SECRET=x",
+  "AZURE_AD_TENANT_ID=x",
+].join(" ");
 
-  const checks = [
+/**
+ * Boot smoke test — builds the API and tries to start it.
+ * Catches module resolution errors (ERR_MODULE_NOT_FOUND) that tsc --noEmit misses.
+ * Passes if the process fails for non-module reasons (e.g. DB connection refused).
+ */
+function bootSmokeTest(): { ok: boolean; output: string } {
+  log("  ⏳ Boot Smoke Test (module resolution)...");
+
+  // Build the API
+  const build = runSafe("npm run build", join(ROOT, "apps/api"));
+  if (!build.ok) {
+    return { ok: false, output: `nest build failed:\n${build.output}` };
+  }
+
+  // Try to start — kill after 15s. We only care if it crashes on module resolution.
+  const { ok, output } = runSafe(
+    `${BOOT_SMOKE_ENV} timeout 15 node dist/main.js 2>&1 || true`,
+    join(ROOT, "apps/api"),
+  );
+
+  // These indicate broken module graph — real failures
+  const moduleErrors = [
+    "ERR_MODULE_NOT_FOUND",
+    "Cannot find module",
+    "ERR_UNSUPPORTED_DIR_IMPORT",
+    "ERR_UNSUPPORTED_TYPESCRIPT_SYNTAX",
+  ];
+
+  const combined = output || "";
+  const hasModuleError = moduleErrors.some((e) => combined.includes(e));
+
+  if (hasModuleError) {
+    return { ok: false, output: `Boot smoke test FAILED — module resolution error:\n${combined}` };
+  }
+
+  log("  ✓ Boot Smoke Test (module resolution OK)");
+  return { ok: true, output: "" };
+}
+
+/** Run a subset of checks (backend-only or full) */
+function verify(scope: "backend" | "full" = "full"): VerifyResult {
+  log(`\n🔍 Running verification (${scope})...`);
+
+  const backendChecks = [
+    { name: "Shared Build", cmd: "npm run build", cwd: join(ROOT, "packages/shared") },
     { name: "Prisma Generate", cmd: "npx prisma generate", cwd: join(ROOT, "apps/api") },
     { name: "API Format", cmd: "npm run format", cwd: join(ROOT, "apps/api") },
     { name: "API Type Check", cmd: "npm run type-check", cwd: join(ROOT, "apps/api") },
     { name: "API Unit Tests", cmd: "npm run test", cwd: join(ROOT, "apps/api") },
-    { name: "Web Build", cmd: "npm run build", cwd: join(ROOT, "apps/web") },
+    { name: "API Boot Smoke Test", cmd: "__BOOT_SMOKE__", cwd: "" },
   ];
+
+  const frontendChecks = [
+    { name: "Web Build", cmd: "npm run build", cwd: join(ROOT, "apps/web") },
+    { name: "Mobile Type Check", cmd: "npx tsc --noEmit", cwd: join(ROOT, "apps/mobile") },
+  ];
+
+  const checks = scope === "backend" ? backendChecks : [...backendChecks, ...frontendChecks];
 
   const results: string[] = [];
   let allPassed = true;
 
   for (const check of checks) {
+    // Special case: boot smoke test
+    if (check.cmd === "__BOOT_SMOKE__") {
+      const smoke = bootSmokeTest();
+      if (smoke.ok) {
+        results.push(`✓ ${check.name}`);
+      } else {
+        allPassed = false;
+        results.push(`✗ ${check.name}\n${smoke.output}`);
+        log(`  ✗ ${check.name} FAILED`);
+      }
+      continue;
+    }
+
     const { ok, output } = runSafe(check.cmd, check.cwd);
     if (ok) {
       results.push(`✓ ${check.name}`);
@@ -402,26 +524,48 @@ async function main() {
         run(`git branch -m ${tempBranch} ${branchName}`);
       }
 
-      // ── Phase 2: Build
-      await runBuilder(specPath);
+      // ── Phase 2a: Backend build
+      await runBackendBuilder(specPath);
 
-      // ── Phase 3: Test & Fix
-      let { passed, output } = verify();
+      // ── Phase 2b: Backend verification gate — catch issues before frontend agents waste time
+      log("\n🔍 Phase 2b: Backend verification gate...");
+      let { passed, output } = verify("backend");
       let fixAttempt = 0;
 
       while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
         fixAttempt++;
         await fixErrors(output, fixAttempt);
-        ({ passed, output } = verify());
+        ({ passed, output } = verify("backend"));
       }
 
       if (!passed) {
-        log(`\n❌ Sprint ${sprint} failed verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
+        log(`\n❌ Sprint ${sprint} backend failed verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
         log("Stopping. Fix manually and re-run with --start-sprint=" + sprint);
         process.exit(1);
       }
 
-      log(`\n✅ Sprint ${sprint} verification passed!`);
+      log("\n✅ Backend verification passed — safe to start frontend work");
+
+      // ── Phase 2c: Frontend build
+      await runFrontendBuilders(specPath);
+
+      // ── Phase 3: Full verification
+      ({ passed, output } = verify("full"));
+      fixAttempt = 0;
+
+      while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
+        fixAttempt++;
+        await fixErrors(output, fixAttempt);
+        ({ passed, output } = verify("full"));
+      }
+
+      if (!passed) {
+        log(`\n❌ Sprint ${sprint} failed full verification after ${MAX_FIX_ATTEMPTS} fix attempts.`);
+        log("Stopping. Fix manually and re-run with --start-sprint=" + sprint);
+        process.exit(1);
+      }
+
+      log(`\n✅ Sprint ${sprint} full verification passed!`);
 
       // ── Phase 4: Commit, Push, PR
       commitAndPR(sprint, sprintName, branchName);
