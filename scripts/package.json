@@ -1,0 +1,13 @@
+{
+  "name": "@leaselink/scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ralph": "npx tsx ralph.ts",
+    "ralph:single": "npx tsx ralph.ts --single"
+  },
+  "dependencies": {
+    "@anthropic-ai/claude-agent-sdk": "latest",
+    "tsx": "^4.0.0"
+  }
+}
