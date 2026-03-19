@@ -1,7 +1,7 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { execSync } from "child_process";
-import { readFileSync, readdirSync, existsSync } from "fs";
-import { join, resolve } from "path";
+import { readFileSync, readdirSync, existsSync, writeFileSync, unlinkSync } from "node:fs";
+import { join, resolve } from "node:path";
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 
@@ -324,7 +324,7 @@ function commitAndPR(sprintNumber: number, sprintName: string, branchName: strin
   // Push
   run(`git push -u origin ${branchName}`);
 
-  // Create PR
+  // Create PR — use writeFileSync to avoid shell escaping issues with spec content
   const prTitle = `[Sprint ${sprintNumber}] ${title}`;
   const specContent = readFileSync(
     join(SPRINTS_DIR, `${sprintName}.md`),
@@ -332,14 +332,15 @@ function commitAndPR(sprintNumber: number, sprintName: string, branchName: strin
   );
   const specPreview = specContent.split("\n").slice(0, 50).join("\n");
 
+  const prBody = `## Sprint ${sprintNumber}\n\n${specPreview}\n\n---\nAutomated sprint implementation by Claude Code sprint runner.`;
+  const prBodyFile = join(ROOT, ".pr-body.tmp.md");
+  writeFileSync(prBodyFile, prBody);
+
   const { ok, output: prUrl } = runSafe(
-    `gh pr create --title "${prTitle}" --base ${BASE_BRANCH} --body "## Sprint ${sprintNumber}
-
-${specPreview}
-
----
-Automated sprint implementation by Claude Code sprint runner."`,
+    `gh pr create --title "${prTitle}" --base ${BASE_BRANCH} --body-file "${prBodyFile}"`,
   );
+
+  try { unlinkSync(prBodyFile); } catch {};
 
   if (ok) {
     log(`  → PR created: ${prUrl}`);
