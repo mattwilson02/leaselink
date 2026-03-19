@@ -482,6 +482,86 @@ function verify(scope: "backend" | "full" = "full"): VerifyResult {
   return { passed: allPassed, output: results.join("\n\n") };
 }
 
+// ─── Spec Compliance Audit ────────────────────────────────────────────────────
+
+interface AuditResult {
+  complete: boolean;
+  missing: string[];
+  summary: string;
+}
+
+async function auditSpecCompliance(specPath: string): Promise<AuditResult> {
+  log("\n🔎 Auditing spec compliance...");
+
+  const sprintSpec = readFileSync(specPath, "utf-8");
+  const diff = runSafe("git diff --stat HEAD~1", ROOT).output;
+
+  const prompt = `You are a strict sprint auditor. Your job: determine if the sprint spec was FULLY implemented.
+
+## Sprint Spec
+${sprintSpec}
+
+## Files Changed (git diff --stat)
+${diff}
+
+## Instructions
+1. Read the sprint spec carefully — extract every task, endpoint, entity, test, and acceptance criterion
+2. Check the actual codebase to verify each item was implemented
+3. Be thorough — check that entities exist, use cases are wired, controllers are registered, tests are written
+4. Do NOT count optional/stretch goals as missing
+
+Respond with EXACTLY this JSON format and nothing else:
+\`\`\`json
+{
+  "complete": true/false,
+  "missing": ["description of missing item 1", "description of missing item 2"],
+  "summary": "one sentence overall assessment"
+}
+\`\`\`
+
+If everything in the spec was implemented, set complete=true and missing=[].
+Be strict but fair — if a feature works but was implemented slightly differently than spec'd, that's fine.`;
+
+  const result = await runAgent(prompt, {
+    cwd: ROOT,
+    model: MODELS.specWriter, // Opus for judgment calls
+    allowedTools: ["Read", "Glob", "Grep"],
+    permissionMode: "bypassPermissions",
+    allowDangerouslySkipPermissions: true,
+    maxTurns: 30,
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: "\nYou are an auditor. Read code to verify implementation completeness. Do NOT modify any files. Output only the JSON result.",
+    },
+  });
+
+  // Parse the JSON from the agent's response
+  try {
+    const jsonMatch = result.match(/```json\s*([\s\S]*?)\s*```/) || result.match(/\{[\s\S]*"complete"[\s\S]*\}/);
+    if (jsonMatch) {
+      const parsed = JSON.parse(jsonMatch[1] || jsonMatch[0]);
+      log(`  ${parsed.complete ? "✓" : "✗"} Audit: ${parsed.summary}`);
+      if (!parsed.complete && parsed.missing?.length > 0) {
+        for (const item of parsed.missing) {
+          log(`    → Missing: ${item}`);
+        }
+      }
+      return {
+        complete: parsed.complete ?? false,
+        missing: parsed.missing ?? [],
+        summary: parsed.summary ?? "",
+      };
+    }
+  } catch {
+    log("  ⚠ Could not parse audit result — treating as incomplete");
+  }
+
+  return { complete: false, missing: ["Audit result could not be parsed"], summary: "Audit failed" };
+}
+
+// ─── Fix Agent ───────────────────────────────────────────────────────────────
+
 async function fixErrors(verifyOutput: string, attempt: number): Promise<void> {
   log(`\n🔧 Fix attempt ${attempt}/${MAX_FIX_ATTEMPTS}...`);
 
@@ -646,6 +726,53 @@ async function main() {
       }
 
       log(`\n✅ Sprint ${sprint} full verification passed!`);
+
+      // ── Phase 3b: Spec compliance audit — did we actually build everything?
+      const audit = await auditSpecCompliance(specPath);
+
+      if (!audit.complete) {
+        log(`\n⚠ Spec audit found ${audit.missing.length} missing item(s) — sending builder back in`);
+
+        const missingList = audit.missing.map((m, i) => `${i + 1}. ${m}`).join("\n");
+        await runAgent(
+          `The spec compliance audit found these items were NOT implemented:\n\n${missingList}\n\nImplement the missing items now. The sprint spec is at: ${specPath}\nRead the spec and the existing code, then fill in the gaps. Run verification checks after.`,
+          {
+            cwd: ROOT,
+            model: MODELS.builder,
+            allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+            permissionMode: "bypassPermissions",
+            allowDangerouslySkipPermissions: true,
+            maxTurns: 150,
+            systemPrompt: {
+              type: "preset",
+              preset: "claude_code",
+              append: "\nYou are a builder fixing missing sprint items. Implement only what's listed as missing. Run checks after.",
+            },
+          },
+        );
+
+        // Re-verify after filling gaps
+        ({ passed, output } = verify("full"));
+        if (!passed) {
+          fixAttempt = 0;
+          while (!passed && fixAttempt < MAX_FIX_ATTEMPTS) {
+            fixAttempt++;
+            await fixErrors(output, fixAttempt);
+            ({ passed, output } = verify("full"));
+          }
+          if (!passed) {
+            log(`\n❌ Sprint ${sprint} failed verification after gap-fill.`);
+            log(`Stopping. Fix manually and re-run with --start-sprint=${sprint}`);
+            process.exit(1);
+          }
+        }
+
+        // Re-audit to confirm
+        const reaudit = await auditSpecCompliance(specPath);
+        if (!reaudit.complete) {
+          log(`\n⚠ Still ${reaudit.missing.length} missing item(s) after gap-fill — proceeding with partial sprint`);
+        }
+      }
 
       // ── Phase 4: Commit, Push, PR
       commitAndPR(sprint, sprintName, branchName);

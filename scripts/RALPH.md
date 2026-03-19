@@ -50,6 +50,13 @@ PRODUCT_SPEC.md
        │
        ▼
 ┌──────────────┐
+│    Spec      │  ← Opus reads the sprint spec, inspects the codebase,
+│   Audit      │    and checks every task/endpoint/entity was built.
+│ (Phase 3b)   │    If items are missing → builder goes back in to
+└──────┬───────┘    fill gaps → re-verify → re-audit.
+       │
+       ▼
+┌──────────────┐
 │  Commit, PR, │  ← git add → commit → push → gh pr create → auto-merge
 │    Merge     │
 │  (Phase 4)   │
