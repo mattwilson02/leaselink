@@ -74,7 +74,11 @@ const Home = () => {
 			</View>
 
 			{/* Lease & Property Card */}
-			<View style={styles.card}>
+			<Pressable
+				testID='lease-card'
+				style={styles.card}
+				onPress={() => activeLease && router.push('/home/lease-detail')}
+			>
 				<Text fontWeight='bold' style={styles.cardTitle}>
 					Your Property
 				</Text>
@@ -119,6 +123,12 @@ const Home = () => {
 						<Text size='sm' style={styles.monthlyRent}>
 							{formattedMonthlyRent}/month
 						</Text>
+
+						{/* Tap hint */}
+						<View style={styles.tapHintRow}>
+							<Text size='sm' style={styles.tapHintText}>View lease details</Text>
+							<ChevronRight size={14} color={colors['primary-green']['500']} />
+						</View>
 					</View>
 				) : (
 					<View style={styles.noLeaseContainer}>
@@ -130,7 +140,7 @@ const Home = () => {
 						</Text>
 					</View>
 				)}
-			</View>
+			</Pressable>
 
 			{/* Next Payment Card */}
 			<View style={styles.card}>
@@ -284,6 +294,15 @@ const styles = StyleSheet.create({
 	monthlyRent: {
 		color: colors.neutral['700'],
 		fontWeight: '600',
+	},
+	tapHintRow: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 4,
+		marginTop: 4,
+	},
+	tapHintText: {
+		color: colors['primary-green']['500'],
 	},
 	noLeaseContainer: {
 		alignItems: 'center',

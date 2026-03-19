@@ -80,6 +80,7 @@ import { GetClientsUseCase } from '@/domain/financial-management/application/use
 import { GetClientByIdUseCase } from '@/domain/financial-management/application/use-cases/get-client-by-id'
 import { CreateLeaseController } from './controllers/create-lease/create-lease.controller'
 import { GetLeasesController } from './controllers/get-leases/get-leases.controller'
+import { GetLeasesByTenantController } from './controllers/get-leases-by-tenant/get-leases-by-tenant.controller'
 import { GetLeaseByIdController } from './controllers/get-lease-by-id/get-lease-by-id.controller'
 import { UpdateLeaseStatusController } from './controllers/update-lease-status/update-lease-status.controller'
 import { RenewLeaseController } from './controllers/renew-lease/renew-lease.controller'
@@ -175,6 +176,8 @@ import { GetDashboardSummaryController } from './controllers/get-dashboard-summa
 		CreateLeaseController,
 		GetLeasesController,
 		GetLeaseByPropertyController,
+		// Leases — tenant endpoint before :id to avoid route conflict
+		GetLeasesByTenantController,
 		GetLeaseByIdController,
 		UpdateLeaseStatusController,
 		RenewLeaseController,
