@@ -269,7 +269,77 @@ export default {
 	},
 	main_footer: {
 		documents: 'Dokumente',
+		maintenance: 'Wartung',
 		notifications: 'Benachrichtigungen',
+	},
+	maintenance: {
+		maintenance: 'Wartungsanfragen',
+		maintenance_description: 'Senden und verfolgen Sie Wartungsanfragen',
+		new_request: 'Neue Anfrage',
+		request_details: 'Anfragedetails',
+		all: 'Alle',
+		title: 'Titel',
+		description: 'Beschreibung',
+		category: 'Kategorie',
+		priority: 'Priorität',
+		photos: 'Fotos',
+		add_photos: 'Fotos hinzufügen',
+		submit: 'Anfrage einreichen',
+		no_requests: 'Keine Wartungsanfragen',
+		no_requests_description: 'Reichen Sie eine ein, wenn Sie ein Problem mit Ihrer Immobilie haben.',
+		no_active_lease: 'Sie müssen einen aktiven Mietvertrag haben, um eine Wartungsanfrage einzureichen.',
+		request_submitted: 'Anfrage eingereicht',
+		request_submitted_description: 'Ihre Wartungsanfrage wurde erfolgreich eingereicht.',
+		close_request: 'Anfrage schließen',
+		request_closed: 'Anfrage geschlossen',
+		request_closed_description: 'Ihre Wartungsanfrage wurde geschlossen.',
+		title_required: 'Titel ist erforderlich',
+		title_max_length: 'Titel darf maximal 200 Zeichen lang sein',
+		description_required: 'Beschreibung ist erforderlich',
+		description_max_length: 'Beschreibung darf maximal 5000 Zeichen lang sein',
+		category_required: 'Kategorie ist erforderlich',
+		priority_required: 'Priorität ist erforderlich',
+		status: 'Status',
+		created_at: 'Erstellt',
+		resolved_at: 'Gelöst',
+		max_photos: 'Sie können bis zu 10 Fotos hinzufügen',
+		remove_photo: 'Foto entfernen',
+		// biome-ignore lint/style/useNamingConvention: enum
+		OPEN: 'Offen',
+		// biome-ignore lint/style/useNamingConvention: enum
+		IN_PROGRESS: 'In Bearbeitung',
+		// biome-ignore lint/style/useNamingConvention: enum
+		RESOLVED: 'Gelöst',
+		// biome-ignore lint/style/useNamingConvention: enum
+		CLOSED: 'Geschlossen',
+		// biome-ignore lint/style/useNamingConvention: enum
+		LOW: 'Niedrig',
+		// biome-ignore lint/style/useNamingConvention: enum
+		MEDIUM: 'Mittel',
+		// biome-ignore lint/style/useNamingConvention: enum
+		HIGH: 'Hoch',
+		// biome-ignore lint/style/useNamingConvention: enum
+		EMERGENCY: 'Notfall',
+		// biome-ignore lint/style/useNamingConvention: enum
+		PLUMBING: 'Sanitär',
+		// biome-ignore lint/style/useNamingConvention: enum
+		ELECTRICAL: 'Elektrik',
+		// biome-ignore lint/style/useNamingConvention: enum
+		HVAC: 'HLK',
+		// biome-ignore lint/style/useNamingConvention: enum
+		APPLIANCE: 'Haushaltsgerät',
+		// biome-ignore lint/style/useNamingConvention: enum
+		STRUCTURAL: 'Strukturell',
+		// biome-ignore lint/style/useNamingConvention: enum
+		PEST_CONTROL: 'Schädlingsbekämpfung',
+		// biome-ignore lint/style/useNamingConvention: enum
+		OTHER: 'Sonstige',
+		select_category: 'Kategorie auswählen',
+		select_priority: 'Priorität auswählen',
+		status_open: 'Offen',
+		status_in_progress: 'In Bearbeitung',
+		status_resolved: 'Gelöst',
+		status_closed: 'Geschlossen',
 	},
 	document_filters: {
 		filter_document_view: 'Dokumentansicht filtern',

@@ -262,7 +262,77 @@ export default {
 	},
 	main_footer: {
 		documents: 'Documents',
+		maintenance: 'Maintenance',
 		notifications: 'Notifications',
+	},
+	maintenance: {
+		maintenance: 'Maintenance Requests',
+		maintenance_description: 'Submit and track maintenance requests for your property',
+		new_request: 'New Request',
+		request_details: 'Request Details',
+		all: 'All',
+		title: 'Title',
+		description: 'Description',
+		category: 'Category',
+		priority: 'Priority',
+		photos: 'Photos',
+		add_photos: 'Add Photos',
+		submit: 'Submit Request',
+		no_requests: 'No maintenance requests',
+		no_requests_description: 'Submit one if you have an issue with your property.',
+		no_active_lease: 'You must have an active lease to submit a maintenance request.',
+		request_submitted: 'Request submitted',
+		request_submitted_description: 'Your maintenance request has been submitted successfully.',
+		close_request: 'Close Request',
+		request_closed: 'Request closed',
+		request_closed_description: 'Your maintenance request has been closed.',
+		title_required: 'Title is required',
+		title_max_length: 'Title must be at most 200 characters',
+		description_required: 'Description is required',
+		description_max_length: 'Description must be at most 5000 characters',
+		category_required: 'Category is required',
+		priority_required: 'Priority is required',
+		status: 'Status',
+		created_at: 'Created',
+		resolved_at: 'Resolved',
+		max_photos: 'You can add up to 10 photos',
+		remove_photo: 'Remove photo',
+		// biome-ignore lint/style/useNamingConvention: enum
+		OPEN: 'Open',
+		// biome-ignore lint/style/useNamingConvention: enum
+		IN_PROGRESS: 'In Progress',
+		// biome-ignore lint/style/useNamingConvention: enum
+		RESOLVED: 'Resolved',
+		// biome-ignore lint/style/useNamingConvention: enum
+		CLOSED: 'Closed',
+		// biome-ignore lint/style/useNamingConvention: enum
+		LOW: 'Low',
+		// biome-ignore lint/style/useNamingConvention: enum
+		MEDIUM: 'Medium',
+		// biome-ignore lint/style/useNamingConvention: enum
+		HIGH: 'High',
+		// biome-ignore lint/style/useNamingConvention: enum
+		EMERGENCY: 'Emergency',
+		// biome-ignore lint/style/useNamingConvention: enum
+		PLUMBING: 'Plumbing',
+		// biome-ignore lint/style/useNamingConvention: enum
+		ELECTRICAL: 'Electrical',
+		// biome-ignore lint/style/useNamingConvention: enum
+		HVAC: 'HVAC',
+		// biome-ignore lint/style/useNamingConvention: enum
+		APPLIANCE: 'Appliance',
+		// biome-ignore lint/style/useNamingConvention: enum
+		STRUCTURAL: 'Structural',
+		// biome-ignore lint/style/useNamingConvention: enum
+		PEST_CONTROL: 'Pest Control',
+		// biome-ignore lint/style/useNamingConvention: enum
+		OTHER: 'Other',
+		select_category: 'Select a category',
+		select_priority: 'Select a priority',
+		status_open: 'Open',
+		status_in_progress: 'In Progress',
+		status_resolved: 'Resolved',
+		status_closed: 'Closed',
 	},
 	document_filters: {
 		filter_document_view: 'Filter Document View',

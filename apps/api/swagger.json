@@ -2284,6 +2284,453 @@
           "Leases"
         ]
       }
+    },
+    "/maintenance-requests/tenant": {
+      "get": {
+        "operationId": "GetMaintenanceRequestsByTenantController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tenant's maintenance requests"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get current tenant's maintenance requests",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
+    },
+    "/maintenance-requests": {
+      "post": {
+        "operationId": "CreateMaintenanceRequestController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "propertyId",
+                  "title",
+                  "description",
+                  "category"
+                ],
+                "properties": {
+                  "propertyId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "title": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "description": {
+                    "type": "string",
+                    "maxLength": 5000
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "PLUMBING",
+                      "ELECTRICAL",
+                      "HVAC",
+                      "APPLIANCE",
+                      "STRUCTURAL",
+                      "PEST_CONTROL",
+                      "OTHER"
+                    ]
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "EMERGENCY"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Request created"
+          },
+          "400": {
+            "description": "No active lease or invalid input"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new maintenance request (tenant only)",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      },
+      "get": {
+        "operationId": "GetMaintenanceRequestsController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "priority",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of requests"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get maintenance requests (manager only)",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
+    },
+    "/maintenance-requests/{id}": {
+      "get": {
+        "operationId": "GetMaintenanceRequestByIdController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Maintenance request UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Maintenance request found"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get maintenance request by ID",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
+    },
+    "/properties/{propertyId}/maintenance-requests": {
+      "get": {
+        "operationId": "GetMaintenanceRequestsByPropertyController_handle",
+        "parameters": [
+          {
+            "name": "propertyId",
+            "required": true,
+            "in": "path",
+            "description": "Property UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Maintenance requests for property"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get maintenance requests for a property (manager only)",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
+    },
+    "/maintenance-requests/{id}/status": {
+      "patch": {
+        "operationId": "UpdateMaintenanceRequestStatusController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Maintenance request UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "OPEN",
+                      "IN_PROGRESS",
+                      "RESOLVED",
+                      "CLOSED"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          },
+          "400": {
+            "description": "Invalid transition"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update maintenance request status",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
+    },
+    "/maintenance-requests/{id}/photos": {
+      "post": {
+        "operationId": "UploadMaintenancePhotosController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Maintenance request UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "files"
+                ],
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "fileName": {
+                          "type": "string"
+                        },
+                        "contentType": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload URLs generated"
+          },
+          "400": {
+            "description": "Photo limit exceeded"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate upload URLs for maintenance request photos (tenant only)",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
+    },
+    "/maintenance-requests/{id}/photos/confirm": {
+      "post": {
+        "operationId": "ConfirmMaintenancePhotosController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Maintenance request UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "blobKeys"
+                ],
+                "properties": {
+                  "blobKeys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Array of blob keys from upload URLs"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Photos confirmed"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Confirm photo uploads for maintenance request (tenant only)",
+        "tags": [
+          "Maintenance Requests"
+        ]
+      }
     }
   },
   "info": {
@@ -2725,7 +3172,7 @@
           "actionType": {
             "type": "string",
             "example": "SIGN_DOCUMENT",
-            "description": "Action type of the notification: [SIGN_DOCUMENT / UPLOAD_DOCUMENT / BASIC_COMPLETE]"
+            "description": "Action type of the notification: [SIGN_DOCUMENT / UPLOAD_DOCUMENT / BASIC_COMPLETE / MAINTENANCE_UPDATE]"
           },
           "linkedDocumentId": {
             "type": "string",
@@ -2977,7 +3424,8 @@
             "enum": [
               "SIGN_DOCUMENT",
               "UPLOAD_DOCUMENT",
-              "BASIC_COMPLETE"
+              "BASIC_COMPLETE",
+              "MAINTENANCE_UPDATE"
             ],
             "description": "Type of action required",
             "nullable": true

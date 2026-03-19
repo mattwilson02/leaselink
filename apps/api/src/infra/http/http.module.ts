@@ -90,6 +90,22 @@ import { GetLeaseByIdUseCase } from '@/domain/lease-management/application/use-c
 import { UpdateLeaseStatusUseCase } from '@/domain/lease-management/application/use-cases/update-lease-status'
 import { RenewLeaseUseCase } from '@/domain/lease-management/application/use-cases/renew-lease'
 import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application/use-cases/get-lease-by-property'
+import { CreateMaintenanceRequestUseCase } from '@/domain/maintenance/application/use-cases/create-maintenance-request'
+import { GetMaintenanceRequestsUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-requests'
+import { GetMaintenanceRequestByIdUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-request-by-id'
+import { GetMaintenanceRequestsByPropertyUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-requests-by-property'
+import { GetMaintenanceRequestsByTenantUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-requests-by-tenant'
+import { UpdateMaintenanceRequestStatusUseCase } from '@/domain/maintenance/application/use-cases/update-maintenance-request-status'
+import { UploadMaintenancePhotosUseCase } from '@/domain/maintenance/application/use-cases/upload-maintenance-photos'
+import { ConfirmMaintenancePhotosUseCase } from '@/domain/maintenance/application/use-cases/confirm-maintenance-photos'
+import { CreateMaintenanceRequestController } from './controllers/create-maintenance-request/create-maintenance-request.controller'
+import { GetMaintenanceRequestsController } from './controllers/get-maintenance-requests/get-maintenance-requests.controller'
+import { GetMaintenanceRequestByIdController } from './controllers/get-maintenance-request-by-id/get-maintenance-request-by-id.controller'
+import { GetMaintenanceRequestsByPropertyController } from './controllers/get-maintenance-requests-by-property/get-maintenance-requests-by-property.controller'
+import { GetMaintenanceRequestsByTenantController } from './controllers/get-maintenance-requests-by-tenant/get-maintenance-requests-by-tenant.controller'
+import { UpdateMaintenanceRequestStatusController } from './controllers/update-maintenance-request-status/update-maintenance-request-status.controller'
+import { UploadMaintenancePhotosController } from './controllers/upload-maintenance-photos/upload-maintenance-photos.controller'
+import { ConfirmMaintenancePhotosController } from './controllers/confirm-maintenance-photos/confirm-maintenance-photos.controller'
 
 @Module({
 	imports: [
@@ -144,6 +160,15 @@ import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application
 		GetLeaseByIdController,
 		UpdateLeaseStatusController,
 		RenewLeaseController,
+		// Maintenance — tenant endpoint before :id to avoid route conflict
+		GetMaintenanceRequestsByTenantController,
+		CreateMaintenanceRequestController,
+		GetMaintenanceRequestsController,
+		GetMaintenanceRequestByIdController,
+		GetMaintenanceRequestsByPropertyController,
+		UpdateMaintenanceRequestStatusController,
+		UploadMaintenancePhotosController,
+		ConfirmMaintenancePhotosController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -188,6 +213,14 @@ import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application
 		UpdateLeaseStatusUseCase,
 		RenewLeaseUseCase,
 		GetLeaseByPropertyUseCase,
+		CreateMaintenanceRequestUseCase,
+		GetMaintenanceRequestsUseCase,
+		GetMaintenanceRequestByIdUseCase,
+		GetMaintenanceRequestsByPropertyUseCase,
+		GetMaintenanceRequestsByTenantUseCase,
+		UpdateMaintenanceRequestStatusUseCase,
+		UploadMaintenancePhotosUseCase,
+		ConfirmMaintenancePhotosUseCase,
 	],
 })
 export class HttpModule {}

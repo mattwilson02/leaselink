@@ -195,10 +195,12 @@ const MainFooter = (props: ViewProps) => {
 
 const pagesWithHeader = [
 	'/documents',
+	'/maintenance',
 	'/notifications',
 ]
 const pagesWithFooter = [
 	{ path: '/documents', label: 'documents', icon: 'file-06' },
+	{ path: '/maintenance', label: 'maintenance', icon: 'home-line' },
 	{ path: '/notifications', label: 'notifications', icon: 'bell-01' },
 ]
 

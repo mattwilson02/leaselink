@@ -270,7 +270,77 @@ export default {
 	},
 	main_footer: {
 		documents: 'Documentos',
+		maintenance: 'Mantenimiento',
 		notifications: 'Notificaciones',
+	},
+	maintenance: {
+		maintenance: 'Solicitudes de Mantenimiento',
+		maintenance_description: 'Envíe y realice seguimiento de solicitudes de mantenimiento',
+		new_request: 'Nueva Solicitud',
+		request_details: 'Detalles de la Solicitud',
+		all: 'Todos',
+		title: 'Título',
+		description: 'Descripción',
+		category: 'Categoría',
+		priority: 'Prioridad',
+		photos: 'Fotos',
+		add_photos: 'Agregar Fotos',
+		submit: 'Enviar Solicitud',
+		no_requests: 'Sin solicitudes de mantenimiento',
+		no_requests_description: 'Envíe una si tiene un problema con su propiedad.',
+		no_active_lease: 'Debe tener un contrato activo para enviar una solicitud de mantenimiento.',
+		request_submitted: 'Solicitud enviada',
+		request_submitted_description: 'Su solicitud de mantenimiento fue enviada con éxito.',
+		close_request: 'Cerrar Solicitud',
+		request_closed: 'Solicitud cerrada',
+		request_closed_description: 'Su solicitud de mantenimiento ha sido cerrada.',
+		title_required: 'El título es obligatorio',
+		title_max_length: 'El título debe tener como máximo 200 caracteres',
+		description_required: 'La descripción es obligatoria',
+		description_max_length: 'La descripción debe tener como máximo 5000 caracteres',
+		category_required: 'La categoría es obligatoria',
+		priority_required: 'La prioridad es obligatoria',
+		status: 'Estado',
+		created_at: 'Creado',
+		resolved_at: 'Resuelto',
+		max_photos: 'Puede agregar hasta 10 fotos',
+		remove_photo: 'Eliminar foto',
+		// biome-ignore lint/style/useNamingConvention: enum
+		OPEN: 'Abierto',
+		// biome-ignore lint/style/useNamingConvention: enum
+		IN_PROGRESS: 'En Progreso',
+		// biome-ignore lint/style/useNamingConvention: enum
+		RESOLVED: 'Resuelto',
+		// biome-ignore lint/style/useNamingConvention: enum
+		CLOSED: 'Cerrado',
+		// biome-ignore lint/style/useNamingConvention: enum
+		LOW: 'Bajo',
+		// biome-ignore lint/style/useNamingConvention: enum
+		MEDIUM: 'Medio',
+		// biome-ignore lint/style/useNamingConvention: enum
+		HIGH: 'Alto',
+		// biome-ignore lint/style/useNamingConvention: enum
+		EMERGENCY: 'Emergencia',
+		// biome-ignore lint/style/useNamingConvention: enum
+		PLUMBING: 'Plomería',
+		// biome-ignore lint/style/useNamingConvention: enum
+		ELECTRICAL: 'Eléctrico',
+		// biome-ignore lint/style/useNamingConvention: enum
+		HVAC: 'HVAC',
+		// biome-ignore lint/style/useNamingConvention: enum
+		APPLIANCE: 'Electrodoméstico',
+		// biome-ignore lint/style/useNamingConvention: enum
+		STRUCTURAL: 'Estructural',
+		// biome-ignore lint/style/useNamingConvention: enum
+		PEST_CONTROL: 'Control de Plagas',
+		// biome-ignore lint/style/useNamingConvention: enum
+		OTHER: 'Otro',
+		select_category: 'Seleccionar categoría',
+		select_priority: 'Seleccionar prioridad',
+		status_open: 'Abierto',
+		status_in_progress: 'En Progreso',
+		status_resolved: 'Resuelto',
+		status_closed: 'Cerrado',
 	},
 	document_filters: {
 		filter_document_view: 'Filtrar vista de documentos',

@@ -34,6 +34,9 @@ import {
 } from "@/hooks/use-properties";
 import { useActiveLeaseByProperty } from "@/hooks/use-leases";
 import { useTenant } from "@/hooks/use-tenants";
+import { useMaintenanceRequestsByProperty } from "@/hooks/use-maintenance-requests";
+import { MaintenanceStatusBadge } from "@/components/maintenance/maintenance-status-badge";
+import { MaintenancePriorityBadge } from "@/components/maintenance/maintenance-priority-badge";
 import { LeaseStatusBadge } from "@/components/leases/lease-status-badge";
 import { TenantStatusBadge } from "@/components/tenants/tenant-status-badge";
 import {
@@ -41,6 +44,8 @@ import {
   PROPERTY_TYPE_LABELS,
   LeaseStatus,
   TenantStatus,
+  MaintenanceStatus,
+  MaintenancePriority,
 } from "@leaselink/shared";
 import type { PropertyType } from "@leaselink/shared";
 import { toast } from "sonner";
@@ -57,6 +62,9 @@ export default function PropertyDetailPage() {
   const { data: activeLeaseData } = useActiveLeaseByProperty(id);
   const activeLease = activeLeaseData?.data;
   const { data: activeTenantData } = useTenant(activeLease?.tenantId ?? "");
+  const { data: maintenanceData } = useMaintenanceRequestsByProperty(id, {
+    pageSize: 5,
+  });
 
   const [showDelete, setShowDelete] = useState(false);
   const [showStatusChange, setShowStatusChange] = useState(false);
@@ -349,6 +357,66 @@ export default function PropertyDetailPage() {
                       Create Lease
                     </Button>
                   </Link>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Maintenance Requests</CardTitle>
+                <Link
+                  href={`/maintenance?propertyId=${id}`}
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  View all
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!maintenanceData?.data || maintenanceData.data.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No maintenance requests for this property.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {maintenanceData.data.map((request) => (
+                    <Link
+                      key={request.id}
+                      href={`/maintenance/${request.id}`}
+                      className="flex items-start justify-between gap-2 rounded-md p-2 hover:bg-muted transition-colors"
+                    >
+                      <div className="min-w-0 space-y-1">
+                        <p className="text-sm font-medium truncate">
+                          {request.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(request.createdAt).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric", year: "numeric" }
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <MaintenancePriorityBadge
+                          priority={request.priority as MaintenancePriority}
+                        />
+                        <MaintenanceStatusBadge
+                          status={request.status as MaintenanceStatus}
+                        />
+                      </div>
+                    </Link>
+                  ))}
+                  {(maintenanceData.meta?.totalCount ?? 0) > 5 && (
+                    <div className="pt-1">
+                      <Link
+                        href={`/maintenance?propertyId=${id}`}
+                        className="text-sm hover:underline"
+                      >
+                        View all {maintenanceData.meta?.totalCount} requests
+                      </Link>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
