@@ -43,6 +43,14 @@ export const envSchema = z.object({
 	AZURE_AD_CLIENT_SECRET: z.string(),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
 	AZURE_AD_TENANT_ID: z.string(),
+	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
+	STRIPE_SECRET_KEY: z.string().startsWith('sk_test_'),
+	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
+	STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_'),
+	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
+	STRIPE_SUCCESS_URL: z.string().url(),
+	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
+	STRIPE_CANCEL_URL: z.string().url(),
 })
 
 export type Env = z.infer<typeof envSchema>

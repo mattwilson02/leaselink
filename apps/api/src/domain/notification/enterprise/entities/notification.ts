@@ -11,6 +11,10 @@ export enum ActionType {
 	SIGN_DOCUMENT = 'SIGN_DOCUMENT',
 	UPLOAD_DOCUMENT = 'UPLOAD_DOCUMENT',
 	BASIC_COMPLETE = 'BASIC_COMPLETE',
+	MAINTENANCE_UPDATE = 'MAINTENANCE_UPDATE',
+	RENT_REMINDER = 'RENT_REMINDER',
+	PAYMENT_RECEIVED = 'PAYMENT_RECEIVED',
+	PAYMENT_OVERDUE = 'PAYMENT_OVERDUE',
 }
 
 export interface NotificationProps {
@@ -21,6 +25,7 @@ export interface NotificationProps {
 	actionType?: ActionType
 	linkedDocumentId?: UniqueEntityId
 	linkedTransactionId?: UniqueEntityId
+	linkedPaymentId?: UniqueEntityId
 	isRead: boolean
 	isActionComplete: boolean
 	createdAt: Date
@@ -106,6 +111,15 @@ export class Notification extends AggregateRoot<NotificationProps> {
 
 	set linkedTransactionId(linkedTransactionId: UniqueEntityId) {
 		this.props.linkedTransactionId = linkedTransactionId
+		this.touch()
+	}
+
+	get linkedPaymentId(): UniqueEntityId | undefined {
+		return this.props.linkedPaymentId
+	}
+
+	set linkedPaymentId(linkedPaymentId: UniqueEntityId) {
+		this.props.linkedPaymentId = linkedPaymentId
 		this.touch()
 	}
 

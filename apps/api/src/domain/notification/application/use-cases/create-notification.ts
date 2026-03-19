@@ -18,6 +18,7 @@ export interface CreateNotificationUseCaseRequest {
 	actionType?: ActionType
 	linkedDocumentId?: string
 	linkedTransactionId?: string
+	linkedPaymentId?: string
 }
 
 type CreateNotificationUseCaseResponse = Either<
@@ -42,6 +43,7 @@ export class CreateNotificationUseCase {
 		actionType,
 		linkedDocumentId,
 		linkedTransactionId,
+		linkedPaymentId,
 	}: CreateNotificationUseCaseRequest): Promise<CreateNotificationUseCaseResponse> {
 		const notification = Notification.create({
 			personId: new UniqueEntityId(personId),
@@ -53,6 +55,9 @@ export class CreateNotificationUseCase {
 				: undefined,
 			linkedTransactionId: linkedTransactionId
 				? new UniqueEntityId(linkedTransactionId)
+				: undefined,
+			linkedPaymentId: linkedPaymentId
+				? new UniqueEntityId(linkedPaymentId)
 				: undefined,
 		})
 

@@ -15,7 +15,7 @@ import {
 	usePathname,
 	useRouter,
 } from 'expo-router'
-import { BellIcon } from 'lucide-react-native'
+import { BellIcon, CreditCardIcon } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { Image } from 'expo-image'
 
@@ -126,6 +126,30 @@ const MainHeader = (props: ViewProps) => {
 	)
 }
 
+type FooterPage = {
+	path: string
+	label: string
+	icon: string | null
+	lucideIcon: 'credit-card' | 'bell' | null
+}
+
+const renderFooterIcon = (page: FooterPage, iconColor: string) => {
+	if (page.icon) {
+		return (
+			<Icon.Icon
+				name={page.icon as keyof typeof iconRegistry}
+				size={24}
+				strokeWidth={2}
+				stroke={iconColor}
+			/>
+		)
+	}
+	if (page.lucideIcon === 'credit-card') {
+		return <CreditCardIcon size={24} strokeWidth={2} color={iconColor} />
+	}
+	return <BellIcon size={24} strokeWidth={2} color={iconColor} />
+}
+
 const MainFooter = (props: ViewProps) => {
 	const router = useRouter()
 	const pathname = usePathname()
@@ -147,59 +171,58 @@ const MainFooter = (props: ViewProps) => {
 				props.style,
 			]}
 		>
-			{pagesWithFooter.map((page) => (
-				<View
-					key={page.path}
-					style={{ gap: 6, alignItems: 'center' }}
-					onTouchEnd={() =>
-						router.push({
-							pathname: page.path as RelativePathString,
-							params: {},
-						})
-					}
-				>
-					<Icon.Icon
-						name={page.icon as keyof typeof iconRegistry}
-						size={24}
-						strokeWidth={2}
-						stroke={
-							isSelected(page.path)
-								? colors['primary-green']['500']
-								: colors.neutral['500']
-						}
-					/>
-					<Text
-						size='xs'
-						style={{
-							color: isSelected(page.path)
-								? colors['primary-green']['500']
-								: colors.neutral['500'],
-						}}
-					>
-						{t(page.label)}
-					</Text>
+			{pagesWithFooter.map((page) => {
+				const iconColor = isSelected(page.path)
+					? colors['primary-green']['500']
+					: colors.neutral['500']
+				return (
 					<View
-						style={{
-							height: 2,
-							width: '100%',
-							backgroundColor: isSelected(page.path)
-								? colors['primary-green']['500']
-								: 'transparent',
-						}}
-					/>
-				</View>
-			))}
+						key={page.path}
+						style={{ gap: 6, alignItems: 'center' }}
+						onTouchEnd={() =>
+							router.push({
+								pathname: page.path as RelativePathString,
+								params: {},
+							})
+						}
+					>
+						{renderFooterIcon(page, iconColor)}
+						<Text
+							size='xs'
+							style={{
+								color: iconColor,
+							}}
+						>
+							{t(page.label)}
+						</Text>
+						<View
+							style={{
+								height: 2,
+								width: '100%',
+								backgroundColor: isSelected(page.path)
+									? colors['primary-green']['500']
+									: 'transparent',
+							}}
+						/>
+					</View>
+				)
+			})}
 		</View>
 	)
 }
 
 const pagesWithHeader = [
-	'/documents',
+	'/home',
+	'/maintenance',
+	'/payments',
 	'/notifications',
 ]
-const pagesWithFooter = [
-	{ path: '/documents', label: 'documents', icon: 'file-06' },
-	{ path: '/notifications', label: 'notifications', icon: 'bell-01' },
+
+const pagesWithFooter: FooterPage[] = [
+	{ path: '/home', label: 'home', icon: 'home-line', lucideIcon: null },
+	{ path: '/maintenance', label: 'maintenance', icon: 'home-03', lucideIcon: null },
+	{ path: '/payments', label: 'payments', icon: null, lucideIcon: 'credit-card' },
+	{ path: '/notifications', label: 'notifications', icon: null, lucideIcon: 'bell' },
 ]
 
 const MainLayout = () => {

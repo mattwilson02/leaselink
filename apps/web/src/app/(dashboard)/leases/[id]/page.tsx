@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Calendar, DollarSign } from "lucide-react";
+import { ArrowLeft, Calendar, DollarSign, ExternalLink, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,15 +11,27 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaseStatusBadge } from "@/components/leases/lease-status-badge";
+import { PaymentStatusBadge } from "@/components/payments/payment-status-badge";
+import { GeneratePaymentsDialog } from "@/components/payments/generate-payments-dialog";
 import { ActivateLeaseDialog } from "@/components/leases/activate-lease-dialog";
 import { TerminateLeaseDialog } from "@/components/leases/terminate-lease-dialog";
 import { useLease, useUpdateLeaseStatus } from "@/hooks/use-leases";
+import { usePayments } from "@/hooks/use-payments";
 import { useProperty } from "@/hooks/use-properties";
 import { useTenant } from "@/hooks/use-tenants";
 import { LeaseStatus } from "@leaselink/shared";
+import type { Payment } from "@leaselink/shared";
 import { toast } from "sonner";
 
 function formatDate(isoString: string) {
@@ -38,6 +50,14 @@ function formatRent(amount: number) {
   }).format(amount);
 }
 
+function formatCurrencyAmount(amount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(amount);
+}
+
 export default function LeaseDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -48,14 +68,17 @@ export default function LeaseDetailPage() {
 
   const { data: propertyData } = useProperty(lease?.propertyId ?? "");
   const { data: tenantData } = useTenant(lease?.tenantId ?? "");
+  const { data: paymentsData } = usePayments({ leaseId: id, pageSize: 50 });
 
   const property = propertyData?.data;
   const tenant = tenantData?.data;
+  const payments = paymentsData?.data ?? [];
 
   const statusMutation = useUpdateLeaseStatus(id);
 
   const [showActivate, setShowActivate] = useState(false);
   const [showTerminate, setShowTerminate] = useState(false);
+  const [showGeneratePayments, setShowGeneratePayments] = useState(false);
 
   function handleActivate() {
     statusMutation.mutate(LeaseStatus.ACTIVE, {
@@ -244,12 +267,66 @@ export default function LeaseDetailPage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Payment History</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Payment History</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/payments?leaseId=${id}`}
+                    className="text-sm text-muted-foreground hover:underline flex items-center gap-1"
+                  >
+                    View all
+                    <ExternalLink className="h-3 w-3" />
+                  </Link>
+                  {lease.status === LeaseStatus.ACTIVE && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowGeneratePayments(true)}
+                    >
+                      <Zap className="mr-1 h-3 w-3" />
+                      Generate
+                    </Button>
+                  )}
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Payment history coming in Sprint 4.
-              </p>
+              {payments.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No payments generated yet.
+                </p>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Due Date</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="hidden sm:table-cell">Paid At</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {payments.map((payment: Payment) => (
+                        <TableRow key={payment.id}>
+                          <TableCell className="text-sm">
+                            {formatDate(payment.dueDate)}
+                          </TableCell>
+                          <TableCell className="text-sm">
+                            {formatCurrencyAmount(payment.amount)}
+                          </TableCell>
+                          <TableCell>
+                            <PaymentStatusBadge status={payment.status} />
+                          </TableCell>
+                          <TableCell className="text-sm hidden sm:table-cell">
+                            {payment.paidAt ? formatDate(payment.paidAt) : "\u2014"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
@@ -281,6 +358,12 @@ export default function LeaseDetailPage() {
         onOpenChange={setShowTerminate}
         onConfirm={handleTerminate}
         isTerminating={statusMutation.isPending}
+      />
+
+      <GeneratePaymentsDialog
+        open={showGeneratePayments}
+        onOpenChange={setShowGeneratePayments}
+        defaultLeaseId={id}
       />
     </div>
   );

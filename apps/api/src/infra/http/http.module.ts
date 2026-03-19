@@ -90,6 +90,38 @@ import { GetLeaseByIdUseCase } from '@/domain/lease-management/application/use-c
 import { UpdateLeaseStatusUseCase } from '@/domain/lease-management/application/use-cases/update-lease-status'
 import { RenewLeaseUseCase } from '@/domain/lease-management/application/use-cases/renew-lease'
 import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application/use-cases/get-lease-by-property'
+import { CreateMaintenanceRequestUseCase } from '@/domain/maintenance/application/use-cases/create-maintenance-request'
+import { GetMaintenanceRequestsUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-requests'
+import { GetMaintenanceRequestByIdUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-request-by-id'
+import { GetMaintenanceRequestsByPropertyUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-requests-by-property'
+import { GetMaintenanceRequestsByTenantUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-requests-by-tenant'
+import { UpdateMaintenanceRequestStatusUseCase } from '@/domain/maintenance/application/use-cases/update-maintenance-request-status'
+import { UploadMaintenancePhotosUseCase } from '@/domain/maintenance/application/use-cases/upload-maintenance-photos'
+import { ConfirmMaintenancePhotosUseCase } from '@/domain/maintenance/application/use-cases/confirm-maintenance-photos'
+import { CreateMaintenanceRequestController } from './controllers/create-maintenance-request/create-maintenance-request.controller'
+import { GetMaintenanceRequestsController } from './controllers/get-maintenance-requests/get-maintenance-requests.controller'
+import { GetMaintenanceRequestByIdController } from './controllers/get-maintenance-request-by-id/get-maintenance-request-by-id.controller'
+import { GetMaintenanceRequestsByPropertyController } from './controllers/get-maintenance-requests-by-property/get-maintenance-requests-by-property.controller'
+import { GetMaintenanceRequestsByTenantController } from './controllers/get-maintenance-requests-by-tenant/get-maintenance-requests-by-tenant.controller'
+import { UpdateMaintenanceRequestStatusController } from './controllers/update-maintenance-request-status/update-maintenance-request-status.controller'
+import { UploadMaintenancePhotosController } from './controllers/upload-maintenance-photos/upload-maintenance-photos.controller'
+import { ConfirmMaintenancePhotosController } from './controllers/confirm-maintenance-photos/confirm-maintenance-photos.controller'
+import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
+import { GetPaymentsUseCase } from '@/domain/payment/application/use-cases/get-payments'
+import { GetPaymentsByTenantUseCase } from '@/domain/payment/application/use-cases/get-payments-by-tenant'
+import { GetPaymentByIdUseCase } from '@/domain/payment/application/use-cases/get-payment-by-id'
+import { CreateCheckoutSessionUseCase } from '@/domain/payment/application/use-cases/create-checkout-session'
+import { HandleCheckoutCompletedUseCase } from '@/domain/payment/application/use-cases/handle-checkout-completed'
+import { MarkOverduePaymentsUseCase } from '@/domain/payment/application/use-cases/mark-overdue-payments'
+import { StripeWebhookController } from './controllers/stripe-webhook/stripe-webhook.controller'
+import { GeneratePaymentsController } from './controllers/generate-payments/generate-payments.controller'
+import { MarkOverduePaymentsController } from './controllers/mark-overdue-payments/mark-overdue-payments.controller'
+import { GetPaymentsByTenantController } from './controllers/get-payments-by-tenant/get-payments-by-tenant.controller'
+import { GetPaymentsController } from './controllers/get-payments/get-payments.controller'
+import { GetPaymentByIdController } from './controllers/get-payment-by-id/get-payment-by-id.controller'
+import { CreateCheckoutSessionController } from './controllers/create-checkout-session/create-checkout-session.controller'
+import { StripeModule } from '../stripe/stripe.module'
+import { StripeServiceImpl } from '../stripe/stripe.service'
 
 @Module({
 	imports: [
@@ -98,6 +130,7 @@ import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application
 		DatabaseModule,
 		EnvModule,
 		BlobStorageModule,
+		StripeModule,
 	],
 	controllers: [
 		CreateClientController,
@@ -144,6 +177,23 @@ import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application
 		GetLeaseByIdController,
 		UpdateLeaseStatusController,
 		RenewLeaseController,
+		// Maintenance — tenant endpoint before :id to avoid route conflict
+		GetMaintenanceRequestsByTenantController,
+		CreateMaintenanceRequestController,
+		GetMaintenanceRequestsController,
+		GetMaintenanceRequestByIdController,
+		GetMaintenanceRequestsByPropertyController,
+		UpdateMaintenanceRequestStatusController,
+		UploadMaintenancePhotosController,
+		ConfirmMaintenancePhotosController,
+		// Payments — static routes before :id to avoid route conflicts
+		StripeWebhookController,
+		GeneratePaymentsController,
+		MarkOverduePaymentsController,
+		GetPaymentsByTenantController,
+		GetPaymentsController,
+		GetPaymentByIdController,
+		CreateCheckoutSessionController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -188,6 +238,22 @@ import { GetLeaseByPropertyUseCase } from '@/domain/lease-management/application
 		UpdateLeaseStatusUseCase,
 		RenewLeaseUseCase,
 		GetLeaseByPropertyUseCase,
+		CreateMaintenanceRequestUseCase,
+		GetMaintenanceRequestsUseCase,
+		GetMaintenanceRequestByIdUseCase,
+		GetMaintenanceRequestsByPropertyUseCase,
+		GetMaintenanceRequestsByTenantUseCase,
+		UpdateMaintenanceRequestStatusUseCase,
+		UploadMaintenancePhotosUseCase,
+		ConfirmMaintenancePhotosUseCase,
+		GenerateLeasePaymentsUseCase,
+		GetPaymentsUseCase,
+		GetPaymentsByTenantUseCase,
+		GetPaymentByIdUseCase,
+		CreateCheckoutSessionUseCase,
+		HandleCheckoutCompletedUseCase,
+		MarkOverduePaymentsUseCase,
+		StripeServiceImpl,
 	],
 })
 export class HttpModule {}
