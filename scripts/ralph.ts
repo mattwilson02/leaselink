@@ -11,6 +11,15 @@ const PRODUCT_SPEC = join(ROOT, "PRODUCT_SPEC.md");
 const BASE_BRANCH = "dev";
 const MAX_FIX_ATTEMPTS = 3;
 
+// Model allocation — Opus for high-leverage decisions, Sonnet for execution
+const MODELS = {
+  specWriter: "claude-opus-4-6",
+  builder: "claude-sonnet-4-6",
+  webAgent: "claude-sonnet-4-6",
+  mobileAgent: "claude-sonnet-4-6",
+  fixAgent: "claude-sonnet-4-6",
+} as const;
+
 // CLI args
 const args = process.argv.slice(2);
 const startSprint = Number(
@@ -88,7 +97,7 @@ async function writeSprintSpec(sprintNumber: number): Promise<{ name: string; pa
 
   const prompt = `You are the sprint planning agent for LeaseLink, a property management platform.
 
-Your job: write a DETAILED sprint spec for Sprint ${sprintNumber}.
+Your job: write a sprint spec for Sprint ${sprintNumber}.
 
 ## Context
 
@@ -101,26 +110,38 @@ ${previousSpecsSummary || "Sprint 1 (foundation) has been implemented — shared
 ## Instructions
 
 1. Read the product spec and previous sprints carefully
-2. Determine what should be built NEXT — pick a logical, focused chunk of work
-3. Write a detailed sprint spec following the EXACT same format as sprint-1-foundation.md:
-   - Overview with clear goal
-   - Codebase context (what exists, what's new)
-   - Tasks with detailed requirements, files to create/modify, code examples
-   - Acceptance criteria for each task
-   - Test cases
-   - Implementation order
-   - Definition of Done
+2. Read the EXISTING codebase (especially apps/api/CLAUDE.md) to understand established patterns
+3. Determine what should be built NEXT — pick a logical, focused chunk of work
 
-4. The spec must be split into sections that can be independently handled by:
-   - **Backend agent** — works on apps/api and packages/shared
-   - **Web agent** — works on apps/web
-   - **Mobile agent** — works on apps/mobile
+4. Write the spec with these sections:
+   - **Overview** — goal and rationale for why this sprint comes next
+   - **What Exists** — brief summary of relevant prior work
+   - **Architectural Decisions** — cross-cutting decisions the builder and subagents MUST follow. Examples: "Use Kubb for API client generation (see apps/mobile/kubb.config.ts)", "Use React Query via generated hooks, not hand-written fetch wrappers", "Reuse the existing BlobStorage service for file uploads". These prevent agents from reinventing patterns that already exist in the codebase.
+   - **Tasks** — broken down by agent (Backend, Web, Mobile), each with:
+     - Objective
+     - Files to create/modify (full paths)
+     - Requirements — business rules, edge cases, relationships, validation rules
+     - What patterns to follow (reference by name, e.g. "follow the Client entity pattern")
+     - Acceptance criteria
+     - Test cases (inputs/outputs)
+   - **Implementation order** and **Definition of Done**
 
+5. **DO NOT write implementation code.** The builder agents can read the codebase and follow existing patterns. Instead, focus on:
+   - WHAT to build (interfaces, relationships, fields, endpoints)
+   - WHY (business rules, constraints, edge cases)
+   - WHERE (file paths, which modules to wire into)
+   - HOW it differs from existing patterns (only call out what's NEW or DIFFERENT)
+
+   Bad: writing out a full entity class with every getter/setter
+   Good: "Create Property entity following the Client entity pattern. Additional business logic: status transitions must follow PROPERTY_STATUS_TRANSITIONS from shared constants."
+
+6. The spec should be split into sections for:
+   - **Backend agent** — apps/api and packages/shared
+   - **Web agent** — apps/web
+   - **Mobile agent** — apps/mobile
    Mark each task clearly with which agent handles it.
 
-5. Be EXTREMELY specific — include file paths, interface definitions, function signatures, SQL migrations, test cases with expected inputs/outputs. An agent reading this spec should have zero ambiguity.
-
-6. The sprint should be sized for a few hours of agent work — not too small, not too large.
+7. The sprint should be sized for a few hours of agent work — not too small, not too large.
 
 IMPORTANT: Write the spec file to docs/sprints/sprint-${sprintNumber}-<descriptive-name>.md
 The filename should describe the sprint's focus (e.g., sprint-2-property-crud-api.md).
@@ -129,6 +150,7 @@ After writing the file, output ONLY the filename (e.g., "sprint-2-property-crud-
 
   const result = await runAgent(prompt, {
     cwd: ROOT,
+    model: MODELS.specWriter,
     allowedTools: ["Read", "Write", "Glob", "Grep"],
     permissionMode: "bypassPermissions",
     allowDangerouslySkipPermissions: true,
@@ -137,7 +159,7 @@ After writing the file, output ONLY the filename (e.g., "sprint-2-property-crud-
       type: "preset",
       preset: "claude_code",
       append:
-        "\nYou are writing a sprint spec. Be extremely detailed. Follow the format of docs/sprints/sprint-1-foundation.md exactly. Do NOT implement any code — only write the spec document.",
+        "\nYou are writing a sprint spec. Focus on WHAT to build, WHY, and WHERE — not HOW. Never write implementation code in the spec. Reference existing patterns by name (e.g. 'follow the Client entity pattern') instead of rewriting them. The builder agents have full codebase access. Do NOT implement any code — only write the spec document.",
     },
   });
 
@@ -182,6 +204,7 @@ async function runBuilder(specPath: string) {
 - Read existing code to understand patterns BEFORE writing new code
 - Every new feature must have unit tests
 - Fix any errors before finishing
+- When delegating to subagents, include the spec's **Architectural Decisions** section in your prompt so they follow the same conventions (e.g. Kubb for API clients, existing UI patterns, shared utilities)
 
 ## Sprint Spec
 
@@ -189,6 +212,7 @@ ${sprintSpec}`;
 
   await runAgent(prompt, {
     cwd: ROOT,
+    model: MODELS.builder,
     allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep", "Agent"],
     permissionMode: "bypassPermissions",
     allowDangerouslySkipPermissions: true,
@@ -196,12 +220,14 @@ ${sprintSpec}`;
     agents: {
       web: {
         description: "Web dashboard builder for apps/web/",
+        model: MODELS.webAgent,
         prompt:
           "You build the Next.js web dashboard. Only modify files in apps/web/. You CAN import from @leaselink/shared. Read existing code patterns before writing. After implementation verify: cd apps/web && npm run build",
         tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
       },
       mobile: {
         description: "Mobile app builder for apps/mobile/",
+        model: MODELS.mobileAgent,
         prompt:
           "You build the Expo React Native mobile app. Only modify files in apps/mobile/. You CAN import from @leaselink/shared. Read existing code patterns before writing. After implementation verify: cd apps/mobile && npx tsc --noEmit",
         tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
@@ -269,6 +295,7 @@ ${verifyOutput}`;
 
   await runAgent(prompt, {
     cwd: ROOT,
+    model: MODELS.fixAgent,
     allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
     permissionMode: "bypassPermissions",
     allowDangerouslySkipPermissions: true,

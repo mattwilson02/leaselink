@@ -60,6 +60,20 @@ import { SendClientPhoneOtpController } from './controllers/send-client-phone-ot
 import { VerifyPhoneNumberOtpController } from './controllers/verify-phone-number-otp/verify-phone-number-otp.controller'
 import { VerifyPasswordUseCase } from '@/domain/authentication/application/use-cases/verify-password'
 import { VerifyPasswordController } from './controllers/verify-password/verify-password.controller'
+import { CreatePropertyController } from './controllers/create-property/create-property.controller'
+import { GetPropertiesController } from './controllers/get-properties/get-properties.controller'
+import { GetPropertyByIdController } from './controllers/get-property-by-id/get-property-by-id.controller'
+import { UpdatePropertyController } from './controllers/update-property/update-property.controller'
+import { UpdatePropertyStatusController } from './controllers/update-property-status/update-property-status.controller'
+import { DeletePropertyController } from './controllers/delete-property/delete-property.controller'
+import { UploadPropertyPhotosController } from './controllers/upload-property-photos/upload-property-photos.controller'
+import { CreatePropertyUseCase } from '@/domain/property-management/application/use-cases/create-property'
+import { GetPropertyByIdUseCase } from '@/domain/property-management/application/use-cases/get-property-by-id'
+import { GetPropertiesByManagerUseCase } from '@/domain/property-management/application/use-cases/get-properties-by-manager'
+import { UpdatePropertyUseCase } from '@/domain/property-management/application/use-cases/update-property'
+import { UpdatePropertyStatusUseCase } from '@/domain/property-management/application/use-cases/update-property-status'
+import { DeletePropertyUseCase } from '@/domain/property-management/application/use-cases/delete-property'
+import { UploadPropertyPhotosUseCase } from '@/domain/property-management/application/use-cases/upload-property-photos'
 
 @Module({
 	imports: [
@@ -99,6 +113,13 @@ import { VerifyPasswordController } from './controllers/verify-password/verify-p
 		UploadClientProfilePhotoController,
 		GetClientProfilePhotoController,
 		SetNotificationPreferencesController,
+		CreatePropertyController,
+		GetPropertiesController,
+		GetPropertyByIdController,
+		UpdatePropertyController,
+		UpdatePropertyStatusController,
+		DeletePropertyController,
+		UploadPropertyPhotosController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -128,6 +149,13 @@ import { VerifyPasswordController } from './controllers/verify-password/verify-p
 		UploadClientProfilePhotoUseCase,
 		GetClientProfilePhotoUseCase,
 		SetNotificationPreferencesUseCase,
+		CreatePropertyUseCase,
+		GetPropertyByIdUseCase,
+		GetPropertiesByManagerUseCase,
+		UpdatePropertyUseCase,
+		UpdatePropertyStatusUseCase,
+		DeletePropertyUseCase,
+		UploadPropertyPhotosUseCase,
 	],
 })
 export class HttpModule {}
