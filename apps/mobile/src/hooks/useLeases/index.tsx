@@ -31,6 +31,12 @@ export interface LeaseWithProperty extends LeaseDTO {
 
 interface TenantLeasesResponse {
 	data: LeaseWithProperty[]
+	meta: {
+		page: number
+		pageSize: number
+		totalCount: number
+		totalPages: number
+	}
 }
 
 export const useMyLeases = () => {

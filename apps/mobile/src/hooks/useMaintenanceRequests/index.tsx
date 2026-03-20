@@ -20,7 +20,7 @@ export interface MaintenanceRequestDTO {
 
 interface MaintenanceRequestsResponse {
 	maintenanceRequests: MaintenanceRequestDTO[]
-	total: number
+	totalCount: number
 }
 
 interface CreateMaintenanceRequestInput {

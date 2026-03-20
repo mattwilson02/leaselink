@@ -922,14 +922,23 @@ async function main() {
           run(`git checkout ${tempBranch}`);
         }
 
-        // ── Phase 1: Write spec
-        saveState({ sprint, phase: "spec" });
-        const spec = await writeSprintSpec(sprint);
-        sprintName = spec.name;
-        specPath = spec.path;
+        // ── Check for pre-written spec (skip Phase 1 if spec already exists)
+        const existingSpec = getExistingSprintSpecs().find((s) => s.number === sprint);
 
-        run("git add -A");
-        runSafe(`git commit -m "docs: add ${sprintName} spec"`);
+        if (existingSpec) {
+          log(`\n📋 Phase 1: Using pre-written spec: ${existingSpec.name}`);
+          sprintName = existingSpec.name;
+          specPath = join(SPRINTS_DIR, `${existingSpec.name}.md`);
+        } else {
+          // ── Phase 1: Write spec
+          saveState({ sprint, phase: "spec" });
+          const spec = await writeSprintSpec(sprint);
+          sprintName = spec.name;
+          specPath = spec.path;
+
+          run("git add -A");
+          runSafe(`git commit -m "docs: add ${sprintName} spec"`);
+        }
 
         branchName = `sprint/${sprintName}`;
         if (branchName !== tempBranch) {

@@ -16,7 +16,7 @@ export interface PaymentDTO {
 
 interface PaymentsResponse {
 	payments: PaymentDTO[]
-	total: number
+	totalCount: number
 }
 
 interface CheckoutSessionResponse {
