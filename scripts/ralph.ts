@@ -238,6 +238,10 @@ ${previousSpecsSummary || "Sprint 1 (foundation) has been implemented — shared
      - What patterns to follow (reference by name, e.g. "follow the Client entity pattern")
      - Acceptance criteria
      - Test cases (inputs/outputs)
+   - **Test Requirements** — for each use case and controller, specify required test files:
+     - Unit test (.spec.ts) for EVERY use case — including getters/queries, not just mutations
+     - E2E test (.e2e-spec.ts) for EVERY controller
+     - List specific test scenarios (success, error cases, edge cases)
    - **Implementation order** and **Definition of Done**
 
 5. **DO NOT write implementation code.** The builder agents can read the codebase and follow existing patterns. Instead, focus on:
@@ -304,7 +308,15 @@ Implement ALL backend and shared-package work:
 
 ## Rules
 - Follow the existing DDD architecture in apps/api/ — read CLAUDE.md and existing code BEFORE writing
-- Every new feature must have unit tests
+- **TEST COVERAGE IS MANDATORY:**
+  - Every use case MUST have a corresponding .spec.ts unit test file
+  - Every controller MUST have a corresponding .e2e-spec.ts E2E test file
+  - Follow the existing test patterns — look at existing .spec.ts and .e2e-spec.ts files before writing new ones
+  - Use in-memory repositories for unit tests, real DB (PrismaService) for E2E tests
+  - Use JwtFactory for E2E auth tokens
+  - Unit tests must cover: success case, each error case, edge cases
+  - Do NOT skip getter/query use case tests — they need specs too
+- **ENV VARS:** If you add new env vars to src/infra/env/env.ts, they MUST be .optional().default('...') with sensible defaults so E2E tests and CI don't break. Never add required env vars without updating CI. Also update apps/api/.env.example with the new vars.
 - After ALL work is done, run these checks and fix any failures:
   1. cd packages/shared && npm run build
   2. cd apps/api && npx prisma generate
@@ -424,6 +436,10 @@ const BOOT_SMOKE_ENV = [
   "AZURE_AD_CLIENT_ID=x",
   "AZURE_AD_CLIENT_SECRET=x",
   "AZURE_AD_TENANT_ID=x",
+  "STRIPE_SECRET_KEY=sk_test_placeholder",
+  "STRIPE_WEBHOOK_SECRET=whsec_placeholder",
+  "STRIPE_SUCCESS_URL=http://localhost:3000/payments/success",
+  "STRIPE_CANCEL_URL=http://localhost:3000/payments/cancel",
 ].join(" ");
 
 /**
@@ -547,6 +563,12 @@ ${diff}
 2. Check the actual codebase to verify each item was implemented
 3. Be thorough — check that entities exist, use cases are wired, controllers are registered, tests are written
 4. Do NOT count optional/stretch goals as missing
+5. **TEST COVERAGE AUDIT (CRITICAL):**
+   - For EVERY use case file in the sprint's domain(s), verify a corresponding .spec.ts exists
+   - For EVERY controller file in the sprint, verify a corresponding .e2e-spec.ts exists
+   - If any use case or controller is missing its test file, list it as a missing item
+   - This is a hard requirement — incomplete test coverage = incomplete sprint
+6. **ENV VAR AUDIT:** Check if any new env vars were added to src/infra/env/env.ts. If they are required (not .optional().default()), flag as missing — all new env vars must have defaults. Also check that apps/api/.env.example includes them.
 
 Respond with EXACTLY this JSON format and nothing else:
 \`\`\`json
@@ -628,9 +650,72 @@ ${verifyOutput}`;
   });
 }
 
+// ─── Phase 3c: Human Action Items ──────────────────────────────────────────
+
+async function generateHumanActions(sprintNumber: number, specPath: string): Promise<string> {
+  log("\n📋 Generating human action items...");
+
+  const sprintSpec = readFileSync(specPath, "utf-8");
+  const diff = runSafe("git diff --stat HEAD~1", ROOT).output;
+  const envFile = runSafe("cat apps/api/src/infra/env/env.ts", ROOT).output;
+
+  const prompt = `You are scanning a sprint implementation for anything that requires HUMAN intervention — things an automated agent cannot do.
+
+## Sprint Spec
+${sprintSpec}
+
+## Files Changed
+${diff}
+
+## Current env.ts
+${envFile}
+
+## What to look for
+Scan the codebase changes and identify items that need a human to:
+1. **External service setup** — API keys, webhook URLs, dashboard configurations (e.g., Stripe webhook endpoint, Twilio phone number purchase, OAuth app registration)
+2. **CI/CD secrets** — new env vars that need real values in GitHub Secrets or deployment configs
+3. **Database migrations** — if Prisma schema changed, migrations need to be run against staging/production
+4. **Third-party integrations** — anything requiring account setup, API access approval, or manual configuration
+5. **DNS/Infrastructure** — domain changes, SSL certs, load balancer config
+6. **Manual testing** — flows that can't be fully E2E tested (e.g., OAuth flows, payment flows with real cards)
+
+If there are NO human actions needed, respond with just: NONE
+
+Otherwise respond with a markdown checklist like:
+- [ ] **Stripe webhook**: Configure webhook endpoint in Stripe Dashboard pointing to /api/payments/stripe-webhook for events: checkout.session.completed
+- [ ] **CI Secret**: Add STRIPE_SECRET_KEY to GitHub Actions secrets for production deployment
+
+Be specific — include URLs, exact steps, and what values are needed. Do NOT list things the agent already handled (like code changes or test writing).`;
+
+  const result = await runAgent(prompt, {
+    cwd: ROOT,
+    model: MODELS.specWriter,
+    allowedTools: ["Read", "Glob", "Grep"],
+    permissionMode: "bypassPermissions",
+    allowDangerouslySkipPermissions: true,
+    maxTurns: 20,
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: "\nYou are scanning for human action items. Read code to check what external setup is needed. Do NOT modify any files. Be concise and specific.",
+    },
+  });
+
+  if (result.trim() === "NONE" || result.trim().length === 0) {
+    log("  ✓ No human actions needed");
+    return "";
+  }
+
+  // Write to docs/sprints/sprint-N-human-actions.md
+  const actionsPath = join(SPRINTS_DIR, `sprint-${sprintNumber}-human-actions.md`);
+  writeFileSync(actionsPath, `# Sprint ${sprintNumber} — Human Action Items\n\n${result}\n`);
+  log(`  → Human actions written to ${actionsPath}`);
+  return result;
+}
+
 // ─── Phase 4: Commit, Push, PR, Merge ─────────────────────────────────────────
 
-function commitAndPR(sprintNumber: number, sprintName: string, branchName: string) {
+function commitAndPR(sprintNumber: number, sprintName: string, branchName: string, humanActions: string) {
   log(`\n📦 Phase 4: Committing and opening PR...`);
 
   // Stage and commit
@@ -652,7 +737,10 @@ function commitAndPR(sprintNumber: number, sprintName: string, branchName: strin
   );
   const specPreview = specContent.split("\n").slice(0, 50).join("\n");
 
-  const prBody = `## Sprint ${sprintNumber}\n\n${specPreview}\n\n---\nAutomated sprint implementation by Claude Code sprint runner.`;
+  const humanActionsSection = humanActions
+    ? `\n\n## ⚠️ Human Action Items\n\n${humanActions}`
+    : "";
+  const prBody = `## Sprint ${sprintNumber}\n\n${specPreview}${humanActionsSection}\n\n---\nAutomated sprint implementation by Claude Code sprint runner.`;
   const prBodyFile = join(ROOT, ".pr-body.tmp.md");
   writeFileSync(prBodyFile, prBody);
 
@@ -852,9 +940,12 @@ async function main() {
         resumePhase = "pr";
       }
 
+      // ── Phase 3c: Human action items
+      const humanActions = await generateHumanActions(sprint, specPath);
+
       // ── Phase 4: Commit, Push, PR
       saveState({ sprint, phase: "pr", specName: sprintName, specPath, branchName });
-      commitAndPR(sprint, sprintName, branchName);
+      commitAndPR(sprint, sprintName, branchName, humanActions);
 
       // Sprint done — PR is up for human review, continue from this branch
       clearState();
