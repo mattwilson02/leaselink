@@ -6,6 +6,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	ForbiddenException,
 	HttpCode,
 	HttpStatus,
 	NotFoundException,
@@ -24,6 +25,8 @@ import { ZodValidationPipe } from 'nestjs-zod'
 import { z } from 'zod'
 import { ClientDTO } from '../../DTOs/client/client-dto'
 import { HttpClientPresenter } from '../../presenters/http-client-presenter'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 
 const editClientBodySchema = z.object({
 	status: z.enum(['ACTIVE', 'INACTIVE', 'INVITED']).optional(),
@@ -112,9 +115,15 @@ export class EditClientController {
 		description: 'Client not found',
 	})
 	async handle(
+		@CurrentUser() user: HttpUserResponse,
 		@Param('id') id: string,
 		@Body(bodyValidationPipe) body: EditClientBodySchema,
 	) {
+		// Ownership check: clients can only edit themselves
+		if (user.type === 'CLIENT' && user.id !== id) {
+			throw new ForbiddenException('You can only update your own profile')
+		}
+
 		const { status, onboardingStatus, deviceId, pushToken } = body
 
 		const response = await this.editClient.execute({

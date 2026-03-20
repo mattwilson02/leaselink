@@ -25,7 +25,6 @@ export const updatePropertySchema = z.object({
   sqft: z.number().int().positive().nullable().optional(),
   rentAmount: z.number().positive().optional(),
   description: z.string().nullable().optional(),
-  status: z.nativeEnum(PropertyStatus).optional(),
 });
 
 export const propertyFilterSchema = z.object({

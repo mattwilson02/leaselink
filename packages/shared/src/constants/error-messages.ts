@@ -26,6 +26,8 @@ export const LEASE_RENEWAL_START_DATE_INVALID =
   "Renewal start date must be on or after the original lease end date";
 export const LEASE_RENEWAL_ALREADY_EXISTS =
   "A pending renewal already exists for this lease";
+export const LEASE_ACTIVATION_FUTURE_START =
+  "Cannot activate a lease whose start date is in the future";
 
 // Maintenance errors
 export const MAINTENANCE_NOT_FOUND = "Maintenance request not found";

@@ -1,6 +1,7 @@
 import { UpdateLeaseStatusUseCase } from '@/domain/lease-management/application/use-cases/update-lease-status'
 import { LeaseNotFoundError } from '@/domain/lease-management/application/use-cases/errors/lease-not-found-error'
 import { InvalidLeaseStatusTransitionError } from '@/domain/lease-management/application/use-cases/errors/invalid-lease-status-transition-error'
+import { LeaseActivationFutureStartError } from '@/domain/lease-management/application/use-cases/errors/lease-activation-future-start-error'
 import {
 	BadRequestException,
 	Body,
@@ -36,6 +37,7 @@ export class UpdateLeaseStatusController {
 	private errorMap: Record<string, any> = {
 		[LeaseNotFoundError.name]: NotFoundException,
 		[InvalidLeaseStatusTransitionError.name]: BadRequestException,
+		[LeaseActivationFutureStartError.name]: BadRequestException,
 	}
 
 	@Patch(':id/status')

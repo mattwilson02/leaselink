@@ -3640,10 +3640,17 @@
             "nullable": true,
             "format": "uuid"
           },
-          "linkedTransactionId": {
+          "linkedMaintenanceRequestId": {
             "type": "string",
             "example": "123e4567-e89b-12d3-a456-426614174003",
-            "description": "Unique identifier of the linked transaction (if any)",
+            "description": "Unique identifier of the linked maintenance request (if any)",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "linkedPaymentId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174004",
+            "description": "Unique identifier of the linked payment (if any)",
             "nullable": true,
             "format": "uuid"
           },
@@ -3686,7 +3693,8 @@
           "notificationType",
           "actionType",
           "linkedDocumentId",
-          "linkedTransactionId",
+          "linkedMaintenanceRequestId",
+          "linkedPaymentId",
           "isRead",
           "isActionComplete",
           "createdAt",

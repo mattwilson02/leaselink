@@ -81,9 +81,13 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Only one `ACTIVE` lease per property at a time
 - Only one `ACTIVE` lease per tenant at a time
 - A lease cannot be activated if the property is not in `OCCUPIED` or `LISTED` status
+- A lease cannot be manually activated if its start date is in the future
+- `PENDING` leases are auto-activated by a nightly scheduler when their start date arrives
+- When a lease is created with a start date on or before today, it is auto-activated immediately
 - When a lease becomes `ACTIVE`, the property status should be set to `OCCUPIED`
 - Lease expiry notifications are sent 60 days, 30 days, and 7 days before end date
 - A `TERMINATED` lease cannot be reactivated
+- All date comparisons use UTC to avoid timezone-related off-by-one errors
 
 ### 3.4 Maintenance Requests
 > New feature — core tenant interaction
@@ -123,6 +127,8 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Payment amount comes from the lease's `monthlyRent` field
 - Due date is the 1st of each month (or lease start date for the first month)
 - Payment status flow: `UPCOMING` → `PENDING` (on due date) → `PAID` or `OVERDUE`
+- `UPCOMING` payments transition to `PENDING` automatically via nightly scheduler when their due date arrives
+- Rent due reminders are sent automatically 3 days before due date via daily scheduler
 - `OVERDUE` payments can still be paid (moves to `PAID`)
 - Grace period: 5 days after due date before marking `OVERDUE`
 - Stripe runs in **test mode only** — no real money ever processed
@@ -147,6 +153,7 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Rent amount can change on renewal
 - When the new lease is activated, the original lease is automatically `EXPIRED`
 - Only one pending renewal can exist per lease at a time
+- A renewal cannot be manually activated if its start date is in the future (same rule as regular leases)
 
 ### 3.7 Document Management
 > Existing feature, updated for property management context
@@ -182,6 +189,7 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Only the assigned tenant can upload against a document request
 - Documents are stored in Azure Blob Storage with signed URLs for upload/download
 - Document metadata includes: name, folder, size, content type, upload date
+- Document access is scoped: a tenant can only view/download their own documents; managers can access all
 
 ### 3.8 Notifications
 > Existing feature, extended with new action types
@@ -647,6 +655,18 @@ Notification events relevant to managers:
 - Tables switch to card layout on small screens
 - Minimum supported width: 768px (tablet)
 - No mobile-specific optimizations (tenants use the native app)
+
+---
+
+## 8.5 Authorization & Data Isolation
+
+**Global Rules (apply to ALL endpoints):**
+- All endpoints require authentication via `EnhancedAuthGuard` (global) unless explicitly `@Public()`
+- Manager-only endpoints use `EmployeeOnlyGuard`
+- **Tenant data isolation**: A tenant (CLIENT) can only access their own data — profile, documents, payments, notifications, maintenance requests. Any endpoint accepting a resource ID must verify the resource belongs to the requesting tenant.
+- **Manager access**: Managers (EMPLOYEE) can access all tenant data for management purposes
+- Endpoints that accept a `clientId` or `tenantId` in the body/URL must verify it matches the authenticated user (for CLIENT type) or allow through (for EMPLOYEE type)
+- Document upload/download, profile photo, and notification endpoints must enforce ownership
 
 ---
 

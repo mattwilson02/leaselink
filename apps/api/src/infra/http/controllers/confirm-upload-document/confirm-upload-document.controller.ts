@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	ForbiddenException,
 	HttpCode,
 	HttpStatus,
 	Post,
@@ -24,6 +25,8 @@ import { BlobDoesNotExistError } from '@/domain/document/application/use-cases/e
 import { ConfirmUploadDocumentRequestDTO } from '../../DTOs/document/confirm-upload-document-request-dto'
 import { ConfirmUploadDocumentResponseDTO } from '../../DTOs/document/confirm-upload-document-response-dto'
 import { ConfirmUploadDocumentBadRequestDTO } from '../../DTOs/document/confirm-upload-document-bad-request-dto'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 
 const confirmUploadDocumentRequestBodySchema = z.object({
 	blobName: z.string(),
@@ -76,8 +79,14 @@ export class ConfirmUploadDocumentController {
 		type: ConfirmUploadDocumentBadRequestDTO,
 	})
 	async handle(
+		@CurrentUser() user: HttpUserResponse,
 		@Body(bodyValidationPipe) body: ConfirmUploadDocumentRequestBodySchema,
 	) {
+		// Ownership check: clients can only upload documents for themselves
+		if (user.type === 'CLIENT' && body.clientId !== user.id) {
+			throw new ForbiddenException('You can only upload documents for yourself')
+		}
+
 		const { documentRequestId } = body
 
 		const response = await this.confirmUploadDocument.execute({

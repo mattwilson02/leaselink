@@ -1,12 +1,15 @@
 import {
 	Controller,
+	ForbiddenException,
 	Get,
 	HttpStatus,
 	NotFoundException,
 	Param,
 	Res,
 } from '@nestjs/common'
-import { Response } from 'express'
+import type { Response } from 'express'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 import {
 	ApiTags,
 	ApiOperation,
@@ -60,6 +63,7 @@ export class GetDocumentByIdController {
 		},
 	})
 	async findById(
+		@CurrentUser() user: HttpUserResponse,
 		@Param('documentId') documentId: string,
 		@Res() res: Response,
 	) {
@@ -76,6 +80,11 @@ export class GetDocumentByIdController {
 		}
 
 		const { document } = result.value
+
+		// Ownership check: clients can only view their own documents
+		if (user.type === 'CLIENT' && document.clientId.toString() !== user.id) {
+			throw new ForbiddenException('You do not have access to this document')
+		}
 
 		return res.status(HttpStatus.OK).json({
 			document: HttpDocumentSingleWithUrlPresenter.toHTTP(document),

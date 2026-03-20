@@ -52,12 +52,21 @@ export class GetNotificationsDTO {
 
 	@ApiProperty({
 		example: '123e4567-e89b-12d3-a456-426614174003',
-		description: 'Unique identifier of the linked transaction (if any)',
+		description: 'Unique identifier of the linked maintenance request (if any)',
 		nullable: true,
 		type: String,
 		format: 'uuid',
 	})
-	linkedTransactionId: string | null
+	linkedMaintenanceRequestId: string | null
+
+	@ApiProperty({
+		example: '123e4567-e89b-12d3-a456-426614174004',
+		description: 'Unique identifier of the linked payment (if any)',
+		nullable: true,
+		type: String,
+		format: 'uuid',
+	})
+	linkedPaymentId: string | null
 
 	@ApiProperty({
 		example: false,

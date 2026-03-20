@@ -3,6 +3,7 @@ import { ClientNotFoundError } from '@/domain/financial-management/application/u
 import {
 	Body,
 	Controller,
+	ForbiddenException,
 	HttpCode,
 	HttpStatus,
 	NotFoundException,
@@ -19,6 +20,8 @@ import {
 } from '@nestjs/swagger'
 import { ZodValidationPipe } from 'nestjs-zod'
 import { z } from 'zod'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 
 const uploadClientProfilePhotoBodySchema = z.object({
 	profilePhoto: z.string(),
@@ -84,9 +87,14 @@ export class UploadClientProfilePhotoController {
 		description: 'Client not found',
 	})
 	async handle(
+		@CurrentUser() user: HttpUserResponse,
 		@Param('clientId') clientId: string,
 		@Body(bodyValidationPipe) body: UploadClientProfilePhotoBodySchema,
 	) {
+		if (user.type === 'CLIENT' && user.id !== clientId) {
+			throw new ForbiddenException('You can only update your own profile photo')
+		}
+
 		const { profilePhoto } = body
 
 		const response = await this.uploadClientProfilePhoto.execute({

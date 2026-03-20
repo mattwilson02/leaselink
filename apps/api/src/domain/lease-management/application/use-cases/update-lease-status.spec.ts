@@ -9,6 +9,7 @@ import { PropertyStatus } from '@/domain/property-management/enterprise/entities
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { InvalidLeaseStatusTransitionError } from './errors/invalid-lease-status-transition-error'
+import { LeaseActivationFutureStartError } from './errors/lease-activation-future-start-error'
 
 describe('UpdateLeaseStatusUseCase', () => {
 	let inMemoryLeasesRepository: InMemoryLeasesRepository
@@ -164,6 +165,28 @@ describe('UpdateLeaseStatusUseCase', () => {
 
 		expect(result.isLeft()).toBe(true)
 		expect(result.value).toBeInstanceOf(LeaseNotFoundError)
+	})
+
+	it('should reject activation of a lease with a future start date', async () => {
+		const futureDate = new Date()
+		futureDate.setMonth(futureDate.getMonth() + 1)
+		const futureEnd = new Date(futureDate)
+		futureEnd.setFullYear(futureEnd.getFullYear() + 1)
+
+		const lease = makeLease({
+			status: LeaseStatus.create('PENDING'),
+			startDate: futureDate,
+			endDate: futureEnd,
+		})
+		inMemoryLeasesRepository.items.push(lease)
+
+		const result = await sut.execute({
+			leaseId: lease.id.toString(),
+			status: 'ACTIVE',
+		})
+
+		expect(result.isLeft()).toBe(true)
+		expect(result.value).toBeInstanceOf(LeaseActivationFutureStartError)
 	})
 
 	it('should expire original lease when a renewal lease is activated', async () => {

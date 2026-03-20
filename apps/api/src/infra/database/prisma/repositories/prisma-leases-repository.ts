@@ -109,4 +109,14 @@ export class PrismaLeasesRepository implements LeasesRepository {
 		})
 		return leases.map(PrismaLeaseMapper.toDomain)
 	}
+
+	async findPendingByStartDateBefore(date: Date): Promise<Lease[]> {
+		const leases = await this.prisma.lease.findMany({
+			where: {
+				status: 'PENDING',
+				startDate: { lte: date },
+			},
+		})
+		return leases.map(PrismaLeaseMapper.toDomain)
+	}
 }

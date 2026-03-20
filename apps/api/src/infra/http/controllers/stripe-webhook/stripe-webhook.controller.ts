@@ -4,6 +4,7 @@ import {
 	Headers,
 	HttpCode,
 	HttpStatus,
+	Logger,
 	Post,
 	Req,
 } from '@nestjs/common'
@@ -15,6 +16,8 @@ import { Request } from 'express'
 @ApiTags('Payments')
 @Controller('/payments')
 export class StripeWebhookController {
+	private readonly logger = new Logger(StripeWebhookController.name)
+
 	constructor(
 		private handleCheckoutCompleted: HandleCheckoutCompletedUseCase,
 		private stripeService: StripeServiceImpl,
@@ -40,16 +43,23 @@ export class StripeWebhookController {
 				})
 
 				if (result.isLeft()) {
-					// biome-ignore lint/suspicious/noConsole: webhook error logging
-					console.error('[Webhook] Payment not found for session:', session.id)
+					this.logger.error(
+						`Payment not found for Stripe session: ${session.id}`,
+					)
+				} else {
+					this.logger.log(
+						`Payment confirmed for Stripe session: ${session.id}`,
+					)
 				}
 			}
 
 			return { received: true }
 		} catch (err) {
-			// biome-ignore lint/suspicious/noConsole: webhook error logging
-			console.error('[Webhook] Error processing event:', err)
-			// Always return 200 to Stripe
+			this.logger.error(
+				'Error processing Stripe webhook event',
+				err instanceof Error ? err.stack : String(err),
+			)
+			// Always return 200 to Stripe to prevent retries of malformed events
 			return { received: true }
 		}
 	}

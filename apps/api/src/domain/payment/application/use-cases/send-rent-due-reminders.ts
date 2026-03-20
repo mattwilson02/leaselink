@@ -29,7 +29,7 @@ export class SendRentDueRemindersUseCase {
 
 		let remindersSent = 0
 		const startOfToday = new Date()
-		startOfToday.setHours(0, 0, 0, 0)
+		startOfToday.setUTCHours(0, 0, 0, 0)
 
 		for (const payment of pendingPayments) {
 			const alreadySent =
