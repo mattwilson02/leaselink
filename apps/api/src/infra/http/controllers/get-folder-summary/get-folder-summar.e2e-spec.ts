@@ -35,18 +35,19 @@ describe('GetDocumentFolderSummaryController (E2E)', () => {
 			.expect(401)
 	})
 
-	it('[GET] /documents/folder-summary - should return 204 if no documents are found', async () => {
+	it('[GET] /documents/folder-summary - should return 200 with empty array if no documents are found', async () => {
 		const { jwt } = await jwtFactory.makeJwt(true)
 		const clientAuth = await prisma.identityProvider.findFirst({
 			where: { providerUserId: authUserClientIdE2E },
 		})
 		if (!clientAuth?.userId) throw new Error('Client user ID not found')
 		await prisma.document.deleteMany({ where: { clientId: clientAuth.userId } })
-		await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.get('/documents/folder-summary')
 			// biome-ignore lint/style/useNamingConvention: <Biome doesn't like capitals in headers>
 			.set({ Authorization: `Bearer ${jwt}` })
-			.expect(204)
+			.expect(200)
+		expect(response.body).toEqual({ documentsByFolder: [] })
 	})
 
 	it('[GET] /documents/folder-summary - should return 200 and folder summary if documents exist', async () => {

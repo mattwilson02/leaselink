@@ -102,7 +102,7 @@ describe('CreateLeaseUseCase', () => {
 		expect(result.value).toBeInstanceOf(ClientNotFoundError)
 	})
 
-	it('should reject if property status is VACANT', async () => {
+	it('should allow lease creation when property status is VACANT', async () => {
 		const property = makeProperty({ status: PropertyStatus.create('VACANT') })
 		inMemoryPropertiesRepository.items.push(property)
 
@@ -118,8 +118,7 @@ describe('CreateLeaseUseCase', () => {
 			securityDeposit: 4000,
 		})
 
-		expect(result.isLeft()).toBe(true)
-		expect(result.value).toBeInstanceOf(LeasePropertyNotAvailableError)
+		expect(result.isRight()).toBe(true)
 	})
 
 	it('should reject if property status is MAINTENANCE', async () => {
