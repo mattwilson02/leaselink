@@ -70,6 +70,16 @@ export class UpdateLeaseStatusUseCase {
 			}
 		}
 
+		if (status === 'TERMINATED' || status === 'EXPIRED') {
+			const property = await this.propertiesRepository.findById(
+				lease.propertyId.toString(),
+			)
+			if (property && property.status === 'OCCUPIED') {
+				property.status = 'VACANT'
+				await this.propertiesRepository.update(property)
+			}
+		}
+
 		const updatedLease = await this.leasesRepository.update(lease)
 
 		// Side effect: generate payment records when lease becomes ACTIVE

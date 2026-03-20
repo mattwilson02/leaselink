@@ -17,7 +17,22 @@ import {
 import { createLeaseSchema } from "@leaselink/shared";
 import type { Property, Tenant } from "@leaselink/shared";
 
-type LeaseFormValues = z.infer<typeof createLeaseSchema>;
+// Client-side schema that accepts YYYY-MM-DD from date inputs
+const leaseFormSchema = z
+  .object({
+    propertyId: z.string().uuid("Invalid property ID"),
+    tenantId: z.string().uuid("Invalid tenant ID"),
+    startDate: z.string().min(1, "Start date is required"),
+    endDate: z.string().min(1, "End date is required"),
+    monthlyRent: z.number().positive("Monthly rent must be greater than 0"),
+    securityDeposit: z.number().min(0, "Security deposit must be 0 or more"),
+  })
+  .refine(
+    (data) => new Date(data.endDate) > new Date(data.startDate),
+    { message: "End date must be after start date", path: ["endDate"] }
+  );
+
+type LeaseFormValues = z.infer<typeof leaseFormSchema>;
 
 interface LeaseFormProps {
   properties: Property[];
@@ -57,7 +72,7 @@ export function LeaseForm({
     control,
     formState: { errors },
   } = useForm<LeaseFormValues>({
-    resolver: zodResolver(createLeaseSchema),
+    resolver: zodResolver(leaseFormSchema),
     defaultValues: {
       propertyId: defaultPropertyId ?? "",
       tenantId: "",
@@ -79,16 +94,16 @@ export function LeaseForm({
   }, [selectedPropertyId, properties, setValue]);
 
   function handleFormSubmit(data: LeaseFormValues) {
-    const transformed: LeaseFormValues = {
+    onSubmit({
       ...data,
       startDate: toISOString(data.startDate),
       endDate: toISOString(data.endDate),
-    };
-    onSubmit(transformed);
+    });
   }
 
   const eligibleProperties = properties.filter(
-    (p) => p.status === "LISTED" || p.status === "OCCUPIED"
+    (p) =>
+      p.status === "LISTED" || p.status === "VACANT"
   );
   const activeTenantsOnly = tenants.filter((t) => t.status === "ACTIVE");
 
@@ -102,8 +117,13 @@ export function LeaseForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a property" />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a property">
+                    {(value: string) => {
+                      const p = eligibleProperties.find((p) => p.id === value);
+                      return p ? `${p.address}, ${p.city}` : "Select a property";
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {eligibleProperties.map((p) => (
@@ -129,8 +149,13 @@ export function LeaseForm({
             control={control}
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a tenant" />
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a tenant">
+                    {(value: string) => {
+                      const t = activeTenantsOnly.find((t) => t.id === value);
+                      return t ? t.name : "Select a tenant";
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {activeTenantsOnly.map((t) => (

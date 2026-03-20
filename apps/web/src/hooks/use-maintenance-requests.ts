@@ -31,7 +31,7 @@ export function useMaintenanceRequests(
   return useQuery({
     queryKey: ["maintenance-requests", filters],
     queryFn: () =>
-      apiClient.get<PaginatedResponse<MaintenanceRequest>>(
+      apiClient.get<{ maintenanceRequests: MaintenanceRequest[]; totalCount: number }>(
         `/maintenance-requests${buildQueryString(filters)}`
       ),
   });
@@ -41,7 +41,7 @@ export function useMaintenanceRequest(id: string) {
   return useQuery({
     queryKey: ["maintenance-requests", id],
     queryFn: () =>
-      apiClient.get<{ data: MaintenanceRequest }>(`/maintenance-requests/${id}`),
+      apiClient.get<{ maintenanceRequest: MaintenanceRequest }>(`/maintenance-requests/${id}`),
     enabled: !!id,
   });
 }
@@ -53,7 +53,7 @@ export function useMaintenanceRequestsByProperty(
   return useQuery({
     queryKey: ["maintenance-requests", "property", propertyId, filters],
     queryFn: () =>
-      apiClient.get<PaginatedResponse<MaintenanceRequest>>(
+      apiClient.get<{ maintenanceRequests: MaintenanceRequest[]; totalCount: number }>(
         `/properties/${propertyId}/maintenance-requests${buildQueryString(filters)}`
       ),
     enabled: !!propertyId,
@@ -64,7 +64,7 @@ export function useUpdateMaintenanceRequestStatus(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (status: string) =>
-      apiClient.patch<{ data: MaintenanceRequest }>(
+      apiClient.patch<{ maintenanceRequest: MaintenanceRequest }>(
         `/maintenance-requests/${id}/status`,
         { status }
       ),

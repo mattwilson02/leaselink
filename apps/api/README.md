@@ -57,7 +57,18 @@ After cloning the repository, you need to set up the environment:
     ```
 
 
-5. Start the development server:
+5. Set up Stripe (for payments):
+    ```sh
+    brew install stripe/stripe-cli/stripe
+    stripe login
+    stripe listen --forward-to localhost:3000/api/payments/webhook
+    ```
+    Copy the `whsec_...` signing secret into your `.env.local` as `STRIPE_WEBHOOK_SECRET`.
+    You also need a `STRIPE_SECRET_KEY` from the [Stripe Dashboard](https://dashboard.stripe.com/test/apikeys).
+
+    > **Note:** The Stripe CLI tunnel is session-based — the webhook secret changes each time you restart `stripe listen`. Keep the CLI running while testing payments locally.
+
+6. Start the development server:
     ```sh
     pnpm start:dev
     ```

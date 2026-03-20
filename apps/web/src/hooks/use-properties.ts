@@ -39,7 +39,7 @@ export function useProperty(id: string) {
   return useQuery({
     queryKey: ["properties", id],
     queryFn: () =>
-      apiClient.get<{ data: Property }>(`/properties/${id}`),
+      apiClient.get<{ property: Property }>(`/properties/${id}`),
     enabled: !!id,
   });
 }
@@ -48,7 +48,7 @@ export function useCreateProperty() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Record<string, unknown>) =>
-      apiClient.post<{ data: Property }>("/properties", data),
+      apiClient.post<{ property: Property }>("/properties", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["properties"] });
     },
@@ -59,7 +59,7 @@ export function useUpdateProperty(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: Record<string, unknown>) =>
-      apiClient.put<{ data: Property }>(`/properties/${id}`, data),
+      apiClient.put<{ property: Property }>(`/properties/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["properties"] });
     },
@@ -70,7 +70,7 @@ export function useUpdatePropertyStatus(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (status: PropertyStatus) =>
-      apiClient.patch<{ data: Property }>(`/properties/${id}/status`, {
+      apiClient.patch<{ property: Property }>(`/properties/${id}/status`, {
         status,
       }),
     onSuccess: () => {
@@ -93,7 +93,7 @@ export function useUploadPropertyPhotos(id: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (fileNames: string[]) =>
-      apiClient.post<{ data: { uploadUrls: string[] } }>(
+      apiClient.post<{ uploadUrls: string[] }>(
         `/properties/${id}/photos`,
         { fileNames }
       ),

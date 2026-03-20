@@ -13,6 +13,7 @@ import {
 	ApiBearerAuth,
 } from '@nestjs/swagger'
 import { GetDocumentRequestsByClientIdUseCase } from '@/domain/document/application/use-cases/get-document-requests-by-client-id'
+import { DocumentRequestRepository } from '@/domain/document/application/repositories/document-request-repository'
 import { ZodValidationPipe } from 'nestjs-zod'
 import { z } from 'zod'
 import { DocumentRequestType } from '@leaselink/shared'
@@ -39,6 +40,7 @@ const queryValidationPipe = new ZodValidationPipe(getDocumentRequestQuerySchema)
 export class GetDocumentRequestsByClientIdController {
 	constructor(
 		private readonly getDocumentRequestsByClientIdUseCase: GetDocumentRequestsByClientIdUseCase,
+		private readonly documentRequestRepository: DocumentRequestRepository,
 	) {}
 
 	private errorMap = {
@@ -79,14 +81,25 @@ export class GetDocumentRequestsByClientIdController {
 		const limit = Number(query.limit) || 10
 		const { requestType } = query
 
-		const clientId = user.id
-
-		if (!user || !clientId) {
-			throw this.errorMap[ClientNotFoundError.name]
+		if (!user) {
+			throw new NotFoundException('User not found')
 		}
 
+		// Employees (managers) see all document requests
+		if (user.type === 'EMPLOYEE') {
+			const documentRequests =
+				await this.documentRequestRepository.getMany(limit, offset, requestType)
+
+			return {
+				documentRequests: HttpDocumentRequestsPresenter.toHTTP(
+					documentRequests ?? [],
+				),
+			}
+		}
+
+		// Clients (tenants) see only their own
 		const result = await this.getDocumentRequestsByClientIdUseCase.execute({
-			clientId,
+			clientId: user.id,
 			offset,
 			limit,
 			requestType,

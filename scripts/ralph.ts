@@ -238,6 +238,8 @@ ${previousSpecsSummary || "Sprint 1 (foundation) has been implemented — shared
      - What patterns to follow (reference by name, e.g. "follow the Client entity pattern")
      - Acceptance criteria
      - Test cases (inputs/outputs)
+   - **API Response Contracts** — for each new endpoint, specify the EXACT response shape that the controller will return (e.g. "GET /properties/:id returns { property: PropertyHttpResponse }"). Frontend builders MUST match these shapes exactly in their hooks. This prevents the most common integration bug: frontend assuming { data } when the API returns { entityName }.
+   - **Business Rules & State Machines** — explicitly define entity status transitions, eligibility rules, and cross-entity constraints. For example: "Which property statuses allow lease creation? (VACANT, LISTED — not OCCUPIED or MAINTENANCE)". "When a lease is created, property status changes to OCCUPIED." These rules MUST be consistent between backend validation and frontend filtering — if the backend rejects a status, the frontend must not show it as an option. Never leave status eligibility to builder interpretation.
    - **Test Requirements** — for each use case and controller, specify required test files:
      - Unit test (.spec.ts) for EVERY use case — including getters/queries, not just mutations
      - E2E test (.e2e-spec.ts) for EVERY controller
@@ -317,6 +319,7 @@ Implement ALL backend and shared-package work:
   - Unit tests must cover: success case, each error case, edge cases
   - Do NOT skip getter/query use case tests — they need specs too
 - **ENV VARS:** If you add new env vars to src/infra/env/env.ts, they MUST be .optional().default('...') with sensible defaults so E2E tests and CI don't break. Never add required env vars without updating CI. Also update apps/api/.env.example with the new vars.
+- **RESPONSE SHAPE CONSISTENCY:** When writing controllers, be consistent with response shapes. For single-entity endpoints, return { entityName: presenter.toHTTP(entity) } (e.g. { property: ... }, { lease: ... }). For list endpoints, return { data: presenter.toHTTPList(entities), meta: { page, pageSize, totalCount, totalPages } }. Frontend builders read your controller return statements to build their hooks — inconsistent shapes cause integration bugs.
 - After ALL work is done, run these checks and fix any failures:
   1. cd packages/shared && npm run build
   2. cd apps/api && npx prisma generate
@@ -386,15 +389,42 @@ ${sprintSpec}`;
       web: {
         description: "Web dashboard builder for apps/web/",
         model: MODELS.webAgent,
-        prompt:
-          "You build the Next.js web dashboard. Only modify files in apps/web/. You CAN import from @leaselink/shared. Read existing code patterns before writing. After implementation verify: cd apps/web && npm run build",
+        prompt: `You build the Next.js web dashboard. Only modify files in apps/web/. You CAN import from @leaselink/shared.
+
+CRITICAL — API CONTRACT ALIGNMENT:
+Before writing ANY hook or API call, you MUST read the actual API controller to verify:
+1. The exact response shape (e.g. the controller may return { property } not { data })
+2. The exact endpoint path
+3. The request body schema
+
+Steps:
+1. For each API endpoint you need, find and READ the controller file in apps/api/src/infra/http/controllers/
+2. Check what the controller's handle() method returns — use EXACTLY those property names in your hooks
+3. Check the presenter if the controller uses one — it transforms the entity for HTTP responses
+4. Read existing hooks in apps/web/src/hooks/ to follow established patterns
+
+Common pitfall: controllers return { entityName: ... } (e.g. { property }, { maintenanceRequest }, { payment }) — NOT { data }. List endpoints return { data: [...], meta: {...} } from presenters. Always verify, never assume.
+
+After implementation verify: cd apps/web && npm run build`,
         tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
       },
       mobile: {
         description: "Mobile app builder for apps/mobile/",
         model: MODELS.mobileAgent,
-        prompt:
-          "You build the Expo React Native mobile app. Only modify files in apps/mobile/. You CAN import from @leaselink/shared. Read existing code patterns before writing. After implementation verify: cd apps/mobile && npx tsc --noEmit",
+        prompt: `You build the Expo React Native mobile app. Only modify files in apps/mobile/. You CAN import from @leaselink/shared.
+
+CRITICAL — API CONTRACT ALIGNMENT:
+Before writing ANY API call or hook, you MUST read the actual API controller to verify:
+1. The exact response shape (e.g. the controller may return { property } not { data })
+2. The exact endpoint path
+3. The request body schema
+
+Steps:
+1. For each API endpoint you need, find and READ the controller file in apps/api/src/infra/http/controllers/
+2. Check what the controller's handle() method returns — use EXACTLY those property names
+3. Read existing code patterns before writing
+
+After implementation verify: cd apps/mobile && npx tsc --noEmit`,
         tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
       },
     },
@@ -569,6 +599,8 @@ ${diff}
    - If any use case or controller is missing its test file, list it as a missing item
    - This is a hard requirement — incomplete test coverage = incomplete sprint
 6. **ENV VAR AUDIT:** Check if any new env vars were added to src/infra/env/env.ts. If they are required (not .optional().default()), flag as missing — all new env vars must have defaults. Also check that apps/api/.env.example includes them.
+7. **API CONTRACT AUDIT (CRITICAL):** For each new controller endpoint, verify that the frontend hooks (apps/web/src/hooks/ and apps/mobile/) use the EXACT response property names from the controller's return statement. For example, if a controller returns { property: ... }, the hook must access response.property, NOT response.data. Check every hook that calls a new endpoint — mismatched response shapes are a critical integration bug.
+8. **BUSINESS RULE CONSISTENCY AUDIT:** Verify that backend validation rules (use case guards, status checks, eligibility logic) are mirrored in the frontend. For example: if the backend only allows creating a lease for VACANT or LISTED properties, the frontend form must filter to those same statuses — not a different set. Check every status filter, dropdown filter, and conditional UI against the corresponding use case validation.
 
 Respond with EXACTLY this JSON format and nothing else:
 \`\`\`json

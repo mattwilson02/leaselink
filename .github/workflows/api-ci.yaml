@@ -102,6 +102,10 @@ jobs:
       AZURE_AD_CLIENT_SECRET: test-client-secret
       AZURE_AD_TENANT_ID: test-tenant-id
       JSON_SERVER_URL: http://localhost:3000
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      STRIPE_SUCCESS_URL: http://localhost:3000/payments/success
+      STRIPE_CANCEL_URL: http://localhost:3000/payments/cancel
 
     steps:
       - uses: actions/checkout@v4

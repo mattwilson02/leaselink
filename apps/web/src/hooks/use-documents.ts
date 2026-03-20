@@ -71,10 +71,12 @@ export function useDocument(id: string) {
 export function useFolderSummary() {
   return useQuery({
     queryKey: ["documents", "folder-summary"],
-    queryFn: () =>
-      apiClient.get<{ documentsByFolder: FolderSummaryItem[] }>(
+    queryFn: async () => {
+      const data = await apiClient.get<{ documentsByFolder: FolderSummaryItem[] }>(
         "/documents/folder-summary"
-      ),
+      );
+      return data ?? { documentsByFolder: [] };
+    },
   });
 }
 

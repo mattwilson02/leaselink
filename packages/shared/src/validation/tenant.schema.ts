@@ -23,7 +23,7 @@ export const tenantFilterSchema = z.object({
   onboardingStatus: z.nativeEnum(OnboardingStatus).optional(),
   search: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),
-  pageSize: z.coerce.number().int().positive().max(100).default(20),
+  pageSize: z.coerce.number().int().positive().max(200).default(20),
 });
 
 export type CreateTenantInput = z.infer<typeof createTenantSchema>;

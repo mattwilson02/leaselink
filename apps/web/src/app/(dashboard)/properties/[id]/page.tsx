@@ -69,7 +69,7 @@ export default function PropertyDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [showStatusChange, setShowStatusChange] = useState(false);
 
-  const property = data?.data;
+  const property = data?.property;
 
   function handleDelete() {
     deleteMutation.mutate(id, {
@@ -374,13 +374,13 @@ export default function PropertyDetailPage() {
               </div>
             </CardHeader>
             <CardContent>
-              {!maintenanceData?.data || maintenanceData.data.length === 0 ? (
+              {!maintenanceData?.maintenanceRequests || maintenanceData.maintenanceRequests.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   No maintenance requests for this property.
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {maintenanceData.data.map((request) => (
+                  {maintenanceData.maintenanceRequests.map((request) => (
                     <Link
                       key={request.id}
                       href={`/maintenance/${request.id}`}
@@ -407,13 +407,13 @@ export default function PropertyDetailPage() {
                       </div>
                     </Link>
                   ))}
-                  {(maintenanceData.meta?.totalCount ?? 0) > 5 && (
+                  {(maintenanceData.totalCount ?? 0) > 5 && (
                     <div className="pt-1">
                       <Link
                         href={`/maintenance?propertyId=${id}`}
                         className="text-sm hover:underline"
                       >
-                        View all {maintenanceData.meta?.totalCount} requests
+                        View all {maintenanceData.totalCount} requests
                       </Link>
                     </div>
                   )}

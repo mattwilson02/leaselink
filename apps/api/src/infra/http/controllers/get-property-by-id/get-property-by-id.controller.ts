@@ -17,13 +17,23 @@ import {
 } from '@nestjs/swagger'
 import { EmployeeOnlyGuard } from '../../guards/employee-only.guard'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
-import { HttpUserResponse } from '../../presenters/http-user-presenter'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { HttpPropertyPresenter } from '../../presenters/http-property-presenter'
+import { EnvService } from '@/infra/env/env.service'
 
 @ApiTags('Properties')
 @Controller('/properties')
 export class GetPropertyByIdController {
-	constructor(private getPropertyById: GetPropertyByIdUseCase) {}
+	private blobBaseUrl: string
+
+	constructor(
+		private getPropertyById: GetPropertyByIdUseCase,
+		private envService: EnvService,
+	) {
+		const endpoint = this.envService.get('BLOB_STORAGE_ENDPOINT')
+		const container = this.envService.get('BLOB_STORAGE_CONTAINER_NAME')
+		this.blobBaseUrl = `${endpoint}/${container}`
+	}
 
 	private errorMap: Record<string, any> = {
 		[PropertyNotFoundError.name]: NotFoundException,
@@ -59,7 +69,7 @@ export class GetPropertyByIdController {
 		}
 
 		return {
-			property: HttpPropertyPresenter.toHTTP(response.value.property),
+			property: HttpPropertyPresenter.toHTTP(response.value.property, this.blobBaseUrl),
 		}
 	}
 }

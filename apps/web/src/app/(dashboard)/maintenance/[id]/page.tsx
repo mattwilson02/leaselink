@@ -114,12 +114,12 @@ export default function MaintenanceDetailPage() {
   const id = params.id as string;
 
   const { data: requestData, isLoading } = useMaintenanceRequest(id);
-  const request = requestData?.data;
+  const request = requestData?.maintenanceRequest;
 
   const { data: propertyData } = useProperty(request?.propertyId ?? "");
   const { data: tenantData } = useTenant(request?.tenantId ?? "");
 
-  const property = propertyData?.data;
+  const property = propertyData?.property;
   const tenant = tenantData?.data;
 
   const [showUpdateStatus, setShowUpdateStatus] = useState(false);

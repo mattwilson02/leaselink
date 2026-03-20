@@ -84,9 +84,9 @@ export default function MaintenancePage() {
 
   const updateMutation = useUpdateMaintenanceRequestStatus(updateStatusId ?? "");
 
-  const requests = requestsData?.data ?? [];
-  const meta = requestsData?.meta;
-  const totalPages = meta?.totalPages ?? 1;
+  const requests = requestsData?.maintenanceRequests ?? [];
+  const totalCount = requestsData?.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   const propertiesById = Object.fromEntries(
     (propertiesData?.data ?? []).map((p) => [p.id, p])
@@ -330,11 +330,11 @@ export default function MaintenancePage() {
         </Table>
       </div>
 
-      {meta && totalPages > 1 && (
+      {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing page {meta.page} of {totalPages} ({meta.totalCount}{" "}
-            {meta.totalCount === 1 ? "request" : "requests"})
+            Showing page {page} of {totalPages} ({totalCount}{" "}
+            {totalCount === 1 ? "request" : "requests"})
           </p>
           <div className="flex gap-2">
             <Button

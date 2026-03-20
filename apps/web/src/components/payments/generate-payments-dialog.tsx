@@ -36,7 +36,7 @@ export function GeneratePaymentsDialog({
       { leaseId: leaseId.trim() },
       {
         onSuccess: (result) => {
-          const count = Array.isArray(result?.data) ? result.data.length : 0;
+          const count = result?.paymentsGenerated ?? 0;
           toast.success(
             count > 0
               ? `${count} payment${count === 1 ? "" : "s"} generated successfully.`

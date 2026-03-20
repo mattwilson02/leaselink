@@ -52,7 +52,9 @@ export class BlobStorageRepository implements StorageRepository {
 		const containerName = this.blobStorageService.getContainerName()
 		const blobEndpoint = this.blobStorageService.getBlobStorageEndpoint()
 
-		const blobName = `${Date.now()}-${params.fileName}`
+		const blobName = params.fileName.includes('/')
+			? params.fileName
+			: `${Date.now()}-${params.fileName}`
 
 		const expiresOn = new Date()
 		expiresOn.setHours(expiresOn.getHours() + 1)

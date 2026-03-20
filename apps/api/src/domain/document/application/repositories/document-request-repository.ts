@@ -8,6 +8,11 @@ export abstract class DocumentRequestRepository {
 		offset: number,
 		requestType?: string,
 	): Promise<DocumentRequest[] | null>
+	abstract getMany(
+		limit: number,
+		offset: number,
+		requestType?: string,
+	): Promise<DocumentRequest[] | null>
 	abstract getById(id: string): Promise<DocumentRequest | null>
 	abstract create(
 		documentRequest: DocumentRequest,

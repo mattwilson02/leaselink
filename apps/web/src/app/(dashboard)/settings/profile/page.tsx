@@ -42,8 +42,14 @@ function PasswordChangeForm() {
     setError(null);
     setSuccess(false);
 
-    if (newPassword.length < 8) {
-      setError("New password must be at least 8 characters.");
+    const passwordErrors: string[] = [];
+    if (newPassword.length < 8) passwordErrors.push("at least 8 characters");
+    if (!/[A-Z]/.test(newPassword)) passwordErrors.push("one uppercase letter");
+    if (!/[a-z]/.test(newPassword)) passwordErrors.push("one lowercase letter");
+    if (!/[0-9]/.test(newPassword)) passwordErrors.push("one number");
+    if (!/[!@#$%^&*\-~_.+]/.test(newPassword)) passwordErrors.push("one special character");
+    if (passwordErrors.length > 0) {
+      setError(`Password must contain: ${passwordErrors.join(", ")}.`);
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -99,8 +105,14 @@ function PasswordChangeForm() {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               disabled={isPending}
-              minLength={8}
             />
+            <ul className="text-xs text-muted-foreground mt-1 space-y-0.5 list-disc list-inside">
+              <li>At least 8 characters</li>
+              <li>One uppercase letter (A-Z)</li>
+              <li>One lowercase letter (a-z)</li>
+              <li>One number (0-9)</li>
+              <li>One special character (!@#$%^&*-~_.+)</li>
+            </ul>
           </div>
           <div className="space-y-1">
             <Label htmlFor="confirmPassword">Confirm New Password</Label>

@@ -179,7 +179,7 @@ describe("Filter schemas", () => {
   });
 
   it("rejects pageSize over max", () => {
-    const result = propertyFilterSchema.safeParse({ pageSize: 200 });
+    const result = propertyFilterSchema.safeParse({ pageSize: 201 });
     expect(result.success).toBe(false);
   });
 });

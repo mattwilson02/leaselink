@@ -39,8 +39,21 @@ export function PropertyPhotoGallery({
 
     try {
       const fileNames = files.map((f) => f.name);
-      await uploadMutation.mutateAsync(fileNames);
-      toast.success("Photo upload initiated.");
+      const result = await uploadMutation.mutateAsync(fileNames);
+      const uploadUrls = result?.uploadUrls ?? [];
+
+      // Upload each file to its pre-signed URL
+      await Promise.all(
+        files.map((file, i) =>
+          fetch(uploadUrls[i], {
+            method: "PUT",
+            headers: { "x-ms-blob-type": "BlockBlob", "Content-Type": file.type },
+            body: file,
+          })
+        )
+      );
+
+      toast.success("Photos uploaded successfully.");
     } catch {
       toast.error("Failed to upload photos.");
     }

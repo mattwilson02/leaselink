@@ -24,6 +24,7 @@ import { TenantStatusBadge } from "@/components/tenants/tenant-status-badge";
 import { OnboardingProgress } from "@/components/tenants/onboarding-progress";
 import { DocumentRequestStatusBadge } from "@/components/documents/document-request-status-badge";
 import { useTenant } from "@/hooks/use-tenants";
+import { useLeases } from "@/hooks/use-leases";
 import { useDocumentRequests } from "@/hooks/use-document-requests";
 import {
   TenantStatus,
@@ -38,6 +39,12 @@ export default function TenantDetailPage() {
 
   const { data, isLoading } = useTenant(id);
   const tenant = data?.data;
+
+  const { data: leaseData, isLoading: leaseLoading } = useLeases({
+    tenantId: id,
+    status: "ACTIVE",
+    pageSize: 1,
+  });
 
   const { data: requestsData, isLoading: requestsLoading } =
     useDocumentRequests({ limit: 50 });
@@ -182,7 +189,24 @@ export default function TenantDetailPage() {
               <CardTitle>Active Lease</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">No active lease.</p>
+              {leaseLoading ? (
+                <Skeleton className="h-4 w-full" />
+              ) : leaseData?.data && leaseData.data.length > 0 ? (
+                <Link
+                  href={`/leases/${leaseData.data[0].id}`}
+                  className="block space-y-1 hover:bg-muted/50 rounded-md p-2 -m-2 transition-colors"
+                >
+                  <p className="text-sm font-medium">
+                    {new Date(leaseData.data[0].startDate).toLocaleDateString()} —{" "}
+                    {new Date(leaseData.data[0].endDate).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    ${leaseData.data[0].monthlyRent.toLocaleString()}/mo
+                  </p>
+                </Link>
+              ) : (
+                <p className="text-sm text-muted-foreground">No active lease.</p>
+              )}
             </CardContent>
           </Card>
 

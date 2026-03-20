@@ -39,6 +39,33 @@ export class PrismaDocumentRequestRepository
 		)
 	}
 
+	async getMany(
+		limit: number,
+		offset: number,
+		requestType?: string,
+	): Promise<DocumentRequest[] | null> {
+		// biome-ignore lint/suspicious/noExplicitAny: <Explicitly allowing any type>
+		const where: any = {}
+		if (requestType) {
+			where.requestType = requestType
+		}
+
+		const documentRequests = await this.prisma.documentRequest.findMany({
+			where,
+			take: limit,
+			skip: offset,
+			orderBy: { createdAt: 'desc' },
+		})
+
+		if (!documentRequests) {
+			return null
+		}
+
+		return documentRequests.map((documentRequest) =>
+			PrismaDocumentRequestMapper.toDomain(documentRequest),
+		)
+	}
+
 	async getById(id: string): Promise<DocumentRequest | null> {
 		const documentRequest = await this.prisma.documentRequest.findUnique({
 			where: {

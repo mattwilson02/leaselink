@@ -40,7 +40,7 @@ export const leaseFilterSchema = z.object({
   propertyId: z.string().uuid().optional(),
   tenantId: z.string().uuid().optional(),
   page: z.coerce.number().int().positive().default(1),
-  pageSize: z.coerce.number().int().positive().max(100).default(20),
+  pageSize: z.coerce.number().int().positive().max(200).default(20),
 });
 
 export type CreateLeaseInput = z.infer<typeof createLeaseSchema>;

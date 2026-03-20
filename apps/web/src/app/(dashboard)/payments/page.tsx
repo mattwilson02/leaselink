@@ -54,7 +54,7 @@ export default function PaymentsPage() {
   const pageSize = 20;
 
   const summaryQuery = usePayments({ pageSize: 200 });
-  const allPayments = summaryQuery.data?.data ?? [];
+  const allPayments = summaryQuery.data?.payments ?? [];
 
   const tableFilters = {
     ...(statusFilter !== ALL_STATUSES ? { status: statusFilter } : {}),
@@ -62,16 +62,16 @@ export default function PaymentsPage() {
     pageSize,
   };
   const { data: paymentsData, isLoading } = usePayments(tableFilters);
-  const payments = paymentsData?.data ?? [];
-  const meta = paymentsData?.meta;
-  const totalPages = meta?.totalPages ?? 1;
+  const payments = paymentsData?.payments ?? [];
+  const totalCount = paymentsData?.totalCount ?? 0;
+  const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   const markOverdueMutation = useMarkOverduePayments();
 
   function handleMarkOverdue() {
     markOverdueMutation.mutate(undefined, {
       onSuccess: (result) => {
-        const count = result?.count ?? 0;
+        const count = result?.overdueCount ?? 0;
         toast.success(
           count > 0
             ? `${count} payment${count === 1 ? "" : "s"} marked overdue.`
@@ -219,11 +219,11 @@ export default function PaymentsPage() {
         </Table>
       </div>
 
-      {meta && totalPages > 1 && (
+      {totalPages > 1 && (
         <div className="flex items-center justify-between">
           <p className="text-sm text-muted-foreground">
-            Showing page {meta.page} of {totalPages} ({meta.totalCount}{" "}
-            {meta.totalCount === 1 ? "payment" : "payments"})
+            Showing page {page} of {totalPages} ({totalCount}{" "}
+            {totalCount === 1 ? "payment" : "payments"})
           </p>
           <div className="flex gap-2">
             <Button

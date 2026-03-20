@@ -46,11 +46,11 @@ export function useNotifications(params: NotificationParams = {}) {
     queryKey: ["notifications", params],
     queryFn: async () => {
       try {
-        return await apiClient.get<NotificationsResponse>(
+        const data = await apiClient.get<NotificationsResponse>(
           `/notifications${buildQueryString(params)}`
         );
+        return data ?? { notifications: [] };
       } catch {
-        // API returns 204 No Content when no notifications — treat as empty
         return { notifications: [] };
       }
     },

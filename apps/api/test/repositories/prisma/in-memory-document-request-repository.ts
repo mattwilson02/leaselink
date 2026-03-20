@@ -23,6 +23,18 @@ export class InMemoryDocumentRequestRepository
 		return Promise.resolve(request ?? null)
 	}
 
+	async getMany(
+		limit: number,
+		offset: number,
+		requestType?: string,
+	): Promise<DocumentRequest[] | null> {
+		let requests = this.items
+		if (requestType) {
+			requests = requests.filter((r) => String(r.requestType) === requestType)
+		}
+		return Promise.resolve(requests.slice(offset, offset + limit))
+	}
+
 	//TODO implement optional requesttype
 	async getManyByClientId(
 		clientId: string,

@@ -59,7 +59,7 @@ export class CreateLeaseUseCase {
 			return left(new ClientNotFoundError())
 		}
 
-		if (property.status !== 'LISTED' && property.status !== 'OCCUPIED') {
+		if (property.status !== 'LISTED' && property.status !== 'VACANT') {
 			return left(new LeasePropertyNotAvailableError())
 		}
 

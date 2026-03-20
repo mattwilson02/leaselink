@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import type { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -62,7 +62,7 @@ export default function NewDocumentRequestPage() {
     resolver: zodResolver(createDocumentRequestSchema),
     defaultValues: {
       tenantId: preselectedTenantId ?? "",
-      requestType: undefined,
+      requestType: null as unknown as DocumentRequestType,
     },
   });
 
@@ -130,8 +130,13 @@ export default function NewDocumentRequestPage() {
                 value={tenantId}
                 onValueChange={(value) => setValue("tenantId", value ?? "")}
               >
-                <SelectTrigger id="tenant">
-                  <SelectValue placeholder="Select a tenant" />
+                <SelectTrigger id="tenant" className="w-full">
+                  <SelectValue placeholder="Select a tenant">
+                    {(value: string) => {
+                      const t = tenants.find((t) => t.id === value);
+                      return t ? t.name : "Select a tenant";
+                    }}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {tenants.map((tenant) => (
@@ -156,8 +161,12 @@ export default function NewDocumentRequestPage() {
                   setValue("requestType", value as DocumentRequestType)
                 }
               >
-                <SelectTrigger id="requestType">
-                  <SelectValue placeholder="Select a request type" />
+                <SelectTrigger id="requestType" className="w-full">
+                  <SelectValue placeholder="Select a request type">
+                    {(value: string) =>
+                      DOCUMENT_REQUEST_TYPE_LABELS[value as DocumentRequestType] ?? "Select a request type"
+                    }
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {Object.values(DocumentRequestType).map((type) => (

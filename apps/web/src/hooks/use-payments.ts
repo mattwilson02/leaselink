@@ -29,7 +29,7 @@ export function usePayments(filters: PaymentFilters = {}) {
   return useQuery({
     queryKey: ["payments", filters],
     queryFn: () =>
-      apiClient.get<PaginatedResponse<Payment>>(
+      apiClient.get<{ payments: Payment[]; totalCount: number }>(
         `/payments${buildQueryString(filters)}`
       ),
   });
@@ -38,7 +38,7 @@ export function usePayments(filters: PaymentFilters = {}) {
 export function usePayment(id: string) {
   return useQuery({
     queryKey: ["payments", id],
-    queryFn: () => apiClient.get<{ data: Payment }>(`/payments/${id}`),
+    queryFn: () => apiClient.get<{ payment: Payment }>(`/payments/${id}`),
     enabled: !!id,
   });
 }
@@ -47,7 +47,7 @@ export function useGeneratePayments() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: { leaseId: string }) =>
-      apiClient.post<{ data: Payment[] }>("/payments/generate", data),
+      apiClient.post<{ paymentsGenerated: number }>("/payments/generate", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payments"] });
     },
@@ -58,7 +58,7 @@ export function useMarkOverduePayments() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () =>
-      apiClient.post<{ count: number }>("/payments/mark-overdue"),
+      apiClient.post<{ overdueCount: number }>("/payments/mark-overdue"),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["payments"] });
     },

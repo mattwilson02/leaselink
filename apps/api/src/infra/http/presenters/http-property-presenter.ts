@@ -20,7 +20,13 @@ export interface PropertyHttpResponse {
 }
 
 export class HttpPropertyPresenter {
-	static toHTTP(property: Property): PropertyHttpResponse {
+	static toHTTP(
+		property: Property,
+		blobBaseUrl?: string,
+	): PropertyHttpResponse {
+		const photos = blobBaseUrl
+			? property.photos.map((key) => `${blobBaseUrl}/${key}`)
+			: property.photos
 		return {
 			id: property.id.toString(),
 			managerId: property.managerId.toString(),
@@ -35,7 +41,7 @@ export class HttpPropertyPresenter {
 			rentAmount: property.rentAmount,
 			status: property.status,
 			description: property.description,
-			photos: property.photos,
+			photos,
 			createdAt:
 				property.createdAt instanceof Date
 					? property.createdAt.toISOString()
@@ -48,7 +54,10 @@ export class HttpPropertyPresenter {
 		}
 	}
 
-	static toHTTPList(properties: Property[]): PropertyHttpResponse[] {
-		return properties.map(HttpPropertyPresenter.toHTTP)
+	static toHTTPList(
+		properties: Property[],
+		blobBaseUrl?: string,
+	): PropertyHttpResponse[] {
+		return properties.map((p) => HttpPropertyPresenter.toHTTP(p, blobBaseUrl))
 	}
 }

@@ -11,8 +11,9 @@ import { ZodValidationPipe } from 'nestjs-zod'
 import { propertyFilterSchema } from '@leaselink/shared'
 import { EmployeeOnlyGuard } from '../../guards/employee-only.guard'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
-import { HttpUserResponse } from '../../presenters/http-user-presenter'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { HttpPropertyPresenter } from '../../presenters/http-property-presenter'
+import { EnvService } from '@/infra/env/env.service'
 import { z } from 'zod'
 
 type PropertyFilterQuery = z.infer<typeof propertyFilterSchema>
@@ -22,7 +23,16 @@ const queryValidationPipe = new ZodValidationPipe(propertyFilterSchema)
 @ApiTags('Properties')
 @Controller('/properties')
 export class GetPropertiesController {
-	constructor(private getProperties: GetPropertiesByManagerUseCase) {}
+	private blobBaseUrl: string
+
+	constructor(
+		private getProperties: GetPropertiesByManagerUseCase,
+		private envService: EnvService,
+	) {
+		const endpoint = this.envService.get('BLOB_STORAGE_ENDPOINT')
+		const container = this.envService.get('BLOB_STORAGE_CONTAINER_NAME')
+		this.blobBaseUrl = `${endpoint}/${container}`
+	}
 
 	@Get()
 	@UseGuards(EmployeeOnlyGuard)
@@ -61,7 +71,7 @@ export class GetPropertiesController {
 		const { properties, totalCount } = response.value
 
 		return {
-			data: HttpPropertyPresenter.toHTTPList(properties),
+			data: HttpPropertyPresenter.toHTTPList(properties, this.blobBaseUrl),
 			meta: {
 				page: query.page,
 				pageSize: query.pageSize,
