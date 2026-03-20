@@ -38,6 +38,7 @@ export abstract class PaymentsRepository {
 		leaseId: string,
 		dueDate: Date,
 	): Promise<Payment | null>
+	abstract findUpcomingDueByDate(date: Date): Promise<Payment[]>
 	abstract findPendingDueWithin(days: number): Promise<Payment[]>
 	abstract update(payment: Payment): Promise<Payment>
 	abstract deleteUnpaidByLeaseId(leaseId: string): Promise<number>

@@ -107,6 +107,17 @@ export class PrismaPaymentsRepository implements PaymentsRepository {
 		return payments.map(PrismaPaymentMapper.toDomain)
 	}
 
+	async findUpcomingDueByDate(date: Date): Promise<Payment[]> {
+		const payments = await this.prisma.payment.findMany({
+			where: {
+				status: 'UPCOMING',
+				dueDate: { lte: date },
+			},
+		})
+
+		return payments.map(PrismaPaymentMapper.toDomain)
+	}
+
 	async findExistingForLease(
 		leaseId: string,
 		dueDate: Date,

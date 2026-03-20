@@ -15,6 +15,7 @@ import {
 	ActionType,
 	NotificationType,
 } from '@/domain/notification/enterprise/entities/notification'
+import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
 
 export interface CreateLeaseUseCaseRequest {
 	propertyId: string
@@ -42,6 +43,8 @@ export class CreateLeaseUseCase {
 		private clientsRepository: ClientsRepository,
 		@Optional()
 		private createNotificationUseCase?: CreateNotificationUseCase,
+		@Optional()
+		private generateLeasePaymentsUseCase?: GenerateLeasePaymentsUseCase,
 	) {}
 
 	async execute(
@@ -85,12 +88,37 @@ export class CreateLeaseUseCase {
 			securityDeposit: request.securityDeposit,
 		})
 
+		const startDate = new Date(request.startDate)
+		const today = new Date()
+		today.setHours(0, 0, 0, 0)
+		const shouldAutoActivate = startDate <= today
+
+		if (shouldAutoActivate) {
+			lease.status = 'ACTIVE'
+		}
+
 		await this.leasesRepository.create(lease)
 
+		if (shouldAutoActivate) {
+			if (property.status !== 'OCCUPIED') {
+				property.status = 'OCCUPIED'
+				await this.propertiesRepository.update(property)
+			}
+
+			if (this.generateLeasePaymentsUseCase) {
+				await this.generateLeasePaymentsUseCase.execute({
+					leaseId: lease.id.toString(),
+				})
+			}
+		}
+
 		if (this.createNotificationUseCase) {
+			const text = shouldAutoActivate
+				? 'A new lease has been created for you. Your lease is now active.'
+				: 'A new lease has been created for you. Please review the details.'
 			await this.createNotificationUseCase.execute({
 				personId: request.tenantId,
-				text: 'A new lease has been created for you. Please review the details.',
+				text,
 				notificationType: NotificationType.ACTION,
 				actionType: ActionType.SIGN_LEASE,
 			})

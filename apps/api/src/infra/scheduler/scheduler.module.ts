@@ -8,6 +8,7 @@ import { LeaseSchedulerService } from './lease-scheduler.service'
 import { RentReminderSchedulerService } from './rent-reminder-scheduler.service'
 import { GenerateAllLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-all-lease-payments'
 import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
+import { ActivateUpcomingPaymentsUseCase } from '@/domain/payment/application/use-cases/activate-upcoming-payments'
 import { MarkOverduePaymentsUseCase } from '@/domain/payment/application/use-cases/mark-overdue-payments'
 import { SendLeaseExpiryNotificationsUseCase } from '@/domain/lease-management/application/use-cases/send-lease-expiry-notifications'
 import { SendRentDueRemindersUseCase } from '@/domain/payment/application/use-cases/send-rent-due-reminders'
@@ -24,6 +25,7 @@ import { CreateNotificationUseCase } from '@/domain/notification/application/use
 		CreateNotificationUseCase,
 		GenerateLeasePaymentsUseCase,
 		GenerateAllLeasePaymentsUseCase,
+		ActivateUpcomingPaymentsUseCase,
 		MarkOverduePaymentsUseCase,
 		SendLeaseExpiryNotificationsUseCase,
 		SendRentDueRemindersUseCase,

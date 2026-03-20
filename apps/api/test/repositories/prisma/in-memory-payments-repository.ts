@@ -78,6 +78,12 @@ export class InMemoryPaymentsRepository implements PaymentsRepository {
 		)
 	}
 
+	async findUpcomingDueByDate(date: Date): Promise<Payment[]> {
+		return this.items.filter(
+			(p) => p.status === 'UPCOMING' && p.dueDate <= date,
+		)
+	}
+
 	async findExistingForLease(
 		leaseId: string,
 		dueDate: Date,

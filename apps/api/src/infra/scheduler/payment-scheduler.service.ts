@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { Cron } from '@nestjs/schedule'
+import { ActivateUpcomingPaymentsUseCase } from '@/domain/payment/application/use-cases/activate-upcoming-payments'
 import { GenerateAllLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-all-lease-payments'
 import { MarkOverduePaymentsUseCase } from '@/domain/payment/application/use-cases/mark-overdue-payments'
 import { EnvService } from '../env/env.service'
@@ -9,10 +10,32 @@ export class PaymentSchedulerService {
 	private readonly logger = new Logger(PaymentSchedulerService.name)
 
 	constructor(
+		private activateUpcomingPayments: ActivateUpcomingPaymentsUseCase,
 		private generateAllLeasePayments: GenerateAllLeasePaymentsUseCase,
 		private markOverduePayments: MarkOverduePaymentsUseCase,
 		private envService: EnvService,
 	) {}
+
+	@Cron('0 0 * * *')
+	async handleUpcomingActivation() {
+		if (!this.envService.get('SCHEDULER_ENABLED')) return
+
+		this.logger.log('Running upcoming payment activation...')
+		try {
+			const result = await this.activateUpcomingPayments.execute()
+
+			if (result.isRight()) {
+				this.logger.log(
+					`Upcoming activation complete: ${result.value.activatedCount} payments activated`,
+				)
+			}
+		} catch (error) {
+			this.logger.error(
+				'Upcoming payment activation failed',
+				error instanceof Error ? error.stack : error,
+			)
+		}
+	}
 
 	@Cron('5 0 * * *')
 	async handlePaymentGeneration() {

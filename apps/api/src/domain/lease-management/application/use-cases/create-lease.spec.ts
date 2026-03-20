@@ -13,6 +13,7 @@ import { LeasePropertyNotAvailableError } from './errors/lease-property-not-avai
 import { LeasePropertyHasActiveLeaseError } from './errors/lease-property-has-active-lease-error'
 import { LeaseTenantHasActiveLeaseError } from './errors/lease-tenant-has-active-lease-error'
 import type { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import type { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
 import { right } from '@/core/either'
 import { ActionType } from '@/domain/notification/enterprise/entities/notification'
 
@@ -24,11 +25,20 @@ class MockCreateNotificationUseCase {
 	}
 }
 
+class MockGenerateLeasePaymentsUseCase {
+	calls: any[] = []
+	async execute(input: any) {
+		this.calls.push(input)
+		return right({ payments: [] })
+	}
+}
+
 describe('CreateLeaseUseCase', () => {
 	let inMemoryLeasesRepository: InMemoryLeasesRepository
 	let inMemoryPropertiesRepository: InMemoryPropertiesRepository
 	let inMemoryClientsRepository: InMemoryClientsRepository
 	let mockCreateNotificationUseCase: MockCreateNotificationUseCase
+	let mockGenerateLeasePaymentsUseCase: MockGenerateLeasePaymentsUseCase
 	let sut: CreateLeaseUseCase
 
 	beforeEach(() => {
@@ -36,11 +46,13 @@ describe('CreateLeaseUseCase', () => {
 		inMemoryPropertiesRepository = new InMemoryPropertiesRepository()
 		inMemoryClientsRepository = new InMemoryClientsRepository()
 		mockCreateNotificationUseCase = new MockCreateNotificationUseCase()
+		mockGenerateLeasePaymentsUseCase = new MockGenerateLeasePaymentsUseCase()
 		sut = new CreateLeaseUseCase(
 			inMemoryLeasesRepository,
 			inMemoryPropertiesRepository,
 			inMemoryClientsRepository,
 			mockCreateNotificationUseCase as unknown as CreateNotificationUseCase,
+			mockGenerateLeasePaymentsUseCase as unknown as GenerateLeasePaymentsUseCase,
 		)
 	})
 
@@ -194,6 +206,59 @@ describe('CreateLeaseUseCase', () => {
 		expect(mockCreateNotificationUseCase.calls[0].actionType).toBe(
 			ActionType.SIGN_LEASE,
 		)
+	})
+
+	it('should auto-activate lease when start date is today or in the past', async () => {
+		const property = makeProperty({ status: PropertyStatus.create('VACANT') })
+		inMemoryPropertiesRepository.items.push(property)
+
+		const tenant = makeClient()
+		inMemoryClientsRepository.items.push(tenant)
+
+		const today = new Date()
+		today.setHours(0, 0, 0, 0)
+
+		const result = await sut.execute({
+			propertyId: property.id.toString(),
+			tenantId: tenant.id.toString(),
+			startDate: today.toISOString(),
+			endDate: new Date('2027-04-01').toISOString(),
+			monthlyRent: 2000,
+			securityDeposit: 4000,
+		})
+
+		expect(result.isRight()).toBe(true)
+		if (result.isRight()) {
+			expect(result.value.lease.status).toBe('ACTIVE')
+		}
+
+		expect(mockGenerateLeasePaymentsUseCase.calls).toHaveLength(1)
+	})
+
+	it('should set property status to OCCUPIED on auto-activation', async () => {
+		const property = makeProperty({ status: PropertyStatus.create('VACANT') })
+		inMemoryPropertiesRepository.items.push(property)
+
+		const tenant = makeClient()
+		inMemoryClientsRepository.items.push(tenant)
+
+		const yesterday = new Date()
+		yesterday.setDate(yesterday.getDate() - 1)
+		yesterday.setHours(0, 0, 0, 0)
+
+		await sut.execute({
+			propertyId: property.id.toString(),
+			tenantId: tenant.id.toString(),
+			startDate: yesterday.toISOString(),
+			endDate: new Date('2027-04-01').toISOString(),
+			monthlyRent: 2000,
+			securityDeposit: 4000,
+		})
+
+		const updatedProperty = inMemoryPropertiesRepository.items.find(
+			(p) => p.id.toString() === property.id.toString(),
+		)
+		expect(updatedProperty?.status).toBe('OCCUPIED')
 	})
 
 	it('should reject if tenant already has an active lease', async () => {

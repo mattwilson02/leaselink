@@ -113,6 +113,7 @@ import { GetPaymentsByTenantUseCase } from '@/domain/payment/application/use-cas
 import { GetPaymentByIdUseCase } from '@/domain/payment/application/use-cases/get-payment-by-id'
 import { CreateCheckoutSessionUseCase } from '@/domain/payment/application/use-cases/create-checkout-session'
 import { HandleCheckoutCompletedUseCase } from '@/domain/payment/application/use-cases/handle-checkout-completed'
+import { ActivateUpcomingPaymentsUseCase } from '@/domain/payment/application/use-cases/activate-upcoming-payments'
 import { MarkOverduePaymentsUseCase } from '@/domain/payment/application/use-cases/mark-overdue-payments'
 import { StripeWebhookController } from './controllers/stripe-webhook/stripe-webhook.controller'
 import { GeneratePaymentsController } from './controllers/generate-payments/generate-payments.controller'
@@ -265,6 +266,7 @@ import { CheckoutRedirectController } from './controllers/checkout-redirect/chec
 		GetPaymentByIdUseCase,
 		CreateCheckoutSessionUseCase,
 		HandleCheckoutCompletedUseCase,
+		ActivateUpcomingPaymentsUseCase,
 		MarkOverduePaymentsUseCase,
 		StripeServiceImpl,
 	],
