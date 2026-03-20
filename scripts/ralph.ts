@@ -864,11 +864,8 @@ function commitAndPR(sprintNumber: number, sprintName: string, branchName: strin
   if (ok) {
     log(`  → PR created: ${prUrl}`);
 
-    // Auto-merge
-    const { ok: mergeOk } = runSafe(`gh pr merge --auto --squash`);
-    if (mergeOk) {
-      log(`  → Auto-merge enabled`);
-    }
+    // PRs are left open for human review — merge one at a time
+    log("  → PR open for review (no auto-merge)");
   } else {
     log(`  ⚠ PR creation failed: ${prUrl}`);
   }
