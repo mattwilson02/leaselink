@@ -1,4 +1,5 @@
 import type {
+	ExistsByActionTypeAndLinkedIdParams,
 	NotificationRepository,
 	UpdateManyByPersonIdParams,
 } from '@/domain/notification/application/repositories/notification-repository'
@@ -71,5 +72,20 @@ export class InMemoryNotificationsRepository implements NotificationRepository {
 				notification.personId.toString() === personId && !notification.isRead,
 		)
 		return notifications.length > 0
+	}
+
+	async existsByActionTypeAndLinkedId(
+		params: ExistsByActionTypeAndLinkedIdParams,
+	): Promise<boolean> {
+		return this.items.some(
+			(n) =>
+				n.actionType === params.actionType &&
+				n.personId.toString() === params.personId &&
+				n.createdAt >= params.createdAfter &&
+				(!params.linkedTransactionId ||
+					n.linkedTransactionId?.toString() === params.linkedTransactionId) &&
+				(!params.linkedPaymentId ||
+					n.linkedPaymentId?.toString() === params.linkedPaymentId),
+		)
 	}
 }

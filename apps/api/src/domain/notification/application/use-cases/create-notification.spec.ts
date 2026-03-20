@@ -74,6 +74,32 @@ describe('UpdateNotificationUseCase', () => {
 		}
 	})
 
+	it('should use text as push body and action-type-specific title', async () => {
+		const client = Client.create({
+			email: 'test@email.com',
+			phoneNumber: '+1234567890',
+			name: 'Test Client',
+			pushToken: 'ExponentPushToken[1234567890]',
+			deviceId: new UniqueEntityId('device-2'),
+		})
+		inMemoryClientsRepository.items.push(client)
+
+		await sut.execute({
+			personId: client.id.toString(),
+			text: 'Your rent is due',
+			notificationType: NotificationType.ACTION,
+			actionType: ActionType.RENT_REMINDER,
+		})
+
+		expect(inMemoryPushNotificationsRepository.items).toHaveLength(1)
+		expect(inMemoryPushNotificationsRepository.items[0].body).toBe(
+			'Your rent is due',
+		)
+		expect(inMemoryPushNotificationsRepository.items[0].title).toBe(
+			'Rent Reminder',
+		)
+	})
+
 	it('should not send a push notification if the client does not have a push token', async () => {
 		const client = Client.create({
 			email: 'test@email.com',

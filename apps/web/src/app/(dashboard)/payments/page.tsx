@@ -90,23 +90,35 @@ export default function PaymentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Payments</h1>
-        <div className="flex gap-2">
+      </div>
+
+      <PaymentSummaryCards payments={allPayments} />
+
+      <div className="rounded-md border bg-muted/40 px-4 py-3">
+        <p className="mb-3 text-xs text-muted-foreground">
+          These actions run automatically. Use manual triggers only if needed.
+        </p>
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
+            size="sm"
             onClick={handleMarkOverdue}
             disabled={markOverdueMutation.isPending}
           >
-            <AlertCircle className="mr-2 h-4 w-4" />
+            <AlertCircle className="mr-2 h-3.5 w-3.5" />
             {markOverdueMutation.isPending ? "Processing..." : "Mark Overdue"}
           </Button>
-          <Button onClick={() => setShowGenerateDialog(true)}>
-            <Zap className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowGenerateDialog(true)}
+          >
+            <Zap className="mr-2 h-3.5 w-3.5" />
             Generate Payments
           </Button>
         </div>
       </div>
 
-      <PaymentSummaryCards payments={allPayments} />
 
       <div className="flex flex-col gap-4 sm:flex-row">
         <Select

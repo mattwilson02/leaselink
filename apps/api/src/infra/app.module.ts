@@ -13,6 +13,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { BetterAuthModule } from './auth/better-auth/better-auth.module'
 import { EnhancedAuthGuard } from './auth/better-auth/guards/enhanced-auth-guard'
 import { DatabaseModule } from './database/database.module'
+import { SchedulerModule } from './scheduler/scheduler.module'
 import { auth } from 'auth'
 
 @Module({
@@ -28,6 +29,7 @@ import { auth } from 'auth'
 		PushNotificationsModule,
 		BetterAuthModule,
 		DatabaseModule,
+		SchedulerModule,
 		AuthModule.forRoot({
 			auth,
 			disableGlobalAuthGuard: true,

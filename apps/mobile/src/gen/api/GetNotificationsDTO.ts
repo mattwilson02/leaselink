@@ -14,7 +14,15 @@ export type GetNotificationsDTONotificationTypeEnum = (typeof getNotificationsDT
 export const getNotificationsDTOActionTypeEnum = {
     "SIGN_DOCUMENT": "SIGN_DOCUMENT",
     "UPLOAD_DOCUMENT": "UPLOAD_DOCUMENT",
-    "BASIC_COMPLETE": "BASIC_COMPLETE"
+    "BASIC_COMPLETE": "BASIC_COMPLETE",
+    "MAINTENANCE_UPDATE": "MAINTENANCE_UPDATE",
+    "RENT_REMINDER": "RENT_REMINDER",
+    "PAYMENT_RECEIVED": "PAYMENT_RECEIVED",
+    "PAYMENT_OVERDUE": "PAYMENT_OVERDUE",
+    "SIGN_LEASE": "SIGN_LEASE",
+    "LEASE_EXPIRY": "LEASE_EXPIRY",
+    "INSPECTION_SCHEDULED": "INSPECTION_SCHEDULED",
+    "LEASE_RENEWAL": "LEASE_RENEWAL"
 } as const;
 
 export type GetNotificationsDTOActionTypeEnum = (typeof getNotificationsDTOActionTypeEnum)[keyof typeof getNotificationsDTOActionTypeEnum];
@@ -55,6 +63,11 @@ export type GetNotificationsDTO = {
      * @type string, uuid
     */
     linkedTransactionId: string | null;
+    /**
+     * @description Unique identifier of the linked payment (if any)
+     * @type string, uuid
+    */
+    linkedPaymentId: string | null;
     /**
      * @description Indicates whether the notification has been read
      * @type boolean

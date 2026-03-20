@@ -133,6 +133,20 @@ export class PrismaPaymentsRepository implements PaymentsRepository {
 		return payment ? PrismaPaymentMapper.toDomain(payment) : null
 	}
 
+	async findPendingDueWithin(days: number): Promise<Payment[]> {
+		const now = new Date()
+		const future = new Date()
+		future.setDate(future.getDate() + days)
+
+		const payments = await this.prisma.payment.findMany({
+			where: {
+				status: 'PENDING',
+				dueDate: { gte: now, lte: future },
+			},
+		})
+		return payments.map(PrismaPaymentMapper.toDomain)
+	}
+
 	async update(payment: Payment): Promise<Payment> {
 		const data = PrismaPaymentMapper.toPrisma(payment)
 		const updated = await this.prisma.payment.update({

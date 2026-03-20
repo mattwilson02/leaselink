@@ -127,6 +127,7 @@ describe('NotificationItem', () => {
 		notificationType: 'INFO',
 		linkedTransactionId: null,
 		linkedDocumentId: null,
+		linkedPaymentId: null,
 		actionType: null,
 		isActionComplete: false,
 		personId: 'person-id',

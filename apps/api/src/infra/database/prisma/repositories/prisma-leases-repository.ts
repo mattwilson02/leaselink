@@ -89,4 +89,24 @@ export class PrismaLeasesRepository implements LeasesRepository {
 		})
 		return PrismaLeaseMapper.toDomain(updated)
 	}
+
+	async findActiveExpiringBetween(
+		startDate: Date,
+		endDate: Date,
+	): Promise<Lease[]> {
+		const leases = await this.prisma.lease.findMany({
+			where: {
+				status: 'ACTIVE',
+				endDate: { gte: startDate, lte: endDate },
+			},
+		})
+		return leases.map(PrismaLeaseMapper.toDomain)
+	}
+
+	async findAllActive(): Promise<Lease[]> {
+		const leases = await this.prisma.lease.findMany({
+			where: { status: 'ACTIVE' },
+		})
+		return leases.map(PrismaLeaseMapper.toDomain)
+	}
 }

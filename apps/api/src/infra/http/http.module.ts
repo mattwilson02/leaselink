@@ -124,6 +124,7 @@ import { CreateCheckoutSessionController } from './controllers/create-checkout-s
 import { StripeModule } from '../stripe/stripe.module'
 import { StripeServiceImpl } from '../stripe/stripe.service'
 import { GetDashboardSummaryController } from './controllers/get-dashboard-summary/get-dashboard-summary.controller'
+import { GetSchedulerStatusController } from './controllers/get-scheduler-status/get-scheduler-status.controller'
 
 @Module({
 	imports: [
@@ -192,6 +193,8 @@ import { GetDashboardSummaryController } from './controllers/get-dashboard-summa
 		ConfirmMaintenancePhotosController,
 		// Dashboard
 		GetDashboardSummaryController,
+		// Scheduler
+		GetSchedulerStatusController,
 		// Payments — static routes before :id to avoid route conflicts
 		StripeWebhookController,
 		GeneratePaymentsController,

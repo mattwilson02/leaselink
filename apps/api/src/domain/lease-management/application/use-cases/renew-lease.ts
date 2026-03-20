@@ -1,12 +1,17 @@
 import { Either, left, right } from '@/core/either'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Optional } from '@nestjs/common'
 import { Lease } from '../../enterprise/entities/lease'
 import { LeasesRepository } from '../repositories/leases-repository'
 import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { LeaseRenewalInvalidSourceError } from './errors/lease-renewal-invalid-source-error'
 import { LeaseRenewalStartDateInvalidError } from './errors/lease-renewal-start-date-invalid-error'
 import { LeaseRenewalAlreadyExistsError } from './errors/lease-renewal-already-exists-error'
+import { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import {
+	ActionType,
+	NotificationType,
+} from '@/domain/notification/enterprise/entities/notification'
 
 export interface RenewLeaseUseCaseRequest {
 	leaseId: string
@@ -26,7 +31,11 @@ type RenewLeaseUseCaseResponse = Either<
 
 @Injectable()
 export class RenewLeaseUseCase {
-	constructor(private leasesRepository: LeasesRepository) {}
+	constructor(
+		private leasesRepository: LeasesRepository,
+		@Optional()
+		private createNotificationUseCase?: CreateNotificationUseCase,
+	) {}
 
 	async execute(
 		request: RenewLeaseUseCaseRequest,
@@ -66,6 +75,15 @@ export class RenewLeaseUseCase {
 		})
 
 		await this.leasesRepository.create(renewalLease)
+
+		if (this.createNotificationUseCase) {
+			await this.createNotificationUseCase.execute({
+				personId: originalLease.tenantId.toString(),
+				text: 'A lease renewal is available for your review.',
+				notificationType: NotificationType.ACTION,
+				actionType: ActionType.LEASE_RENEWAL,
+			})
+		}
 
 		return right({ lease: renewalLease })
 	}

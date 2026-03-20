@@ -6,18 +6,32 @@ import { ClientNotFoundError } from '@/domain/financial-management/application/u
 import { CreateDocumentRequestError } from './errors/create-document-request-error'
 import { Client } from '@/domain/financial-management/enterprise/entities/client'
 import { ClientStatus } from '@/domain/financial-management/enterprise/entities/value-objects/client-status'
+import type { CreateNotificationUseCase } from '@/domain/notification/application/use-cases/create-notification'
+import { right } from '@/core/either'
+import { ActionType } from '@/domain/notification/enterprise/entities/notification'
+
+class MockCreateNotificationUseCase {
+	calls: any[] = []
+	async execute(input: any) {
+		this.calls.push(input)
+		return right({ notification: {} as any })
+	}
+}
 
 describe('CreateDocumentRequestUseCase', () => {
 	let documentRequestRepository: InMemoryDocumentRequestRepository
 	let clientsRepository: InMemoryClientsRepository
+	let mockCreateNotificationUseCase: MockCreateNotificationUseCase
 	let sut: CreateDocumentRequestUseCase
 
 	beforeEach(() => {
 		documentRequestRepository = new InMemoryDocumentRequestRepository()
 		clientsRepository = new InMemoryClientsRepository()
+		mockCreateNotificationUseCase = new MockCreateNotificationUseCase()
 		sut = new CreateDocumentRequestUseCase(
 			documentRequestRepository,
 			clientsRepository,
+			mockCreateNotificationUseCase as unknown as CreateNotificationUseCase,
 		)
 	})
 
@@ -59,6 +73,33 @@ describe('CreateDocumentRequestUseCase', () => {
 
 		expect(result.isLeft()).toBe(true)
 		expect(result.value).toBeInstanceOf(ClientNotFoundError)
+	})
+
+	it('should send UPLOAD_DOCUMENT notification to tenant on creation', async () => {
+		const clientId = new UniqueEntityId().toString()
+		const requestedBy = new UniqueEntityId().toString()
+		const client = Client.create(
+			{
+				name: 'Test Client',
+				email: 'test@example.com',
+				phoneNumber: '+441234567890',
+				status: ClientStatus.create('ACTIVE'),
+			},
+			new UniqueEntityId(clientId),
+		)
+		await clientsRepository.create(client)
+
+		await sut.execute({
+			clientId,
+			requestedBy,
+			requestType: 'PROOF_OF_ADDRESS',
+		})
+
+		expect(mockCreateNotificationUseCase.calls).toHaveLength(1)
+		expect(mockCreateNotificationUseCase.calls[0].personId).toBe(clientId)
+		expect(mockCreateNotificationUseCase.calls[0].actionType).toBe(
+			ActionType.UPLOAD_DOCUMENT,
+		)
 	})
 
 	it('returns CreateDocumentRequestError if creation fails', async () => {

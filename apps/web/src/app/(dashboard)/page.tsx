@@ -10,6 +10,7 @@ import { RevenueSummary } from "@/components/dashboard/revenue-summary";
 import { UpcomingExpirations } from "@/components/dashboard/upcoming-expirations";
 import { OpenMaintenance } from "@/components/dashboard/open-maintenance";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { SchedulerStatus } from "@/components/dashboard/scheduler-status";
 
 function DashboardSkeleton() {
   return (
@@ -124,6 +125,9 @@ export default function DashboardPage() {
 
       {/* Row 4: Recent activity */}
       <RecentActivity activities={data.recentActivity} />
+
+      {/* Row 5: Scheduler status */}
+      <SchedulerStatus />
     </div>
   );
 }
