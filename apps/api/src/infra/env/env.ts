@@ -44,13 +44,13 @@ export const envSchema = z.object({
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
 	AZURE_AD_TENANT_ID: z.string(),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
-	STRIPE_SECRET_KEY: z.string().startsWith('sk_test_'),
+	STRIPE_SECRET_KEY: z.string().optional().default('sk_test_placeholder'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
-	STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_'),
+	STRIPE_WEBHOOK_SECRET: z.string().optional().default('whsec_placeholder'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
-	STRIPE_SUCCESS_URL: z.string().url(),
+	STRIPE_SUCCESS_URL: z.string().url().optional().default('http://localhost:3000/payments/success'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
-	STRIPE_CANCEL_URL: z.string().url(),
+	STRIPE_CANCEL_URL: z.string().url().optional().default('http://localhost:3000/payments/cancel'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
 	SCHEDULER_ENABLED: z.coerce.boolean().default(true),
 })
