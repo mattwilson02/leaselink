@@ -1,12 +1,18 @@
 import { z } from "zod";
 import { LeaseStatus } from "../enums";
 
+// Accepts both YYYY-MM-DD (from HTML date inputs) and full ISO datetime strings
+const dateString = (label: string) =>
+  z.string().refine((val) => !Number.isNaN(Date.parse(val)), {
+    message: `Invalid ${label}`,
+  });
+
 export const createLeaseSchema = z
   .object({
     propertyId: z.string().uuid("Invalid property ID"),
     tenantId: z.string().uuid("Invalid tenant ID"),
-    startDate: z.string().datetime({ message: "Invalid start date" }),
-    endDate: z.string().datetime({ message: "Invalid end date" }),
+    startDate: dateString("start date"),
+    endDate: dateString("end date"),
     monthlyRent: z.number().positive("Monthly rent must be greater than 0"),
     securityDeposit: z
       .number()
@@ -23,8 +29,8 @@ export const updateLeaseStatusSchema = z.object({
 
 export const renewLeaseSchema = z
   .object({
-    startDate: z.string().datetime({ message: "Invalid start date" }),
-    endDate: z.string().datetime({ message: "Invalid end date" }),
+    startDate: dateString("start date"),
+    endDate: dateString("end date"),
     monthlyRent: z.number().positive("Monthly rent must be greater than 0"),
     securityDeposit: z
       .number()

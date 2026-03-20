@@ -1,7 +1,10 @@
 import { RenewLeaseUseCase } from './renew-lease'
 import { InMemoryLeasesRepository } from 'test/repositories/prisma/in-memory-leases-repository'
+import { InMemoryPropertiesRepository } from 'test/repositories/prisma/in-memory-properties-repository'
 import { makeLease } from 'test/factories/make-lease'
+import { makeProperty } from 'test/factories/make-property'
 import { LeaseStatus } from '../../enterprise/entities/value-objects/lease-status'
+import { PropertyStatus } from '@/domain/property-management/enterprise/entities/value-objects/property-status'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { LeaseRenewalInvalidSourceError } from './errors/lease-renewal-invalid-source-error'
@@ -21,14 +24,17 @@ class MockCreateNotificationUseCase {
 
 describe('RenewLeaseUseCase', () => {
 	let inMemoryLeasesRepository: InMemoryLeasesRepository
+	let inMemoryPropertiesRepository: InMemoryPropertiesRepository
 	let mockCreateNotificationUseCase: MockCreateNotificationUseCase
 	let sut: RenewLeaseUseCase
 
 	beforeEach(() => {
 		inMemoryLeasesRepository = new InMemoryLeasesRepository()
+		inMemoryPropertiesRepository = new InMemoryPropertiesRepository()
 		mockCreateNotificationUseCase = new MockCreateNotificationUseCase()
 		sut = new RenewLeaseUseCase(
 			inMemoryLeasesRepository,
+			inMemoryPropertiesRepository,
 			mockCreateNotificationUseCase as unknown as CreateNotificationUseCase,
 		)
 	})

@@ -147,13 +147,14 @@ async function runAgentOnce(
 // ─── Sprint State Persistence ────────────────────────────────────────────────
 
 type SprintPhase =
-  | "spec"           // Phase 1: writing spec
-  | "backend"        // Phase 2a: backend builder
-  | "backend_verify" // Phase 2b: backend verification gate
-  | "frontend"       // Phase 2c: frontend builders
-  | "full_verify"    // Phase 3: full verification
-  | "audit"          // Phase 3b: spec compliance audit
-  | "pr";            // Phase 4: commit, push, PR
+  | "spec"              // Phase 1: writing spec
+  | "backend"           // Phase 2a: backend builder
+  | "backend_verify"    // Phase 2b: backend verification gate
+  | "frontend"          // Phase 2c: frontend builders
+  | "contract_verify"   // Phase 2d: frontend/backend contract verification
+  | "full_verify"       // Phase 3: full verification
+  | "audit"             // Phase 3b: spec compliance audit
+  | "pr";               // Phase 4: commit, push, PR
 
 interface SprintState {
   sprint: number;
@@ -318,6 +319,12 @@ Implement ALL backend and shared-package work:
   - Use JwtFactory for E2E auth tokens
   - Unit tests must cover: success case, each error case, edge cases
   - Do NOT skip getter/query use case tests — they need specs too
+- **TEST QUALITY — READ THIS:**
+  - After writing each test, re-read the use case code and verify your test assertions match the ACTUAL behavior
+  - If the use case allows status X, your test must NOT assert that status X is rejected (and vice versa)
+  - Tests must assert the correct response shape — if the use case returns { lease }, the test must check result.value.lease
+  - Run tests after writing them. If a test fails, READ the use case again before "fixing" the test — the use case is probably right
+  - Default status values come from the entity's create() method — read it before asserting initial status
 - **ENV VARS:** If you add new env vars to src/infra/env/env.ts, they MUST be .optional().default('...') with sensible defaults so E2E tests and CI don't break. Never add required env vars without updating CI. Also update apps/api/.env.example with the new vars.
 - **RESPONSE SHAPE CONSISTENCY:** When writing controllers, be consistent with response shapes. For single-entity endpoints, return { entityName: presenter.toHTTP(entity) } (e.g. { property: ... }, { lease: ... }). For list endpoints, return { data: presenter.toHTTPList(entities), meta: { page, pageSize, totalCount, totalPages } }. Frontend builders read your controller return statements to build their hooks — inconsistent shapes cause integration bugs.
 - After ALL work is done, run these checks and fix any failures:
@@ -391,21 +398,29 @@ ${sprintSpec}`;
         model: MODELS.webAgent,
         prompt: `You build the Next.js web dashboard. Only modify files in apps/web/. You CAN import from @leaselink/shared.
 
-CRITICAL — API CONTRACT ALIGNMENT:
-Before writing ANY hook or API call, you MUST read the actual API controller to verify:
-1. The exact response shape (e.g. the controller may return { property } not { data })
-2. The exact endpoint path
-3. The request body schema
+CRITICAL — API CONTRACT ALIGNMENT (DO THIS FIRST OR YOU WILL BREAK THE BUILD):
+Before writing ANY hook or API call, you MUST:
+1. Find the controller: Glob for apps/api/src/infra/http/controllers/**/*.controller.ts matching the endpoint name
+2. READ the controller's handle() method — note the EXACT return statement
+3. If it uses a presenter, READ the presenter file too — it transforms field names
+4. Your hook's response type MUST match the controller's return shape EXACTLY
 
-Steps:
-1. For each API endpoint you need, find and READ the controller file in apps/api/src/infra/http/controllers/
-2. Check what the controller's handle() method returns — use EXACTLY those property names in your hooks
-3. Check the presenter if the controller uses one — it transforms the entity for HTTP responses
-4. Read existing hooks in apps/web/src/hooks/ to follow established patterns
+MANDATORY WORKFLOW for each hook:
+1. Read the controller file
+2. Copy the response shape into a comment in your hook file (e.g. // Controller returns: { property: PropertyHttpResponse })
+3. Define your TypeScript interface to match that exact shape
+4. Only then write the hook logic
 
-Common pitfall: controllers return { entityName: ... } (e.g. { property }, { maintenanceRequest }, { payment }) — NOT { data }. List endpoints return { data: [...], meta: {...} } from presenters. Always verify, never assume.
+Common patterns from this codebase:
+- Single entity: { entityName: ... } (e.g. { property }, { lease }, { payment })
+- List endpoints: { data: [...], meta: { page, pageSize, totalCount, totalPages } } OR { entityNamePlural: [...], totalCount }
+- Downloads: { downloadUrl, blobName, expiresOn }
+- NEVER assume { data } — always verify
 
-After implementation verify: cd apps/web && npm run build`,
+VALIDATION CHECKLIST (run before finishing):
+1. cd apps/web && npm run build — must pass
+2. For EVERY hook you wrote, grep the controller to confirm the response shape matches
+3. Check that status filters/dropdowns use the same values the backend validates against (read the use case)`,
         tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
       },
       mobile: {
@@ -413,18 +428,29 @@ After implementation verify: cd apps/web && npm run build`,
         model: MODELS.mobileAgent,
         prompt: `You build the Expo React Native mobile app. Only modify files in apps/mobile/. You CAN import from @leaselink/shared.
 
-CRITICAL — API CONTRACT ALIGNMENT:
-Before writing ANY API call or hook, you MUST read the actual API controller to verify:
-1. The exact response shape (e.g. the controller may return { property } not { data })
-2. The exact endpoint path
-3. The request body schema
+CRITICAL — API CONTRACT ALIGNMENT (DO THIS FIRST OR YOU WILL BREAK THE BUILD):
+Before writing ANY API call or hook, you MUST:
+1. Find the controller: Glob for apps/api/src/infra/http/controllers/**/*.controller.ts matching the endpoint name
+2. READ the controller's handle() method — note the EXACT return statement
+3. If it uses a presenter, READ the presenter file too
+4. Your hook's response type MUST match the controller's return shape EXACTLY
 
-Steps:
-1. For each API endpoint you need, find and READ the controller file in apps/api/src/infra/http/controllers/
-2. Check what the controller's handle() method returns — use EXACTLY those property names
-3. Read existing code patterns before writing
+MANDATORY WORKFLOW for each hook:
+1. Read the controller file
+2. Copy the response shape into a comment in your hook file
+3. Define your TypeScript interface to match that exact shape
+4. Only then write the hook logic
 
-After implementation verify: cd apps/mobile && npx tsc --noEmit`,
+Common patterns from this codebase:
+- Single entity: { entityName: ... } (e.g. { property }, { lease }, { payment })
+- List endpoints: { data: [...], meta: { page, pageSize, totalCount, totalPages } } OR { entityNamePlural: [...], totalCount }
+- Blob storage URLs: replace 'backend-blob-storage' with 'localhost' for mobile access
+- NEVER assume { data } — always verify
+
+VALIDATION CHECKLIST (run before finishing):
+1. cd apps/mobile && npx tsc --noEmit — must pass
+2. For EVERY hook you wrote, grep the controller to confirm the response shape matches
+3. Check field names match exactly (e.g. photos vs photoUrls, blobName vs name)`,
         tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
       },
     },
@@ -437,6 +463,54 @@ After implementation verify: cd apps/mobile && npx tsc --noEmit`,
   });
 
   log("  ✓ Frontend builders finished");
+}
+
+// ─── Phase 2d: Contract Verification ─────────────────────────────────────────
+
+async function verifyContracts(specPath: string) {
+  log("\n🔗 Phase 2d: Verifying frontend/backend contracts...");
+
+  const sprintSpec = readFileSync(specPath, "utf-8");
+
+  const prompt = `You are a contract verification agent. Your ONLY job: verify that every frontend hook matches its corresponding API controller response shape.
+
+## Sprint Spec (for context on what was built)
+${sprintSpec}
+
+## Instructions
+1. Find all hook files modified or created in this sprint:
+   - apps/web/src/hooks/
+   - apps/mobile/src/hooks/
+2. For EACH hook that makes an API call:
+   a. Read the hook — note what response shape it expects (the TypeScript interface/type)
+   b. Find and read the corresponding controller in apps/api/src/infra/http/controllers/
+   c. If the controller uses a presenter, read the presenter too
+   d. Compare: do the property names match EXACTLY?
+3. Common mismatches to check:
+   - Hook expects \`response.data\` but controller returns \`{ entityName: ... }\`
+   - Hook expects \`photoUrls\` but API returns \`photos\`
+   - Hook expects \`{ data: [...] }\` but controller returns \`{ entityPlural: [...], totalCount }\`
+   - Hook uses wrong field for file type detection (e.g. blobName instead of name)
+4. If you find mismatches: FIX THEM in the frontend hooks to match the controller
+5. After fixes, run: cd apps/web && npm run build && cd ../mobile && npx tsc --noEmit
+
+If everything matches, just confirm and exit.`;
+
+  await runAgent(prompt, {
+    cwd: ROOT,
+    model: MODELS.specWriter, // Opus for accuracy
+    allowedTools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"],
+    permissionMode: "bypassPermissions",
+    allowDangerouslySkipPermissions: true,
+    maxTurns: 50,
+    systemPrompt: {
+      type: "preset",
+      preset: "claude_code",
+      append: "\nYou verify and fix frontend/backend contract mismatches. Be thorough — read every hook and its corresponding controller.",
+    },
+  });
+
+  log("  ✓ Contract verification finished");
 }
 
 // ─── Phase 3: Test & Fix ──────────────────────────────────────────────────────
@@ -468,8 +542,8 @@ const BOOT_SMOKE_ENV = [
   "AZURE_AD_TENANT_ID=x",
   "STRIPE_SECRET_KEY=sk_test_placeholder",
   "STRIPE_WEBHOOK_SECRET=whsec_placeholder",
-  "STRIPE_SUCCESS_URL=http://localhost:3000/payments/success",
-  "STRIPE_CANCEL_URL=http://localhost:3000/payments/cancel",
+  "STRIPE_SUCCESS_URL=http://localhost:3333/payments/checkout/success",
+  "STRIPE_CANCEL_URL=http://localhost:3333/payments/checkout/cancel",
 ].join(" ");
 
 /**
@@ -598,6 +672,11 @@ ${diff}
    - For EVERY controller file in the sprint, verify a corresponding .e2e-spec.ts exists
    - If any use case or controller is missing its test file, list it as a missing item
    - This is a hard requirement — incomplete test coverage = incomplete sprint
+   - **TEST QUALITY CHECK:** For each test file, read both the test AND its use case. Verify:
+     - Tests assert what the code actually does (e.g. if use case allows VACANT status, test must NOT assert it's rejected)
+     - Default entity status in tests matches the entity's create() method
+     - Response shape in test assertions matches the use case return type
+     - If a test contradicts the use case logic, flag it as a missing item
 6. **ENV VAR AUDIT:** Check if any new env vars were added to src/infra/env/env.ts. If they are required (not .optional().default()), flag as missing — all new env vars must have defaults. Also check that apps/api/.env.example includes them.
 7. **API CONTRACT AUDIT (CRITICAL):** For each new controller endpoint, verify that the frontend hooks (apps/web/src/hooks/ and apps/mobile/) use the EXACT response property names from the controller's return statement. For example, if a controller returns { property: ... }, the hook must access response.property, NOT response.data. Check every hook that calls a new endpoint — mismatched response shapes are a critical integration bug.
 8. **BUSINESS RULE CONSISTENCY AUDIT:** Verify that backend validation rules (use case guards, status checks, eligibility logic) are mirrored in the frontend. For example: if the backend only allows creating a lease for VACANT or LISTED properties, the frontend form must filter to those same statuses — not a different set. Check every status filter, dropdown filter, and conditional UI against the corresponding use case validation.
@@ -894,6 +973,13 @@ async function main() {
       if (resumePhase === "frontend") {
         saveState({ sprint, phase: "frontend", specName: sprintName, specPath, branchName });
         await runFrontendBuilders(specPath);
+        resumePhase = "contract_verify";
+      }
+
+      // ── Phase 2d: Contract verification
+      if (resumePhase === "contract_verify") {
+        saveState({ sprint, phase: "contract_verify", specName: sprintName, specPath, branchName });
+        await verifyContracts(specPath);
         resumePhase = "full_verify";
       }
 
