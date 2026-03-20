@@ -14,7 +14,9 @@ export type DocumentRequestDTOStatusEnum = (typeof documentRequestDTOStatusEnum)
 
 export const documentRequestDTORequestTypeEnum = {
     "PROOF_OF_ADDRESS": "PROOF_OF_ADDRESS",
-    "PROOF_OF_IDENTITY": "PROOF_OF_IDENTITY"
+    "PROOF_OF_IDENTITY": "PROOF_OF_IDENTITY",
+    "SIGNED_LEASE": "SIGNED_LEASE",
+    "MOVE_IN_CHECKLIST": "MOVE_IN_CHECKLIST"
 } as const;
 
 export type DocumentRequestDTORequestTypeEnum = (typeof documentRequestDTORequestTypeEnum)[keyof typeof documentRequestDTORequestTypeEnum];

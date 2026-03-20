@@ -48,9 +48,9 @@ export const envSchema = z.object({
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
 	STRIPE_WEBHOOK_SECRET: z.string().optional().default('whsec_placeholder'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
-	STRIPE_SUCCESS_URL: z.string().url().optional().default('http://localhost:3000/payments/success'),
+	STRIPE_SUCCESS_URL: z.string().url().optional().default('http://localhost:3333/payments/checkout/success'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
-	STRIPE_CANCEL_URL: z.string().url().optional().default('http://localhost:3000/payments/cancel'),
+	STRIPE_CANCEL_URL: z.string().url().optional().default('http://localhost:3333/payments/checkout/cancel'),
 	// biome-ignore lint/style/useNamingConvention: env variables should be in uppercase
 	SCHEDULER_ENABLED: z.coerce.boolean().default(true),
 })

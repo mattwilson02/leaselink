@@ -1,14 +1,13 @@
 import { GetDocumentFolderSummaryUseCase } from '@/domain/document/application/use-cases/get-document-folder-summary'
-import { ClientNotFoundError } from '@/domain/financial-management/application/use-cases/errors/client-not-found-error'
+import { DocumentRepository } from '@/domain/document/application/repositories/document-repository'
 import { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
 import {
 	Controller,
 	Get,
 	HttpStatus,
-	NotFoundException,
 	HttpCode,
-	HttpException,
+	UnauthorizedException,
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
@@ -24,11 +23,8 @@ import { GetFolderSummaryResponseDTO } from '../../DTOs/document/get-folder-summ
 export class GetFolderSummaryController {
 	constructor(
 		private readonly getDocumentCountByFolderUseCase: GetDocumentFolderSummaryUseCase,
+		private readonly documentRepository: DocumentRepository,
 	) {}
-
-	private errorMap = {
-		[ClientNotFoundError.name]: NotFoundException,
-	}
 
 	@Get()
 	@ApiBearerAuth()
@@ -41,29 +37,30 @@ export class GetFolderSummaryController {
 		description: 'Document count by folder found for client',
 		type: GetFolderSummaryResponseDTO,
 	})
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-		description: 'No content',
-	})
 	async findAll(
 		@CurrentUser() user: HttpUserResponse,
 	): Promise<GetFolderSummaryResponseDTO> {
-		const clientId = user.id
-
-		if (!user || !clientId) {
-			throw new this.errorMap[ClientNotFoundError.name]()
+		if (!user?.id) {
+			throw new UnauthorizedException()
 		}
 
+		// Managers see all documents across all clients
+		if (user.type === 'EMPLOYEE') {
+			const documentsByFolder =
+				await this.documentRepository.getAllGroupedByDocumentType()
+
+			return HttpDocumentByFolderPresenter.toHTTP(documentsByFolder ?? [])
+		}
+
+		// Tenants see only their own documents
 		const result = await this.getDocumentCountByFolderUseCase.execute({
-			clientId,
+			clientId: user.id,
 		})
 
 		if (result.isLeft()) {
-			throw new HttpException('No Content', HttpStatus.NO_CONTENT)
+			return HttpDocumentByFolderPresenter.toHTTP([])
 		}
 
-		const documentsByFolder = result.value
-
-		return HttpDocumentByFolderPresenter.toHTTP(documentsByFolder)
+		return HttpDocumentByFolderPresenter.toHTTP(result.value)
 	}
 }

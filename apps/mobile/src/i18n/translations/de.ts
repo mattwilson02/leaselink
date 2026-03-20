@@ -231,6 +231,10 @@ export default {
 		PROOF_OF_ADDRESS: 'Nachweis der Adresse',
 		// biome-ignore lint/style/useNamingConvention: enum
 		PROOF_OF_IDENTITY: 'Nachweis der Identität',
+		// biome-ignore lint/style/useNamingConvention: enum
+		SIGNED_LEASE: 'Unterschriebener Mietvertrag',
+		// biome-ignore lint/style/useNamingConvention: enum
+		MOVE_IN_CHECKLIST: 'Einzugscheckliste',
 		pending: 'Ausstehend',
 		uploaded: 'Hochgeladen',
 		canceled: 'Abgebrochen',
@@ -258,6 +262,12 @@ export default {
 		// biome-ignore lint/style/useNamingConvention: enum
 		TAX_DOCUMENTS: 'Steuerdokumente',
 		// biome-ignore lint/style/useNamingConvention: enum
+		LEASE_AGREEMENTS: 'Mietverträge',
+		// biome-ignore lint/style/useNamingConvention: enum
+		INSPECTION_REPORTS: 'Inspektionsberichte',
+		// biome-ignore lint/style/useNamingConvention: enum
+		INSURANCE: 'Versicherung',
+		// biome-ignore lint/style/useNamingConvention: enum
 		OTHER: 'Sonstiges',
 		size: 'Größe',
 		type: 'Typ',
@@ -271,6 +281,7 @@ export default {
 		home: 'Startseite',
 		maintenance: 'Wartung',
 		payments: 'Zahlungen',
+		documents: 'Dokumente',
 		notifications: 'Benachrichtigungen',
 	},
 	maintenance: {

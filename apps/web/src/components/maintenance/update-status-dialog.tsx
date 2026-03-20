@@ -90,7 +90,9 @@ export function UpdateStatusDialog({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select new status" />
+                <SelectValue placeholder="Select new status">
+                  {(value: string) => MAINTENANCE_STATUS_LABELS[value as MaintenanceStatus] ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {validTransitions.map((status) => (

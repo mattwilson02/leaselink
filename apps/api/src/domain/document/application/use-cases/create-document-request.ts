@@ -13,6 +13,10 @@ import {
 	ActionType,
 	NotificationType,
 } from '@/domain/notification/enterprise/entities/notification'
+import {
+	type DocumentRequestType as SharedDocumentRequestType,
+	DOCUMENT_REQUEST_TYPE_LABELS,
+} from '@leaselink/shared'
 
 interface CreateDocumentRequestUseCaseRequest {
 	clientId: string
@@ -61,7 +65,7 @@ export class CreateDocumentRequestUseCase {
 		if (this.createNotificationUseCase) {
 			await this.createNotificationUseCase.execute({
 				personId: clientId,
-				text: `You have a new document request: ${requestType}. Please upload the required document.`,
+				text: `You have a new document request: ${DOCUMENT_REQUEST_TYPE_LABELS[requestType as SharedDocumentRequestType] ?? requestType}. Please upload the required document.`,
 				notificationType: NotificationType.ACTION,
 				actionType: ActionType.UPLOAD_DOCUMENT,
 				linkedDocumentId: created.id.toString(),

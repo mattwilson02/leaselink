@@ -25,6 +25,14 @@ import * as DocumentPicker from 'expo-document-picker'
 import DocIcon from '@/assets/icons/doc.svg'
 import { ErrorModal } from '@/components/ErrorModal'
 import { queryClient } from '@/app/_layout'
+import { DocumentFolder, DocumentRequestType } from '@leaselink/shared'
+
+const requestTypeToFolder: Record<string, string> = {
+	[DocumentRequestType.SIGNED_LEASE]: DocumentFolder.LEASE_AGREEMENTS,
+	[DocumentRequestType.MOVE_IN_CHECKLIST]: DocumentFolder.LEASE_AGREEMENTS,
+	[DocumentRequestType.PROOF_OF_IDENTITY]: DocumentFolder.IDENTIFICATION,
+	[DocumentRequestType.PROOF_OF_ADDRESS]: DocumentFolder.IDENTIFICATION,
+}
 
 interface SelectedFile {
 	id: number
@@ -276,7 +284,7 @@ const UploadDocument = () => {
 					fileSize: selectedImage?.size
 						? Number((selectedImage.size / 1024).toFixed(1))
 						: 0,
-					folder: 'inbox', // TODO: use actual folder logic
+					folder: requestTypeToFolder[documentRequest?.requestType ?? ''] ?? DocumentFolder.OTHER,
 					name: selectedImage.name,
 					blobName: blobName,
 				},

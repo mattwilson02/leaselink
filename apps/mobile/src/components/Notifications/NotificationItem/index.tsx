@@ -210,7 +210,11 @@ const NotificationItem = ({ notification }: Props) => {
 		} else if (notification.linkedTransactionId) {
 			router.push(`/maintenance/${notification.linkedTransactionId}`)
 		} else if (notification.linkedDocumentId) {
-			router.push(`/documents/${notification.linkedDocumentId}`)
+			if (notification.actionType === 'UPLOAD_DOCUMENT' || notification.actionType === 'SIGN_DOCUMENT') {
+				router.push(`/upload-document?requestId=${notification.linkedDocumentId}`)
+			} else {
+				router.push(`/documents/${notification.linkedDocumentId}`)
+			}
 		} else if (
 			notification.actionType === 'LEASE_EXPIRY' ||
 			notification.actionType === 'SIGN_LEASE' ||
@@ -351,7 +355,7 @@ const NotificationItem = ({ notification }: Props) => {
 		>
 			<Pressable
 				testID={`notification-${notification.id}`}
-				accessibilityLabel={notification.text}
+				accessibilityLabel={(notification as unknown as { title: string }).title ?? notification.text}
 				onPress={onRead}
 				style={{
 					flexDirection: 'row',
@@ -393,8 +397,18 @@ const NotificationItem = ({ notification }: Props) => {
 								flexWrap: 'wrap',
 							}}
 						>
-							{notification.text}
+							{(notification as unknown as { title: string }).title ?? notification.text}
 						</Text>
+						{(notification as unknown as { body?: string }).body ? (
+							<Text
+								size='sm'
+								style={{
+									color: colors.neutral['500'],
+								}}
+							>
+								{(notification as unknown as { body: string }).body}
+							</Text>
+						) : null}
 						<Text
 							size='sm'
 							style={{

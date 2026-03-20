@@ -15,10 +15,10 @@ type Props = {
 const PaymentItem = ({ payment }: Props) => {
 	const router = useRouter()
 
-	const formattedAmount = new Intl.NumberFormat('en-GB', {
+	const formattedAmount = new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency: 'GBP',
-	}).format(payment.amount / 100)
+		currency: 'USD',
+	}).format(payment.amount)
 
 	const formattedDueDate = dayjs(payment.dueDate).format('DD MMM YYYY')
 	const formattedPaidDate = payment.paidAt

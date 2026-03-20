@@ -69,6 +69,22 @@ export const useCreateCheckoutSession = () => {
 	})
 }
 
+export const useVerifyPayment = () => {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async (paymentId: string) => {
+			const response = await api.post<{ status: string; updated: boolean }>(
+				`/payments/${paymentId}/verify`,
+			)
+			return response.data
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['payments'] })
+		},
+	})
+}
+
 export const useNextPaymentDue = () => {
 	const { data, isLoading } = useMyPayments()
 

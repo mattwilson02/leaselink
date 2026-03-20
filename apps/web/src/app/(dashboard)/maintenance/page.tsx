@@ -129,7 +129,9 @@ export default function MaintenancePage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filter by status">
+              {(value: string) => value === ALL ? "All statuses" : MAINTENANCE_STATUS_LABELS[value as MaintenanceStatus] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>All statuses</SelectItem>
@@ -149,7 +151,9 @@ export default function MaintenancePage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter by priority" />
+            <SelectValue placeholder="Filter by priority">
+              {(value: string) => value === ALL ? "All priorities" : MAINTENANCE_PRIORITY_LABELS[value as MaintenancePriority] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>All priorities</SelectItem>
@@ -169,7 +173,9 @@ export default function MaintenancePage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter by category" />
+            <SelectValue placeholder="Filter by category">
+              {(value: string) => value === ALL ? "All categories" : MAINTENANCE_CATEGORY_LABELS[value as MaintenanceCategory] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>All categories</SelectItem>

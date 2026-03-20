@@ -125,6 +125,8 @@ import { StripeModule } from '../stripe/stripe.module'
 import { StripeServiceImpl } from '../stripe/stripe.service'
 import { GetDashboardSummaryController } from './controllers/get-dashboard-summary/get-dashboard-summary.controller'
 import { GetSchedulerStatusController } from './controllers/get-scheduler-status/get-scheduler-status.controller'
+import { VerifyPaymentController } from './controllers/verify-payment/verify-payment.controller'
+import { CheckoutRedirectController } from './controllers/checkout-redirect/checkout-redirect.controller'
 
 @Module({
 	imports: [
@@ -196,6 +198,7 @@ import { GetSchedulerStatusController } from './controllers/get-scheduler-status
 		// Scheduler
 		GetSchedulerStatusController,
 		// Payments — static routes before :id to avoid route conflicts
+		CheckoutRedirectController,
 		StripeWebhookController,
 		GeneratePaymentsController,
 		MarkOverduePaymentsController,
@@ -203,6 +206,7 @@ import { GetSchedulerStatusController } from './controllers/get-scheduler-status
 		GetPaymentsController,
 		GetPaymentByIdController,
 		CreateCheckoutSessionController,
+		VerifyPaymentController,
 	],
 	providers: [
 		CreateClientUseCase,

@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createLeaseSchema } from "@leaselink/shared";
+import { createLeaseSchema, PROPERTY_STATUS_LABELS, type PropertyStatus } from "@leaselink/shared";
 import type { Property, Tenant } from "@leaselink/shared";
 
 // Client-side schema that accepts YYYY-MM-DD from date inputs
@@ -128,7 +128,7 @@ export function LeaseForm({
                 <SelectContent>
                   {eligibleProperties.map((p) => (
                     <SelectItem key={p.id} value={p.id}>
-                      {p.address}, {p.city} — {p.status}
+                      {p.address}, {p.city} — {PROPERTY_STATUS_LABELS[p.status as PropertyStatus] ?? p.status}
                     </SelectItem>
                   ))}
                 </SelectContent>

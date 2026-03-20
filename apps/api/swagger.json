@@ -876,9 +876,6 @@
                 }
               }
             }
-          },
-          "204": {
-            "description": "No content"
           }
         },
         "security": [
@@ -1173,16 +1170,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MarkAllNotificationsAsReadResponseDTO"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Person or notifications not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MarkAllNotificationsAsReadNotFoundDTO"
                 }
               }
             }
@@ -2231,7 +2218,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Paginated list of tenant's leases"
+            "description": "Paginated list of tenant's leases with property data"
           }
         },
         "security": [
@@ -3054,6 +3041,38 @@
           }
         ],
         "summary": "Create Stripe Checkout Session for a payment (tenant only)",
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/{id}/verify": {
+      "post": {
+        "operationId": "VerifyPaymentController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment verification result"
+          },
+          "404": {
+            "description": "Payment not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Verify payment status by checking Stripe session (for mobile clients)",
         "tags": [
           "Payments"
         ]
@@ -4611,31 +4630,6 @@
         },
         "required": [
           "count"
-        ]
-      },
-      "MarkAllNotificationsAsReadNotFoundDTO": {
-        "type": "object",
-        "properties": {
-          "message": {
-            "type": "string",
-            "example": "Client not found",
-            "description": "Error message indicating the client was not found"
-          },
-          "error": {
-            "type": "string",
-            "example": "Not Found",
-            "description": "Error type indicating the resource was not found"
-          },
-          "statusCode": {
-            "type": "number",
-            "example": 404,
-            "description": "HTTP status code for not found"
-          }
-        },
-        "required": [
-          "message",
-          "error",
-          "statusCode"
         ]
       },
       "SetNotificationPreferencesRequestDTO": {

@@ -1,4 +1,5 @@
 import { GetMaintenanceRequestByIdUseCase } from '@/domain/maintenance/application/use-cases/get-maintenance-request-by-id'
+import { StorageRepository } from '@/domain/document/application/repositories/storage-repository'
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common'
 import {
 	ApiBearerAuth,
@@ -16,6 +17,7 @@ import { HttpMaintenanceRequestPresenter } from '../../presenters/http-maintenan
 export class GetMaintenanceRequestByIdController {
 	constructor(
 		private getMaintenanceRequestById: GetMaintenanceRequestByIdUseCase,
+		private storageRepository: StorageRepository,
 	) {}
 
 	@Get(':id')
@@ -41,10 +43,24 @@ export class GetMaintenanceRequestByIdController {
 			throw new NotFoundException(error.message)
 		}
 
+		const result = HttpMaintenanceRequestPresenter.toHTTP(
+			response.value.request,
+		)
+
+		// Generate signed URLs for photos
+		const photoUrls = await Promise.all(
+			result.photos.map(async (blobName) => {
+				const urlResult =
+					await this.storageRepository.generateDownloadUrl({ blobName })
+				return urlResult.isRight() ? urlResult.value.downloadUrl : blobName
+			}),
+		)
+
 		return {
-			maintenanceRequest: HttpMaintenanceRequestPresenter.toHTTP(
-				response.value.request,
-			),
+			maintenanceRequest: {
+				...result,
+				photos: photoUrls,
+			},
 		}
 	}
 }

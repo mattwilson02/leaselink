@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, File } from "lucide-react";
@@ -15,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DocumentFolderBadge } from "@/components/documents/document-folder-badge";
 import { useDocument, useDocumentDownload } from "@/hooks/use-documents";
 import { formatFileSize } from "@/lib/utils";
+import { apiClient } from "@/lib/api-client";
 import { toast } from "sonner";
 
 function formatDate(isoString: string) {
@@ -31,8 +33,22 @@ export default function DocumentDetailPage() {
 
   const { data: docData, isLoading } = useDocument(id);
   const downloadMutation = useDocumentDownload();
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewFetchedRef = useRef(false);
 
   const document = docData?.document;
+
+  useEffect(() => {
+    if (document?.id && !previewFetchedRef.current) {
+      previewFetchedRef.current = true;
+      apiClient
+        .post<{ downloadUrl: string }>("/documents/download", {
+          documentId: document.id,
+        })
+        .then((result) => setPreviewUrl(result.downloadUrl))
+        .catch(() => {});
+    }
+  }, [document?.id]);
 
   function handleDownload() {
     if (!document) return;
@@ -77,9 +93,9 @@ export default function DocumentDetailPage() {
     );
   }
 
-  const isPdf = document.blobName?.toLowerCase().endsWith(".pdf");
-  const isImage =
-    document.blobName?.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/);
+  const fileName = (document.name || document.blobName || "").toLowerCase();
+  const isPdf = fileName.endsWith(".pdf");
+  const isImage = fileName.match(/\.(jpg|jpeg|png|gif|webp)$/);
 
   return (
     <div className="space-y-6">
@@ -113,16 +129,20 @@ export default function DocumentDetailPage() {
               <CardTitle>Preview</CardTitle>
             </CardHeader>
             <CardContent>
-              {isPdf ? (
+              {!previewUrl ? (
+                <div className="flex items-center justify-center h-48">
+                  <Skeleton className="h-full w-full" />
+                </div>
+              ) : isPdf ? (
                 <iframe
-                  src={document.blobName}
+                  src={previewUrl}
                   className="w-full h-96 border rounded"
                   title={document.name}
                 />
               ) : isImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                  src={document.blobName}
+                  src={previewUrl}
                   alt={document.name}
                   className="max-w-full rounded border"
                 />

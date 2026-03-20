@@ -27,10 +27,10 @@ const leaseStatusBackground: Record<string, string> = {
 }
 
 const formatCurrency = (amount: number) =>
-	new Intl.NumberFormat('en-GB', {
+	new Intl.NumberFormat('en-US', {
 		style: 'currency',
-		currency: 'GBP',
-	}).format(amount / 100)
+		currency: 'USD',
+	}).format(amount)
 
 const LeaseDetail = () => {
 	const router = useRouter()

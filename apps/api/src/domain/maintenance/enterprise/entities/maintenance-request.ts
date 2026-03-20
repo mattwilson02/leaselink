@@ -127,6 +127,12 @@ export class MaintenanceRequest extends Entity<MaintenanceRequestProps> {
 						: MaintenancePriority.create(
 								(props?.priority as unknown as string) ?? 'MEDIUM',
 							),
+				category:
+					props?.category instanceof MaintenanceCategory
+						? props.category
+						: MaintenanceCategory.create(
+								props?.category as unknown as string,
+							),
 				photos: props?.photos ?? [],
 				resolvedAt: props?.resolvedAt ?? null,
 				createdAt: props?.createdAt ?? new Date(),

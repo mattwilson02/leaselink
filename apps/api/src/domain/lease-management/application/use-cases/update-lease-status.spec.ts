@@ -1,6 +1,7 @@
 import { UpdateLeaseStatusUseCase } from './update-lease-status'
 import { InMemoryLeasesRepository } from 'test/repositories/prisma/in-memory-leases-repository'
 import { InMemoryPropertiesRepository } from 'test/repositories/prisma/in-memory-properties-repository'
+import { InMemoryPaymentsRepository } from 'test/repositories/prisma/in-memory-payments-repository'
 import { makeProperty } from 'test/factories/make-property'
 import { makeLease } from 'test/factories/make-lease'
 import { LeaseStatus } from '../../enterprise/entities/value-objects/lease-status'
@@ -12,14 +13,17 @@ import { InvalidLeaseStatusTransitionError } from './errors/invalid-lease-status
 describe('UpdateLeaseStatusUseCase', () => {
 	let inMemoryLeasesRepository: InMemoryLeasesRepository
 	let inMemoryPropertiesRepository: InMemoryPropertiesRepository
+	let inMemoryPaymentsRepository: InMemoryPaymentsRepository
 	let sut: UpdateLeaseStatusUseCase
 
 	beforeEach(() => {
 		inMemoryLeasesRepository = new InMemoryLeasesRepository()
 		inMemoryPropertiesRepository = new InMemoryPropertiesRepository()
+		inMemoryPaymentsRepository = new InMemoryPaymentsRepository()
 		sut = new UpdateLeaseStatusUseCase(
 			inMemoryLeasesRepository,
 			inMemoryPropertiesRepository,
+			inMemoryPaymentsRepository,
 		)
 	})
 

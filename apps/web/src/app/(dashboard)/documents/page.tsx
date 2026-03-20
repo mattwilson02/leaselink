@@ -104,7 +104,9 @@ export default function DocumentsPage() {
             }}
           >
             <SelectTrigger className="w-full sm:w-52">
-              <SelectValue placeholder="Filter by type" />
+              <SelectValue placeholder="Filter by type">
+                {(value: string) => value === ALL ? "All types" : DOCUMENT_REQUEST_TYPE_LABELS[value as DocumentRequestType] ?? value}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>All types</SelectItem>
@@ -124,7 +126,9 @@ export default function DocumentsPage() {
             }}
           >
             <SelectTrigger className="w-full sm:w-44">
-              <SelectValue placeholder="Filter by status" />
+              <SelectValue placeholder="Filter by status">
+                {(value: string) => value === ALL ? "All statuses" : DOCUMENT_REQUEST_STATUS_LABELS[value as DocumentRequestStatus] ?? value}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={ALL}>All statuses</SelectItem>
@@ -209,11 +213,13 @@ export default function DocumentsPage() {
                         {formatDate(request.createdAt)}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Link href={`/documents/requests`}>
-                          <Button variant="ghost" size="icon">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </Link>
+                        {request.documentId && (
+                          <Link href={`/documents/${request.documentId}`}>
+                            <Button variant="ghost" size="icon">
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </Link>
+                        )}
                       </TableCell>
                     </TableRow>
                   );

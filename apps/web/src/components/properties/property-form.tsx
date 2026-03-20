@@ -110,7 +110,9 @@ export function PropertyForm({
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select type" />
+              <SelectValue placeholder="Select type">
+                {(value: string) => PROPERTY_TYPE_LABELS[value as PropertyType] ?? value}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               {Object.values(PropertyType).map((type) => (

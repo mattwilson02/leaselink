@@ -68,6 +68,10 @@ function getLinkedPath(notification: Notification): string | null {
     return `/payments/${notification.linkedPaymentId}`;
   }
   if (notification.linkedDocumentId) {
+    // Document notifications link to document requests, not documents
+    if (notification.actionType === "UPLOAD_DOCUMENT" || notification.actionType === "SIGN_DOCUMENT") {
+      return "/documents/requests";
+    }
     return `/documents/${notification.linkedDocumentId}`;
   }
   return null;

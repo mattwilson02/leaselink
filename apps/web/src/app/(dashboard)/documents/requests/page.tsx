@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -90,7 +90,9 @@ export default function DocumentRequestsPage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-52">
-            <SelectValue placeholder="Filter by type" />
+            <SelectValue placeholder="Filter by type">
+              {(value: string) => value === ALL ? "All types" : DOCUMENT_REQUEST_TYPE_LABELS[value as DocumentRequestType] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>All types</SelectItem>
@@ -110,7 +112,9 @@ export default function DocumentRequestsPage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filter by status">
+              {(value: string) => value === ALL ? "All statuses" : DOCUMENT_REQUEST_STATUS_LABELS[value as DocumentRequestStatus] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL}>All statuses</SelectItem>
@@ -131,6 +135,7 @@ export default function DocumentRequestsPage() {
               <TableHead>Request Type</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="hidden sm:table-cell">Created</TableHead>
+              <TableHead className="w-16" />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -153,7 +158,7 @@ export default function DocumentRequestsPage() {
               ))
             ) : requests.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="h-32 text-center">
+                <TableCell colSpan={5} className="h-32 text-center">
                   <p className="text-muted-foreground">
                     No document requests. Create one to request documents from a
                     tenant.
@@ -189,6 +194,15 @@ export default function DocumentRequestsPage() {
                     </TableCell>
                     <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
                       {formatDate(request.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      {request.documentId && (
+                        <Link href={`/documents/${request.documentId}`}>
+                          <Button variant="ghost" size="icon">
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </Link>
+                      )}
                     </TableCell>
                   </TableRow>
                 );

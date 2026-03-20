@@ -127,7 +127,9 @@ export default function LeasesPage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filter by status">
+              {(value: string) => value === ALL_STATUSES ? "All statuses" : LEASE_STATUS_LABELS[value as LeaseStatus] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_STATUSES}>All statuses</SelectItem>

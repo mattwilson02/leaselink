@@ -7,7 +7,7 @@ import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import dayjs from 'dayjs'
 import { PaymentStatus } from '@leaselink/shared'
 import * as WebBrowser from 'expo-web-browser'
-import { usePayment, useCreateCheckoutSession } from '@/hooks/usePayments'
+import { usePayment, useCreateCheckoutSession, useVerifyPayment } from '@/hooks/usePayments'
 import PaymentStatusBadge from '@/components/Payments/PaymentStatusBadge'
 import { ErrorModal } from '@/components/ErrorModal'
 
@@ -22,15 +22,23 @@ const PaymentDetail = () => {
 
 	const { data: payment, isLoading, refetch } = usePayment(id)
 	const { mutateAsync: createCheckoutSession } = useCreateCheckoutSession()
+	const { mutateAsync: verifyPayment } = useVerifyPayment()
 
 	const handlePayNow = async () => {
 		try {
 			setIsOpeningBrowser(true)
 			const session = await createCheckoutSession(id)
 			await WebBrowser.openBrowserAsync(session.url)
-			const result = await refetch()
-			if (result.data?.status === PaymentStatus.PAID) {
+			// Verify payment status with Stripe (webhooks may not have fired yet)
+			const verification = await verifyPayment(id)
+			if (verification.status === 'PAID') {
 				setShowSuccessModal(true)
+			} else {
+				// Refetch in case webhook arrived
+				const result = await refetch()
+				if (result.data?.status === PaymentStatus.PAID) {
+					setShowSuccessModal(true)
+				}
 			}
 		} catch (error) {
 			const msg =
@@ -43,10 +51,10 @@ const PaymentDetail = () => {
 	}
 
 	const formattedAmount = payment
-		? new Intl.NumberFormat('en-GB', {
+		? new Intl.NumberFormat('en-US', {
 				style: 'currency',
-				currency: 'GBP',
-			}).format(payment.amount / 100)
+				currency: 'USD',
+			}).format(payment.amount)
 		: ''
 
 	if (isLoading) {
@@ -261,7 +269,8 @@ const styles = StyleSheet.create({
 		gap: 8,
 	},
 	amountText: {
-		fontSize: 40,
+		fontSize: 28,
+		lineHeight: 40,
 		color: colors.neutral['700'],
 	},
 	infoRow: {

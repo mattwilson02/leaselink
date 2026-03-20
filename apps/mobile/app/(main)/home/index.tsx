@@ -24,10 +24,10 @@ const Home = () => {
 	const { activeLease, isLoading: isLeaseLoading } = useMyActiveLease()
 
 	const formattedAmount = nextPayment
-		? new Intl.NumberFormat('en-GB', {
+		? new Intl.NumberFormat('en-US', {
 				style: 'currency',
-				currency: 'GBP',
-			}).format(nextPayment.amount / 100)
+				currency: 'USD',
+			}).format(nextPayment.amount)
 		: ''
 
 	const isPendingOrOverdue =
@@ -35,10 +35,10 @@ const Home = () => {
 		nextPayment?.status === PaymentStatus.OVERDUE
 
 	const formattedMonthlyRent = activeLease
-		? new Intl.NumberFormat('en-GB', {
+		? new Intl.NumberFormat('en-US', {
 				style: 'currency',
-				currency: 'GBP',
-			}).format(activeLease.monthlyRent / 100)
+				currency: 'USD',
+			}).format(activeLease.monthlyRent)
 		: ''
 
 	const formattedLeaseDates = activeLease
@@ -318,8 +318,10 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	paymentAmount: {
-		fontSize: 28,
+		fontSize: 22,
+		lineHeight: 32,
 		color: colors.neutral['700'],
+		flexShrink: 1,
 	},
 	caughtUpContainer: {
 		alignItems: 'center',

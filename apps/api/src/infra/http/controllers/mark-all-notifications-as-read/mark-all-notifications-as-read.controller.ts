@@ -1,8 +1,8 @@
 import {
 	Controller,
 	Patch,
-	NotFoundException,
 	HttpStatus,
+	UnauthorizedException,
 } from '@nestjs/common'
 import {
 	ApiTags,
@@ -11,9 +11,7 @@ import {
 	ApiBearerAuth,
 } from '@nestjs/swagger'
 import { MarkAllNotificationsAsReadUseCase } from '@/domain/notification/application/use-cases/mark-all-notifications-as-read'
-import { ClientNotFoundError } from '@/domain/financial-management/application/use-cases/errors/client-not-found-error'
 import { MarkAllNotificationsAsReadResponseDTO } from '../../DTOs/notification/mark-all-notifications-as-read-response-dto'
-import { MarkAllNotificationsAsReadNotFoundDTO } from '../../DTOs/notification/mark-all-notifications-as-read-not-found-dto'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
 import { HttpUserResponse } from '../../presenters/http-user-presenter'
 
@@ -24,10 +22,6 @@ export class MarkAllNotificationsAsReadController {
 		private readonly markAllNotificationsAsReadUseCase: MarkAllNotificationsAsReadUseCase,
 	) {}
 
-	private errorMap = {
-		[ClientNotFoundError.name]: NotFoundException,
-	}
-
 	@Patch()
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Mark all notifications as read for current user' })
@@ -36,31 +30,23 @@ export class MarkAllNotificationsAsReadController {
 		description: 'All notifications marked as read',
 		type: MarkAllNotificationsAsReadResponseDTO,
 	})
-	@ApiResponse({
-		status: HttpStatus.NOT_FOUND,
-		description: 'Person or notifications not found',
-		type: MarkAllNotificationsAsReadNotFoundDTO,
-	})
 	async markAllAsRead(
 		@CurrentUser() user: HttpUserResponse,
 	): Promise<MarkAllNotificationsAsReadResponseDTO> {
 		const personId = user.id
 
-		if (!user || !personId) {
-			throw this.errorMap[ClientNotFoundError.name]
+		if (!personId) {
+			throw new UnauthorizedException()
 		}
 
 		const result = await this.markAllNotificationsAsReadUseCase.execute({
 			personId,
 		})
 
-		if (result.isLeft()) {
-			const error = result.value
-			const exception =
-				this.errorMap[error.constructor.name] || NotFoundException
-
-			throw new exception(error.message)
+		if (result.isRight()) {
+			return { count: result.value.count }
 		}
-		return { count: result.value.count }
+
+		return { count: 0 }
 	}
 }

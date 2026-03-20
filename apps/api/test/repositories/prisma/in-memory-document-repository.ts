@@ -128,6 +128,38 @@ export class InMemoryDocumentRepository implements DocumentRepository {
 		}))
 	}
 
+	async getAllGroupedByDocumentType(): Promise<FolderSummary[] | null> {
+		if (this.items.length === 0) return null
+
+		const folderMap = new Map<
+			string,
+			{ fileCount: number; totalFileSizeSum: number; mostRecentUpdatedDate: Date | null }
+		>()
+
+		for (const doc of this.items) {
+			const folder = doc.folder.value
+			const fileSize = doc.fileSize ?? 0
+			const updatedAt = doc.updatedAt ?? doc.createdAt
+			const entry = folderMap.get(folder)
+			if (!entry) {
+				folderMap.set(folder, { fileCount: 1, totalFileSizeSum: fileSize, mostRecentUpdatedDate: updatedAt })
+			} else {
+				entry.fileCount += 1
+				entry.totalFileSizeSum += fileSize
+				if (!entry.mostRecentUpdatedDate || updatedAt > entry.mostRecentUpdatedDate) {
+					entry.mostRecentUpdatedDate = updatedAt
+				}
+			}
+		}
+
+		return Array.from(folderMap.entries()).map(([folderName, data]) => ({
+			folderName,
+			fileCount: data.fileCount,
+			totalFileSizeSum: data.totalFileSizeSum,
+			mostRecentUpdatedDate: data.mostRecentUpdatedDate,
+		}))
+	}
+
 	async getRecentlyViewedAt(
 		clientId: string,
 		limit = 10,

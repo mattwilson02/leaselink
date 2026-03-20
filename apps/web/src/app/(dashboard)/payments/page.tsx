@@ -129,7 +129,9 @@ export default function PaymentsPage() {
           }}
         >
           <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filter by status">
+              {(value: string) => value === ALL_STATUSES ? "All statuses" : PAYMENT_STATUS_LABELS[value as PaymentStatus] ?? value}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_STATUSES}>All statuses</SelectItem>

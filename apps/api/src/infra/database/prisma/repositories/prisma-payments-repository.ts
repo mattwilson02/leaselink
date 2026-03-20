@@ -155,4 +155,14 @@ export class PrismaPaymentsRepository implements PaymentsRepository {
 		})
 		return PrismaPaymentMapper.toDomain(updated)
 	}
+
+	async deleteUnpaidByLeaseId(leaseId: string): Promise<number> {
+		const result = await this.prisma.payment.deleteMany({
+			where: {
+				leaseId,
+				status: { in: ['PENDING', 'UPCOMING'] },
+			},
+		})
+		return result.count
+	}
 }

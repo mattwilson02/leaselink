@@ -1,6 +1,7 @@
 import { GetLeasesByTenantController } from './get-leases-by-tenant.controller'
 import { GetLeasesUseCase } from '@/domain/lease-management/application/use-cases/get-leases'
 import { InMemoryLeasesRepository } from 'test/repositories/prisma/in-memory-leases-repository'
+import { InMemoryPropertiesRepository } from 'test/repositories/prisma/in-memory-properties-repository'
 import { makeLease } from 'test/factories/make-lease'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { LeaseStatus } from '@/domain/lease-management/enterprise/entities/value-objects/lease-status'
@@ -27,13 +28,15 @@ function makeManagerUser(id = 'manager-1'): HttpUserResponse {
 
 describe('GetLeasesByTenantController', () => {
 	let leasesRepository: InMemoryLeasesRepository
+	let propertiesRepository: InMemoryPropertiesRepository
 	let getLeasesUseCase: GetLeasesUseCase
 	let sut: GetLeasesByTenantController
 
 	beforeEach(() => {
 		leasesRepository = new InMemoryLeasesRepository()
+		propertiesRepository = new InMemoryPropertiesRepository()
 		getLeasesUseCase = new GetLeasesUseCase(leasesRepository)
-		sut = new GetLeasesByTenantController(getLeasesUseCase)
+		sut = new GetLeasesByTenantController(getLeasesUseCase, propertiesRepository)
 	})
 
 	it('returns tenant leases with pagination meta', async () => {

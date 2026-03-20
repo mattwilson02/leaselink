@@ -145,6 +145,26 @@ export class PrismaDocumentRepository implements DocumentRepository {
 		}))
 	}
 
+	async getAllGroupedByDocumentType(): Promise<FolderSummary[] | null> {
+		const documentsByFolder = await this.prisma.document.groupBy({
+			by: ['folder'],
+			_count: { folder: true },
+			_sum: { fileSize: true },
+			_max: { updatedAt: true },
+		})
+
+		if (documentsByFolder.length === 0) {
+			return null
+		}
+
+		return documentsByFolder.map((group) => ({
+			folderName: group.folder,
+			fileCount: group._count.folder,
+			totalFileSizeSum: group._sum.fileSize ?? 0,
+			mostRecentUpdatedDate: group._max.updatedAt ?? null,
+		}))
+	}
+
 	async getRecentlyViewedAt(
 		clientId: string,
 		limit = 10,

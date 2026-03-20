@@ -32,6 +32,14 @@ export const requestTypeIcon: Record<
 		name: 'passcode-lock',
 		strokeWidth: 2,
 	},
+	[documentRequestDTORequestTypeEnum.SIGNED_LEASE]: {
+		name: 'file-05',
+		strokeWidth: 1.33,
+	},
+	[documentRequestDTORequestTypeEnum.MOVE_IN_CHECKLIST]: {
+		name: 'check-verified-01',
+		strokeWidth: 1.33,
+	},
 }
 
 const statusText: Record<

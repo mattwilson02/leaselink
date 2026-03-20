@@ -40,7 +40,7 @@ export const useInitialRoute = () => {
 				return
 			}
 
-			router.replace('/(main)/documents')
+			router.replace('/(main)/home')
 		} catch (error) {
 			console.error('Error during biometric authentication:', error)
 		}
@@ -96,7 +96,7 @@ export const useInitialRoute = () => {
 				return
 			}
 
-			router.replace('/(main)/documents')
+			router.replace('/(main)/home')
 			return
 		}
 	}, [router, isSignedIn, getUser, hasCredentials, handleBiometrics])

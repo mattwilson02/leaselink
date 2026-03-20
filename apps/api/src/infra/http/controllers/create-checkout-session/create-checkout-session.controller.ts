@@ -4,6 +4,7 @@ import { PaymentAlreadyPaidError } from '@/domain/payment/application/use-cases/
 import { PaymentNotPayableError } from '@/domain/payment/application/use-cases/errors/payment-not-payable-error'
 import {
 	BadRequestException,
+	Body,
 	ConflictException,
 	Controller,
 	HttpCode,
@@ -42,7 +43,11 @@ export class CreateCheckoutSessionController {
 	@ApiResponse({ status: 200, description: 'Checkout session URL' })
 	@ApiResponse({ status: 404, description: 'Payment not found' })
 	@ApiResponse({ status: 409, description: 'Payment already paid' })
-	async handle(@CurrentUser() user: HttpUserResponse, @Param('id') id: string) {
+	async handle(
+		@CurrentUser() user: HttpUserResponse,
+		@Param('id') id: string,
+		@Body() body?: { successUrl?: string; cancelUrl?: string },
+	) {
 		if (user.type !== 'CLIENT') {
 			throw new UnauthorizedException('Only tenants can initiate payments')
 		}
@@ -50,8 +55,8 @@ export class CreateCheckoutSessionController {
 		const response = await this.createCheckoutSession.execute({
 			paymentId: id,
 			tenantId: user.id,
-			successUrl: this.envService.get('STRIPE_SUCCESS_URL'),
-			cancelUrl: this.envService.get('STRIPE_CANCEL_URL'),
+			successUrl: body?.successUrl || this.envService.get('STRIPE_SUCCESS_URL'),
+			cancelUrl: body?.cancelUrl || this.envService.get('STRIPE_CANCEL_URL'),
 		})
 
 		if (response.isLeft()) {

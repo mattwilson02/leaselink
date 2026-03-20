@@ -75,7 +75,9 @@ export function ChangeStatusDialog({
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select new status" />
+                <SelectValue placeholder="Select new status">
+                  {(value: string) => PROPERTY_STATUS_LABELS[value as PropertyStatus] ?? value}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {validTransitions.map((status) => (

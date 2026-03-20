@@ -1,6 +1,10 @@
 import { ValueObject } from '@/core/entities/value-object'
 
-export type DocumentRequestTypeType = 'PROOF_OF_ADDRESS' | 'PROOF_OF_IDENTITY'
+export type DocumentRequestTypeType =
+	| 'PROOF_OF_ADDRESS'
+	| 'PROOF_OF_IDENTITY'
+	| 'SIGNED_LEASE'
+	| 'MOVE_IN_CHECKLIST'
 
 interface DocumentRequestTypeProps {
 	value: DocumentRequestTypeType
@@ -11,6 +15,8 @@ export class DocumentRequestType extends ValueObject<DocumentRequestTypeProps> {
 	private static ALLOWED_VALUES: DocumentRequestTypeType[] = [
 		'PROOF_OF_ADDRESS',
 		'PROOF_OF_IDENTITY',
+		'SIGNED_LEASE',
+		'MOVE_IN_CHECKLIST',
 	]
 
 	private constructor(props: DocumentRequestTypeProps) {

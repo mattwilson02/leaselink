@@ -210,7 +210,7 @@ const MaintenanceDetail = () => {
 					</View>
 
 					{/* Photos */}
-					{request.photoUrls && request.photoUrls.length > 0 && (
+					{request.photos && request.photos.length > 0 && (
 						<View style={styles.section}>
 							<Text fontWeight='bold' style={styles.sectionTitle}>
 								{t('photos')}
@@ -220,7 +220,7 @@ const MaintenanceDetail = () => {
 								showsHorizontalScrollIndicator={false}
 								contentContainerStyle={styles.photosRow}
 							>
-								{request.photoUrls.map((url, index) => (
+								{request.photos.map((url, index) => (
 									<Image
 										key={`${url}-${index}`}
 										source={{ uri: url }}

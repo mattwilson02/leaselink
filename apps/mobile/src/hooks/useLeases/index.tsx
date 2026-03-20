@@ -1,6 +1,6 @@
 import api from '@/services/api'
 import { useQuery } from '@tanstack/react-query'
-import { LeaseStatus, PropertyType } from '@leaselink/shared'
+import { LeaseStatus, type PropertyType } from '@leaselink/shared'
 
 export interface LeaseDTO {
 	id: string
@@ -30,7 +30,7 @@ export interface LeaseWithProperty extends LeaseDTO {
 }
 
 interface TenantLeasesResponse {
-	leases: LeaseWithProperty[]
+	data: LeaseWithProperty[]
 }
 
 export const useMyLeases = () => {
@@ -43,7 +43,7 @@ export const useMyLeases = () => {
 		retry: false,
 	})
 
-	return { leases: data?.leases ?? [], isLoading, isError }
+	return { leases: data?.data ?? [], isLoading, isError }
 }
 
 export const useMyActiveLease = () => {

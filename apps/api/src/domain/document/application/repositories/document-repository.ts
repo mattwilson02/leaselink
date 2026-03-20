@@ -25,6 +25,7 @@ export abstract class DocumentRepository {
 	abstract getManyByClientIdGroupedByDocumentType(
 		clientId: string,
 	): Promise<FolderSummary[] | null>
+	abstract getAllGroupedByDocumentType(): Promise<FolderSummary[] | null>
 	abstract getRecentlyViewedAt(
 		clientId: string,
 		limit?: number,

@@ -9,6 +9,7 @@ import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { InvalidLeaseStatusTransitionError } from './errors/invalid-lease-status-transition-error'
 import { LeaseStatusType } from '../../enterprise/entities/value-objects/lease-status'
 import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
+import { PaymentsRepository } from '@/domain/payment/application/repositories/payments-repository'
 
 export interface UpdateLeaseStatusUseCaseRequest {
 	leaseId: string
@@ -25,6 +26,7 @@ export class UpdateLeaseStatusUseCase {
 	constructor(
 		private leasesRepository: LeasesRepository,
 		private propertiesRepository: PropertiesRepository,
+		private paymentsRepository: PaymentsRepository,
 		@Optional()
 		private generateLeasePaymentsUseCase?: GenerateLeasePaymentsUseCase,
 	) {}
@@ -78,6 +80,8 @@ export class UpdateLeaseStatusUseCase {
 				property.status = 'VACANT'
 				await this.propertiesRepository.update(property)
 			}
+
+			await this.paymentsRepository.deleteUnpaidByLeaseId(leaseId)
 		}
 
 		const updatedLease = await this.leasesRepository.update(lease)

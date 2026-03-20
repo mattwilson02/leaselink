@@ -59,13 +59,13 @@ const CreateMaintenanceRequest = () => {
 	const { data: activeLease, isLoading: leaseLoading } = useQuery({
 		queryKey: ['leases', 'tenant', 'active'],
 		queryFn: async () => {
-			const response = await api.get<{ leases: ActiveLease[] }>(
+			const response = await api.get<{ data: ActiveLease[] }>(
 				'/leases/tenant',
 				{
 					params: { status: 'ACTIVE' },
 				},
 			)
-			const leases = response.data?.leases ?? []
+			const leases = response.data?.data ?? []
 			return leases.find((l) => l.status === 'ACTIVE') ?? null
 		},
 	})
@@ -439,6 +439,7 @@ const CreateMaintenanceRequest = () => {
 							testID='cancel-button'
 							variant='secondary'
 							color='neutral'
+							size='md'
 							onPress={() => router.back()}
 							disabled={isPending}
 							style={{ flex: 1 }}
@@ -447,6 +448,7 @@ const CreateMaintenanceRequest = () => {
 						</Button.Root>
 						<Button.Root
 							testID='submit-button'
+							size='md'
 							onPress={handleSubmit}
 							disabled={isPending || leaseLoading || !activeLease}
 							style={{ flex: 1 }}

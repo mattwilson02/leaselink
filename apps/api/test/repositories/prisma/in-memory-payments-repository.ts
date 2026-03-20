@@ -112,4 +112,16 @@ export class InMemoryPaymentsRepository implements PaymentsRepository {
 		}
 		return payment
 	}
+
+	async deleteUnpaidByLeaseId(leaseId: string): Promise<number> {
+		const before = this.items.length
+		this.items = this.items.filter(
+			(p) =>
+				!(
+					p.leaseId.toString() === leaseId &&
+					(p.status === 'PENDING' || p.status === 'UPCOMING')
+				),
+		)
+		return before - this.items.length
+	}
 }

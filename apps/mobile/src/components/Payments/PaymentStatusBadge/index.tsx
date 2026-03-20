@@ -17,8 +17,8 @@ const PAYMENT_STATUS_LABELS: Record<string, string> = {
 
 const statusColors: Record<string, { background: string; text: string }> = {
 	[PaymentStatus.UPCOMING]: {
-		background: colors.neutral['100'],
-		text: colors.neutral['500'],
+		background: colors.neutral['600'],
+		text: '#FFFFFF',
 	},
 	[PaymentStatus.PENDING]: {
 		background: '#DBEAFE',

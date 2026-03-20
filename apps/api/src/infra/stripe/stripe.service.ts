@@ -47,6 +47,14 @@ export class StripeServiceImpl extends AbstractStripeService {
 		};
 	}
 
+	async retrieveSession(sessionId: string): Promise<{ paymentStatus: string; paymentIntentId: string | null }> {
+		const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+		return {
+			paymentStatus: session.payment_status,
+			paymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+		};
+	}
+
 	constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
 		return this.stripe.webhooks.constructEvent(
 			payload,

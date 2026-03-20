@@ -42,11 +42,11 @@ export default function SignInPage() {
   async function onSubmit(data: SignInValues) {
     setError(null);
     try {
-      const result = await apiClient.post<{ data: { accessToken: string } }>(
-        "/auth/sign-in",
+      const result = await apiClient.post<{ token: string }>(
+        "/api/auth/sign-in/email",
         data
       );
-      setAuthToken(result.data.accessToken);
+      setAuthToken(result.token);
       router.push("/");
     } catch (err) {
       setError(

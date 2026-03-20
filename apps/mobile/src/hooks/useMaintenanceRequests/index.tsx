@@ -1,7 +1,7 @@
 import api from '@/services/api'
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import type { MaintenanceStatus } from '@leaselink/shared'
-import * as ImagePicker from 'expo-image-picker'
+import type * as ImagePicker from 'expo-image-picker'
 
 export interface MaintenanceRequestDTO {
 	id: string
@@ -12,7 +12,7 @@ export interface MaintenanceRequestDTO {
 	category: string
 	priority: string
 	status: string
-	photoUrls?: string[]
+	photos?: string[]
 	createdAt: string
 	updatedAt: string
 	resolvedAt?: string | null
@@ -32,9 +32,9 @@ interface CreateMaintenanceRequestInput {
 	photos?: ImagePicker.ImagePickerAsset[]
 }
 
-interface UploadUrlItem {
-	blobKey: string
-	uploadUrl: string
+interface UploadPhotosResponse {
+	uploadUrls: string[]
+	blobKeys: string[]
 }
 
 const PAGE_SIZE = 10
@@ -71,7 +71,14 @@ export const useMaintenanceRequest = (id: string) => {
 			const response = await api.get<{ maintenanceRequest: MaintenanceRequestDTO }>(
 				`/maintenance-requests/${id}`,
 			)
-			return response.data.maintenanceRequest
+			const request = response.data.maintenanceRequest
+			// Replace blob storage hostname for local dev
+			if (request.photos) {
+				request.photos = request.photos.map((url) =>
+					url.replace('backend-blob-storage', 'localhost'),
+				)
+			}
+			return request
 		},
 		enabled: !!id,
 	})
@@ -103,22 +110,21 @@ export const useCreateMaintenanceRequest = () => {
 					contentType: photo.mimeType || 'image/jpeg',
 				}))
 
-				const uploadUrlsResponse = await api.post<{ uploadUrls: UploadUrlItem[] }>(
+				const uploadUrlsResponse = await api.post<UploadPhotosResponse>(
 					`/maintenance-requests/${maintenanceRequest.id}/photos`,
 					{ files },
 				)
 
-				const uploadUrls = uploadUrlsResponse.data.uploadUrls
+				const { uploadUrls, blobKeys } = uploadUrlsResponse.data
 
 				// Step 3: Upload each photo directly to blob storage
 				await Promise.all(
-					uploadUrls.map(async (uploadItem, index) => {
-						const photo = input.photos![index]
+					uploadUrls.map(async (uploadUrl, index) => {
+						const photo = (input.photos as ImagePicker.ImagePickerAsset[])[index]
 						const fileResponse = await fetch(photo.uri)
 						const fileBlob = await fileResponse.blob()
 
-						// TODO: replace blob storage hostname for dev environment
-						const mobileAccessibleUrl = uploadItem.uploadUrl.replace(
+						const mobileAccessibleUrl = uploadUrl.replace(
 							'backend-blob-storage',
 							'localhost',
 						)
@@ -131,13 +137,8 @@ export const useCreateMaintenanceRequest = () => {
 								'x-ms-blob-type': 'BlockBlob',
 							},
 						})
-
-						return uploadItem.blobKey
 					}),
 				)
-
-				// Step 4: Confirm photo upload
-				const blobKeys = uploadUrls.map((item) => item.blobKey)
 				await api.post(`/maintenance-requests/${maintenanceRequest.id}/photos/confirm`, {
 					blobKeys,
 				})
