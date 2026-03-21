@@ -7,6 +7,7 @@ import { PropertiesRepository } from '@/domain/property-management/application/r
 import { ExpensesRepository } from '@/domain/expense-management/application/repositories/expenses-repository'
 import { VendorsRepository } from '@/domain/expense-management/application/repositories/vendors-repository'
 import { AuditLogsRepository } from '@/domain/audit/application/repositories/audit-logs-repository'
+import { SignatureRepository } from '@/domain/signature/application/repositories/signature-repository'
 import { Module } from '@nestjs/common'
 import { PrismaService } from './prisma/prisma.service'
 import { PrismaClientsRepository } from './prisma/repositories/prisma-clients-repository'
@@ -24,6 +25,7 @@ import { PrismaDocumentRequestRepository } from './prisma/repositories/prisma-do
 import { PrismaExpensesRepository } from './prisma/repositories/prisma-expenses-repository'
 import { PrismaVendorsRepository } from './prisma/repositories/prisma-vendors-repository'
 import { PrismaAuditLogsRepository } from './prisma/repositories/prisma-audit-logs-repository'
+import { PrismaSignatureRepository } from './prisma/repositories/prisma-signature-repository'
 
 @Module({
 	providers: [
@@ -76,6 +78,10 @@ import { PrismaAuditLogsRepository } from './prisma/repositories/prisma-audit-lo
 			provide: AuditLogsRepository,
 			useClass: PrismaAuditLogsRepository,
 		},
+		{
+			provide: SignatureRepository,
+			useClass: PrismaSignatureRepository,
+		},
 	],
 	exports: [
 		PrismaService,
@@ -91,6 +97,7 @@ import { PrismaAuditLogsRepository } from './prisma/repositories/prisma-audit-lo
 		ExpensesRepository,
 		VendorsRepository,
 		AuditLogsRepository,
+		SignatureRepository,
 	],
 })
 export class DatabaseModule {}
