@@ -10,6 +10,7 @@ interface MaintenanceRequestFilters {
   priority?: string;
   category?: string;
   propertyId?: string;
+  tenantId?: string;
   page?: number;
   pageSize?: number;
 }
@@ -20,6 +21,7 @@ function buildQueryString(filters: MaintenanceRequestFilters): string {
   if (filters.priority) params.set("priority", filters.priority);
   if (filters.category) params.set("category", filters.category);
   if (filters.propertyId) params.set("propertyId", filters.propertyId);
+  if (filters.tenantId) params.set("tenantId", filters.tenantId);
   if (filters.page) params.set("page", String(filters.page));
   if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
   const qs = params.toString();

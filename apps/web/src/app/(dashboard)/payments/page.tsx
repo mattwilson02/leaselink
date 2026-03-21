@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, AlertCircle, Zap } from "lucide-react";
+import { Eye, AlertCircle, Zap, Download } from "lucide-react";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -67,6 +68,31 @@ export default function PaymentsPage() {
   const totalPages = Math.ceil(totalCount / pageSize) || 1;
 
   const markOverdueMutation = useMarkOverduePayments();
+  const [isExporting, setIsExporting] = useState(false);
+
+  async function handleExportCsv() {
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter !== ALL_STATUSES) params.set("status", statusFilter);
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
+      const url = `${baseUrl}/payments/export${params.toString() ? `?${params.toString()}` : ""}`;
+      const token = Cookies.get("auth_token");
+      const headers: HeadersInit = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const response = await fetch(url, { headers });
+      if (!response.ok) throw new Error("Export failed");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `payments-export.csv`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   function handleMarkOverdue() {
     markOverdueMutation.mutate(undefined, {
@@ -115,6 +141,15 @@ export default function PaymentsPage() {
           >
             <Zap className="mr-2 h-3.5 w-3.5" />
             Generate Payments
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCsv}
+            disabled={isExporting}
+          >
+            <Download className="mr-2 h-3.5 w-3.5" />
+            {isExporting ? "Exporting..." : "Download CSV"}
           </Button>
         </div>
       </div>

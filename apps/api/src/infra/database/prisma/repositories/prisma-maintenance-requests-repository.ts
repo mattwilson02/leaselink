@@ -55,6 +55,10 @@ export class PrismaMaintenanceRequestsRepository
 			where.propertyId = params.propertyId
 		}
 
+		if (params.tenantId) {
+			where.tenantId = params.tenantId
+		}
+
 		const [requests, totalCount] = await Promise.all([
 			this.prisma.maintenanceRequest.findMany({
 				where,

@@ -5,6 +5,7 @@ export interface MaintenanceRequestsFilterParams {
 	priority?: string
 	category?: string
 	propertyId?: string
+	tenantId?: string
 	managerId?: string
 	page: number
 	pageSize: number
