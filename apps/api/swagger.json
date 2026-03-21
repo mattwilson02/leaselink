@@ -498,27 +498,27 @@
             }
           },
           {
-            "name": "limit",
+            "name": "pageSize",
             "required": false,
             "in": "query",
-            "description": "Pagination limit",
+            "description": "Number of items per page",
             "schema": {
               "example": 10
             }
           },
           {
-            "name": "offset",
+            "name": "page",
             "required": false,
             "in": "query",
-            "description": "Pagination offset",
+            "description": "Page number",
             "schema": {
-              "example": 0
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of notifications by personId",
+            "description": "Paginated list of notifications for current user",
             "content": {
               "application/json": {
                 "schema": {
@@ -526,9 +526,6 @@
                 }
               }
             }
-          },
-          "204": {
-            "description": "No notifications found for the given personId"
           }
         },
         "security": [
@@ -662,27 +659,27 @@
             }
           },
           {
-            "name": "limit",
+            "name": "pageSize",
             "required": false,
             "in": "query",
-            "description": "Pagination limit",
+            "description": "Number of items per page",
             "schema": {
               "example": 10
             }
           },
           {
-            "name": "offset",
+            "name": "page",
             "required": false,
             "in": "query",
-            "description": "Pagination offset",
+            "description": "Page number",
             "schema": {
-              "example": 0
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of documents by clientId",
+            "description": "Paginated list of documents by clientId",
             "content": {
               "application/json": {
                 "schema": {
@@ -690,9 +687,6 @@
                 }
               }
             }
-          },
-          "204": {
-            "description": "No documents found for the given clientId"
           },
           "404": {
             "description": "Client not found"

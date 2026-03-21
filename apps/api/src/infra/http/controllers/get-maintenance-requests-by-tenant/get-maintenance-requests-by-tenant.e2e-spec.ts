@@ -100,11 +100,15 @@ describe('GetMaintenanceRequestsByTenantController (E2E)', () => {
 			})
 			.expect(200)
 
-		expect(response.body.maintenanceRequests).toBeDefined()
-		expect(Array.isArray(response.body.maintenanceRequests)).toBe(true)
-		expect(typeof response.body.totalCount).toBe('number')
+		expect(response.body.data).toBeDefined()
+		expect(Array.isArray(response.body.data)).toBe(true)
+		expect(response.body.meta).toBeDefined()
+		expect(typeof response.body.meta.totalCount).toBe('number')
+		expect(typeof response.body.meta.page).toBe('number')
+		expect(typeof response.body.meta.pageSize).toBe('number')
+		expect(typeof response.body.meta.totalPages).toBe('number')
 		// biome-ignore lint/suspicious/noExplicitAny: test assertion
-		const ids = response.body.maintenanceRequests.map((r: any) => r.id)
+		const ids = response.body.data.map((r: any) => r.id)
 		expect(ids).toContain(maintenanceRequest.id)
 	})
 

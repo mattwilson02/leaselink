@@ -39,7 +39,7 @@ export function useProperty(id: string) {
   return useQuery({
     queryKey: ["properties", id],
     queryFn: () =>
-      apiClient.get<{ property: Property }>(`/properties/${id}`),
+      apiClient.get<{ data: Property }>(`/properties/${id}`),
     enabled: !!id,
   });
 }

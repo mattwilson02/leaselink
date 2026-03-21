@@ -62,12 +62,13 @@ describe('Get Documents by Client Id', () => {
 
 		expect(result.isRight()).toBeTruthy()
 		if (result.isRight()) {
-			expect(result.value).toEqual({
-				documents: expect.arrayContaining([
+			expect(result.value.documents).toEqual(
+				expect.arrayContaining([
 					expect.objectContaining({ name: 'Document 1', clientId }),
 					expect.objectContaining({ name: 'Document 2', clientId }),
 				]),
-			})
+			)
+			expect(result.value.totalCount).toBe(2)
 		}
 	})
 
@@ -88,6 +89,7 @@ describe('Get Documents by Client Id', () => {
 		expect(result.isRight()).toBeTruthy()
 		expect(result.value).toEqual({
 			documents: [],
+			totalCount: 0,
 		})
 	})
 

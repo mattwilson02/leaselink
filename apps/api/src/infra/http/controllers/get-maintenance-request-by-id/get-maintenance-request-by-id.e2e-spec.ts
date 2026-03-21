@@ -97,10 +97,10 @@ describe('GetMaintenanceRequestByIdController (E2E)', () => {
 			})
 			.expect(200)
 
-		expect(response.body.maintenanceRequest).toBeDefined()
-		expect(response.body.maintenanceRequest.id).toBe(maintenanceRequest.id)
-		expect(response.body.maintenanceRequest.category).toBe('HVAC')
-		expect(Array.isArray(response.body.maintenanceRequest.photos)).toBe(true)
+		expect(response.body.data).toBeDefined()
+		expect(response.body.data.id).toBe(maintenanceRequest.id)
+		expect(response.body.data.category).toBe('HVAC')
+		expect(Array.isArray(response.body.data.photos)).toBe(true)
 	})
 
 	it('[GET] /maintenance-requests/:id - should return 404 when not found', async () => {

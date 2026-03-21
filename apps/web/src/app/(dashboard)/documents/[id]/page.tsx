@@ -60,7 +60,7 @@ export default function DocumentDetailPage() {
 
   const [metadataOpen, setMetadataOpen] = useState(false);
 
-  const document = docData?.document;
+  const document = docData?.data;
 
   const isSignableFolder = !!document && SIGNABLE_FOLDERS.includes(document.folder);
 

@@ -56,6 +56,6 @@ export class GetExpenseByIdController {
 			throw new exceptionClass(error.message)
 		}
 
-		return { expense: HttpExpensePresenter.toHTTP(response.value.expense) }
+		return { data: HttpExpensePresenter.toHTTP(response.value.expense) }
 	}
 }

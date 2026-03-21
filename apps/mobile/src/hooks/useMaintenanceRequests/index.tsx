@@ -5,7 +5,7 @@ import {
 	useQuery,
 	useQueryClient,
 } from '@tanstack/react-query'
-import type { MaintenanceStatus } from '@leaselink/shared'
+import type { MaintenanceStatus, PaginationMeta } from '@leaselink/shared'
 import type * as ImagePicker from 'expo-image-picker'
 
 export interface MaintenanceRequestDTO {
@@ -24,8 +24,8 @@ export interface MaintenanceRequestDTO {
 }
 
 interface MaintenanceRequestsResponse {
-	maintenanceRequests: MaintenanceRequestDTO[]
-	totalCount: number
+	data: MaintenanceRequestDTO[]
+	meta: PaginationMeta
 }
 
 interface CreateMaintenanceRequestInput {
@@ -61,10 +61,10 @@ export const useMyMaintenanceRequests = (filters?: { status?: string }) => {
 			)
 			return response.data
 		},
-		getNextPageParam: (lastPage, allPages) => {
-			if (!lastPage?.maintenanceRequests) return undefined
-			if (lastPage.maintenanceRequests.length < PAGE_SIZE) return undefined
-			return allPages.length + 1
+		getNextPageParam: (lastPage) => {
+			if (!lastPage?.meta) return undefined
+			if (lastPage.meta.page >= lastPage.meta.totalPages) return undefined
+			return lastPage.meta.page + 1
 		},
 	})
 }
@@ -74,9 +74,9 @@ export const useMaintenanceRequest = (id: string) => {
 		queryKey: ['maintenanceRequests', id],
 		queryFn: async () => {
 			const response = await api.get<{
-				maintenanceRequest: MaintenanceRequestDTO
+				data: MaintenanceRequestDTO
 			}>(`/maintenance-requests/${id}`)
-			const request = response.data.maintenanceRequest
+			const request = response.data.data
 			// Replace blob storage hostname for local dev
 			if (request.photos) {
 				request.photos = request.photos.map((url) =>

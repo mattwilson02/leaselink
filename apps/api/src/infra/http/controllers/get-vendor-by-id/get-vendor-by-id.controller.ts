@@ -56,6 +56,6 @@ export class GetVendorByIdController {
 			throw new exceptionClass(error.message)
 		}
 
-		return { vendor: HttpVendorPresenter.toHTTP(response.value.vendor) }
+		return { data: HttpVendorPresenter.toHTTP(response.value.vendor) }
 	}
 }

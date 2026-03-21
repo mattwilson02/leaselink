@@ -56,10 +56,13 @@ export class GetMaintenanceRequestsByPropertyController {
 		})
 
 		return {
-			maintenanceRequests: HttpMaintenanceRequestPresenter.toHTTPList(
-				response.value.requests,
-			),
-			totalCount: response.value.totalCount,
+			data: HttpMaintenanceRequestPresenter.toHTTPList(response.value.requests),
+			meta: {
+				page: query.page,
+				pageSize: query.pageSize,
+				totalCount: response.value.totalCount,
+				totalPages: Math.ceil(response.value.totalCount / query.pageSize),
+			},
 		}
 	}
 }

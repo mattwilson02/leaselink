@@ -23,7 +23,7 @@ export default function EditVendorPage() {
   const id = params.id as string;
 
   const { data, isLoading } = useVendor(id);
-  const vendor = data?.vendor;
+  const vendor = data?.data;
 
   const updateMutation = useUpdateVendor(id);
 

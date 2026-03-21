@@ -34,7 +34,7 @@ export function useMaintenanceRequests(
   return useQuery({
     queryKey: ["maintenance-requests", filters],
     queryFn: () =>
-      apiClient.get<{ maintenanceRequests: MaintenanceRequest[]; totalCount: number }>(
+      apiClient.get<PaginatedResponse<MaintenanceRequest>>(
         `/maintenance-requests${buildQueryString(filters)}`
       ),
   });
@@ -44,7 +44,7 @@ export function useMaintenanceRequest(id: string) {
   return useQuery({
     queryKey: ["maintenance-requests", id],
     queryFn: () =>
-      apiClient.get<{ maintenanceRequest: MaintenanceRequest }>(`/maintenance-requests/${id}`),
+      apiClient.get<{ data: MaintenanceRequest }>(`/maintenance-requests/${id}`),
     enabled: !!id,
   });
 }
@@ -56,7 +56,7 @@ export function useMaintenanceRequestsByProperty(
   return useQuery({
     queryKey: ["maintenance-requests", "property", propertyId, filters],
     queryFn: () =>
-      apiClient.get<{ maintenanceRequests: MaintenanceRequest[]; totalCount: number }>(
+      apiClient.get<PaginatedResponse<MaintenanceRequest>>(
         `/properties/${propertyId}/maintenance-requests${buildQueryString(filters)}`
       ),
     enabled: !!propertyId,
@@ -81,15 +81,14 @@ export function useMaintenanceRequestsByVendor(vendorId: string) {
   return useQuery({
     queryKey: ["maintenance-requests", "vendor", vendorId],
     queryFn: async () => {
-      const result = await apiClient.get<{
-        maintenanceRequests: MaintenanceRequest[];
-        totalCount: number;
-      }>(`/maintenance-requests${buildQueryString({ pageSize: 200 })}`);
+      const result = await apiClient.get<PaginatedResponse<MaintenanceRequest>>(
+        `/maintenance-requests${buildQueryString({ pageSize: 200 })}`
+      );
       const activeStatuses = [
         MaintenanceStatus.OPEN,
         MaintenanceStatus.IN_PROGRESS,
       ] as string[];
-      return result.maintenanceRequests.filter(
+      return result.data.filter(
         (r) => r.vendorId === vendorId && activeStatuses.includes(r.status)
       );
     },

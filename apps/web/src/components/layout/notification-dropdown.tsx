@@ -146,10 +146,10 @@ function NotificationItem({ notification, onRead }: NotificationItemProps) {
 
 export function NotificationDropdown() {
   const hasUnread = useHasUnreadNotifications();
-  const notifications = useNotifications({ limit: 10 });
+  const notifications = useNotifications({ pageSize: 10 });
   const markAll = useMarkAllNotificationsRead();
 
-  const items = notifications.data?.notifications ?? [];
+  const items = notifications.data?.data ?? [];
 
   return (
     <Popover>

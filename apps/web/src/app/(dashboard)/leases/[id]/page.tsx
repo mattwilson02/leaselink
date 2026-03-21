@@ -70,9 +70,9 @@ export default function LeaseDetailPage() {
   const { data: tenantData } = useTenant(lease?.tenantId ?? "");
   const { data: paymentsData } = usePayments({ leaseId: id, pageSize: 50 });
 
-  const property = propertyData?.property;
+  const property = propertyData?.data;
   const tenant = tenantData?.data;
-  const payments = paymentsData?.payments ?? [];
+  const payments = paymentsData?.data ?? [];
 
   const statusMutation = useUpdateLeaseStatus(id);
 

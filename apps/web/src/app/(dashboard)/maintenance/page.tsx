@@ -84,9 +84,9 @@ export default function MaintenancePage() {
 
   const updateMutation = useUpdateMaintenanceRequestStatus(updateStatusId ?? "");
 
-  const requests = requestsData?.maintenanceRequests ?? [];
-  const totalCount = requestsData?.totalCount ?? 0;
-  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+  const requests = requestsData?.data ?? [];
+  const totalCount = requestsData?.meta?.totalCount ?? 0;
+  const totalPages = requestsData?.meta?.totalPages ?? 1;
 
   const propertiesById = Object.fromEntries(
     (propertiesData?.data ?? []).map((p) => [p.id, p])

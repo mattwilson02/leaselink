@@ -69,9 +69,9 @@ describe('GetPropertyByIdController (E2E)', () => {
 			})
 			.expect(200)
 
-		expect(response.body.property).toBeDefined()
-		expect(response.body.property.id).toBe(property.id)
-		expect(response.body.property.bedrooms).toBe(3)
+		expect(response.body.data).toBeDefined()
+		expect(response.body.data.id).toBe(property.id)
+		expect(response.body.data.bedrooms).toBe(3)
 
 		await prisma.property.delete({ where: { id: property.id } })
 	})

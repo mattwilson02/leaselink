@@ -101,7 +101,7 @@ export default function RenewLeasePage() {
         <CardContent>
           <RenewLeaseForm
             originalLease={lease}
-            property={propertyData?.property}
+            property={propertyData?.data}
             tenant={tenantData?.data}
             isSubmitting={renewMutation.isPending}
             onSubmit={handleSubmit}

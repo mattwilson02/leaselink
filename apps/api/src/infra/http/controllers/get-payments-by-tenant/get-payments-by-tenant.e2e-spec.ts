@@ -115,11 +115,15 @@ describe('GetPaymentsByTenantController (E2E)', () => {
 			})
 			.expect(200)
 
-		expect(response.body.payments).toBeDefined()
-		expect(Array.isArray(response.body.payments)).toBe(true)
-		expect(typeof response.body.totalCount).toBe('number')
+		expect(response.body.data).toBeDefined()
+		expect(Array.isArray(response.body.data)).toBe(true)
+		expect(response.body.meta).toBeDefined()
+		expect(typeof response.body.meta.totalCount).toBe('number')
+		expect(typeof response.body.meta.page).toBe('number')
+		expect(typeof response.body.meta.pageSize).toBe('number')
+		expect(typeof response.body.meta.totalPages).toBe('number')
 		// biome-ignore lint/suspicious/noExplicitAny: test assertion
-		const ids = response.body.payments.map((p: any) => p.id)
+		const ids = response.body.data.map((p: any) => p.id)
 		expect(ids).toContain(payment.id)
 	})
 

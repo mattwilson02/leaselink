@@ -5,7 +5,7 @@ import { apiClient } from "@/lib/api-client";
 import type { Vendor } from "@leaselink/shared";
 
 // GET /vendors returns: { data: VendorHttpResponse[], meta: { page, pageSize, totalCount, totalPages } }
-// GET /vendors/:id returns: { vendor: VendorHttpResponse }
+// GET /vendors/:id returns: { data: VendorHttpResponse }
 // POST /vendors returns: { vendor: VendorHttpResponse }
 // PUT /vendors/:id returns: { vendor: VendorHttpResponse }
 // DELETE /vendors/:id returns: 204 No Content
@@ -28,6 +28,10 @@ interface VendorListResponse {
 }
 
 interface VendorResponse {
+  data: Vendor;
+}
+
+interface VendorMutationResponse {
   vendor: Vendor;
 }
 
@@ -66,7 +70,7 @@ export function useCreateVendor() {
       phone?: string;
       email?: string;
       notes?: string;
-    }) => apiClient.post<VendorResponse>("/vendors", data),
+    }) => apiClient.post<VendorMutationResponse>("/vendors", data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendors"] });
     },
@@ -82,7 +86,7 @@ export function useUpdateVendor(id: string) {
       phone?: string | null;
       email?: string | null;
       notes?: string | null;
-    }) => apiClient.put<VendorResponse>(`/vendors/${id}`, data),
+    }) => apiClient.put<VendorMutationResponse>(`/vendors/${id}`, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["vendors"] });
     },

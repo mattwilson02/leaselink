@@ -115,9 +115,13 @@ describe('GetPaymentsController (E2E)', () => {
 			})
 			.expect(200)
 
-		expect(response.body.payments).toBeDefined()
-		expect(Array.isArray(response.body.payments)).toBe(true)
-		expect(typeof response.body.totalCount).toBe('number')
+		expect(response.body.data).toBeDefined()
+		expect(Array.isArray(response.body.data)).toBe(true)
+		expect(response.body.meta).toBeDefined()
+		expect(typeof response.body.meta.totalCount).toBe('number')
+		expect(typeof response.body.meta.page).toBe('number')
+		expect(typeof response.body.meta.pageSize).toBe('number')
+		expect(typeof response.body.meta.totalPages).toBe('number')
 	})
 
 	it('[GET] /payments - should reject CLIENT auth', async () => {

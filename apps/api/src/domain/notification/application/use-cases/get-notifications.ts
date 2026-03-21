@@ -18,6 +18,7 @@ type GetNotificationsUseCaseResponse = Either<
 	null,
 	{
 		notifications: Notification[]
+		totalCount: number
 	}
 >
 
@@ -32,16 +33,24 @@ export class GetNotificationsUseCase {
 		notificationType,
 		isArchived,
 	}: GetNotificationsUseCaseRequest): Promise<GetNotificationsUseCaseResponse> {
-		const notifications = await this.notificationsRepository.getManyByPersonId(
-			personId,
-			offset,
-			limit,
-			notificationType,
-			isArchived,
-		)
+		const [notifications, totalCount] = await Promise.all([
+			this.notificationsRepository.getManyByPersonId(
+				personId,
+				offset,
+				limit,
+				notificationType,
+				isArchived,
+			),
+			this.notificationsRepository.countByPersonId(
+				personId,
+				notificationType,
+				isArchived,
+			),
+		])
 
 		return right({
 			notifications,
+			totalCount,
 		})
 	}
 }

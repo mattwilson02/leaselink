@@ -44,7 +44,7 @@ export default function VendorDetailPage() {
   const id = params.id as string;
 
   const { data, isLoading } = useVendor(id);
-  const vendor = data?.vendor;
+  const vendor = data?.data;
 
   const { data: assignedRequests, isLoading: isLoadingRequests } =
     useMaintenanceRequestsByVendor(id);

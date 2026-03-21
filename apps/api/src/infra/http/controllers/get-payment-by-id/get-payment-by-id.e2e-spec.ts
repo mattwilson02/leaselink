@@ -112,10 +112,10 @@ describe('GetPaymentByIdController (E2E)', () => {
 			})
 			.expect(200)
 
-		expect(response.body.payment).toBeDefined()
-		expect(response.body.payment.id).toBe(payment.id)
-		expect(response.body.payment.amount).toBe(1500)
-		expect(response.body.payment.status).toBe('PENDING')
+		expect(response.body.data).toBeDefined()
+		expect(response.body.data.id).toBe(payment.id)
+		expect(response.body.data.amount).toBe(1500)
+		expect(response.body.data.status).toBe('PENDING')
 	})
 
 	it('[GET] /payments/:id - should return 404 when not found', async () => {

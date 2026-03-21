@@ -56,10 +56,15 @@ export class GetMaintenanceRequestsController {
 		})
 
 		return {
-			maintenanceRequests: HttpMaintenanceRequestPresenter.toHTTPList(
-				response.value.requests,
-			),
-			totalCount: response.value.totalCount,
+			data: HttpMaintenanceRequestPresenter.toHTTPList(response.value.requests),
+			meta: {
+				page: query.page ?? 1,
+				pageSize: query.pageSize ?? 20,
+				totalCount: response.value.totalCount,
+				totalPages: Math.ceil(
+					response.value.totalCount / (query.pageSize ?? 20),
+				),
+			},
 		}
 	}
 }

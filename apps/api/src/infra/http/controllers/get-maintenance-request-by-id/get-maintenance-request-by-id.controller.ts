@@ -58,7 +58,7 @@ export class GetMaintenanceRequestByIdController {
 		)
 
 		return {
-			maintenanceRequest: {
+			data: {
 				...result,
 				photos: photoUrls,
 			},

@@ -55,7 +55,7 @@ export default function PaymentsPage() {
   const pageSize = 20;
 
   const summaryQuery = usePayments({ pageSize: 200 });
-  const allPayments = summaryQuery.data?.payments ?? [];
+  const allPayments = summaryQuery.data?.data ?? [];
 
   const tableFilters = {
     ...(statusFilter !== ALL_STATUSES ? { status: statusFilter } : {}),
@@ -63,9 +63,9 @@ export default function PaymentsPage() {
     pageSize,
   };
   const { data: paymentsData, isLoading } = usePayments(tableFilters);
-  const payments = paymentsData?.payments ?? [];
-  const totalCount = paymentsData?.totalCount ?? 0;
-  const totalPages = Math.ceil(totalCount / pageSize) || 1;
+  const payments = paymentsData?.data ?? [];
+  const totalCount = paymentsData?.meta?.totalCount ?? 0;
+  const totalPages = paymentsData?.meta?.totalPages ?? 1;
 
   const markOverdueMutation = useMarkOverduePayments();
   const [isExporting, setIsExporting] = useState(false);

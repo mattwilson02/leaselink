@@ -36,7 +36,7 @@ export default function PaymentDetailPage() {
   const id = params.id as string;
 
   const { data: paymentData, isLoading } = usePayment(id);
-  const payment = paymentData?.payment;
+  const payment = paymentData?.data;
 
   if (isLoading) {
     return (

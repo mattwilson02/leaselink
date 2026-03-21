@@ -19,6 +19,13 @@ export abstract class DocumentRepository {
 		createdAtTo?: Date,
 		folders?: DocumentFolderType[],
 	): Promise<Document[] | null>
+	abstract countByClientId(
+		clientId: string,
+		search?: string,
+		createdAtFrom?: Date,
+		createdAtTo?: Date,
+		folders?: DocumentFolderType[],
+	): Promise<number>
 	abstract getById(id: string): Promise<Document | null>
 	abstract create(document: Document): Promise<Either<Error, Document>>
 	abstract getManyByContentKey(contentKey: string): Promise<Document[] | null>

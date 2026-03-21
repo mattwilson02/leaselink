@@ -95,7 +95,7 @@ export default function TenantDetailPage() {
   const { data: requestsData, isLoading: requestsLoading } =
     useDocumentRequests({ limit: 50 });
 
-  const { data: documentsData, isLoading: documentsLoading } = useDocuments({ limit: 100 });
+  const { data: documentsData, isLoading: documentsLoading } = useDocuments({ pageSize: 100 });
 
   const [paymentsPage, setPaymentsPage] = useState(1);
   const paymentsPageSize = 20;
@@ -104,17 +104,17 @@ export default function TenantDetailPage() {
     page: paymentsPage,
     pageSize: paymentsPageSize,
   });
-  const payments = paymentsData?.payments ?? [];
-  const paymentsTotalCount = paymentsData?.totalCount ?? 0;
-  const paymentsTotalPages = Math.ceil(paymentsTotalCount / paymentsPageSize) || 1;
+  const payments = paymentsData?.data ?? [];
+  const paymentsTotalCount = paymentsData?.meta?.totalCount ?? 0;
+  const paymentsTotalPages = paymentsData?.meta?.totalPages ?? 1;
 
   const [maintenancePage, setMaintenancePage] = useState(1);
   const maintenancePageSize = 20;
   const { data: maintenanceData, isLoading: maintenanceLoading } =
     useMaintenanceRequests({ tenantId: id, page: maintenancePage, pageSize: maintenancePageSize });
-  const allMaintenanceRequests = maintenanceData?.maintenanceRequests ?? [];
-  const maintenanceTotalCount = maintenanceData?.totalCount ?? 0;
-  const maintenanceTotalPages = Math.ceil(maintenanceTotalCount / maintenancePageSize) || 1;
+  const allMaintenanceRequests = maintenanceData?.data ?? [];
+  const maintenanceTotalCount = maintenanceData?.meta?.totalCount ?? 0;
+  const maintenanceTotalPages = maintenanceData?.meta?.totalPages ?? 1;
 
   if (isLoading) {
     return (
@@ -148,7 +148,7 @@ export default function TenantDetailPage() {
   const tenantDocumentRequests = (requestsData?.documentRequests ?? []).filter(
     (r) => r.clientId === id
   );
-  const tenantDocuments = documentsData?.documents ?? [];
+  const tenantDocuments = documentsData?.data ?? [];
   const activeLease =
     leaseData?.data && leaseData.data.length > 0 ? leaseData.data[0] : null;
 

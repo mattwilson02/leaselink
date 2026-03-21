@@ -221,15 +221,15 @@ export default function MaintenanceDetailPage() {
   const id = params.id as string;
 
   const { data: requestData, isLoading } = useMaintenanceRequest(id);
-  const request = requestData?.maintenanceRequest;
+  const request = requestData?.data;
 
   const { data: propertyData } = useProperty(request?.propertyId ?? "");
   const { data: tenantData } = useTenant(request?.tenantId ?? "");
   const { data: vendorData } = useVendor(request?.vendorId ?? "");
 
-  const property = propertyData?.property;
+  const property = propertyData?.data;
   const tenant = tenantData?.data;
-  const assignedVendor = vendorData?.vendor;
+  const assignedVendor = vendorData?.data;
 
   const [showUpdateStatus, setShowUpdateStatus] = useState(false);
   const [showAssignVendor, setShowAssignVendor] = useState(false);

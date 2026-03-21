@@ -21,7 +21,7 @@ export default function EditPropertyPage() {
   const { data, isLoading } = useProperty(id);
   const updateMutation = useUpdateProperty(id);
 
-  const property = data?.property;
+  const property = data?.data;
 
   async function handleSubmit(data: PropertyFormValues) {
     try {

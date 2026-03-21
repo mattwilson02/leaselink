@@ -96,9 +96,9 @@ export default function PropertyDetailPage() {
   const maintenancePageSize = 20;
   const { data: maintenanceData, isLoading: maintenanceLoading } =
     useMaintenanceRequests({ propertyId: id, page: maintenancePage, pageSize: maintenancePageSize });
-  const maintenanceRequests = maintenanceData?.maintenanceRequests ?? [];
-  const maintenanceTotalCount = maintenanceData?.totalCount ?? 0;
-  const maintenanceTotalPages = Math.ceil(maintenanceTotalCount / maintenancePageSize) || 1;
+  const maintenanceRequests = maintenanceData?.data ?? [];
+  const maintenanceTotalCount = maintenanceData?.meta?.totalCount ?? 0;
+  const maintenanceTotalPages = maintenanceData?.meta?.totalPages ?? 1;
 
   const [expensesPage, setExpensesPage] = useState(1);
   const expensesPageSize = 20;
@@ -111,15 +111,15 @@ export default function PropertyDetailPage() {
   const expensesTotalCount = expensesData?.meta?.totalCount ?? 0;
   const expensesTotalPages = expensesData?.meta?.totalPages ?? 1;
 
-  const { data: documentsData, isLoading: documentsLoading } = useDocuments({ limit: 200 });
-  const documents = (documentsData?.documents ?? []).filter(
+  const { data: documentsData, isLoading: documentsLoading } = useDocuments({ pageSize: 200 });
+  const documents = (documentsData?.data ?? []).filter(
     (doc) => doc.clientId === activeLease?.tenantId
   );
 
   const [showDelete, setShowDelete] = useState(false);
   const [showStatusChange, setShowStatusChange] = useState(false);
 
-  const property = data?.property;
+  const property = data?.data;
 
   function handleDelete() {
     deleteMutation.mutate(id, {

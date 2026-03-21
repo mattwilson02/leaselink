@@ -51,7 +51,7 @@ describe('GetNotificationsController (E2E)', () => {
 		})
 	})
 
-	it('[GET] /notifications/:personId - should retrieve notifications for a person', async () => {
+	it('[GET] /notifications - should retrieve notifications for a person', async () => {
 		const { jwt } = await jwtFactory.makeJwt(true)
 
 		const oldDate = new Date('2023-01-01T10:00:00.000Z')
@@ -102,12 +102,17 @@ describe('GetNotificationsController (E2E)', () => {
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10 })
+			.query({ page: 1, pageSize: 10 })
 			.expect(200)
 
 		expect(response.body).toBeDefined()
-		expect(response.body.notifications).toHaveLength(3)
-		const notifications = response.body.notifications
+		expect(response.body.data).toHaveLength(3)
+		expect(response.body.meta).toBeDefined()
+		expect(response.body.meta.page).toBe(1)
+		expect(response.body.meta.pageSize).toBe(10)
+		expect(response.body.meta.totalCount).toBe(3)
+		expect(typeof response.body.meta.totalPages).toBe('number')
+		const notifications = response.body.data
 		expect(notifications[0]).toEqual(
 			expect.objectContaining({
 				title: 'Recent Notification',
@@ -130,7 +135,7 @@ describe('GetNotificationsController (E2E)', () => {
 		)
 	})
 
-	it('[GET] /notifications/:personId - should return archived notifications when isArchived=true', async () => {
+	it('[GET] /notifications - should return archived notifications when isArchived=true', async () => {
 		const { jwt } = await jwtFactory.makeJwt(true)
 
 		const archivedDate = new Date('2023-06-01')
@@ -182,12 +187,13 @@ describe('GetNotificationsController (E2E)', () => {
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10, isArchived: 'true' })
+			.query({ page: 1, pageSize: 10, isArchived: 'true' })
 			.expect(200)
 
 		expect(response.body).toBeDefined()
-		expect(response.body.notifications).toHaveLength(2)
-		expect(response.body.notifications).toEqual(
+		expect(response.body.data).toHaveLength(2)
+		expect(response.body.meta.totalCount).toBe(2)
+		expect(response.body.data).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
 					title: 'Archived Notification 1',
@@ -201,14 +207,14 @@ describe('GetNotificationsController (E2E)', () => {
 		)
 
 		// Ensure we only get archived notifications (none with title 'Active Notification')
-		const activeNotifications = response.body.notifications.filter(
+		const activeNotifications = response.body.data.filter(
 			(notification: { title: string }) =>
 				notification.title === 'Active Notification',
 		)
 		expect(activeNotifications).toHaveLength(0)
 	})
 
-	it('[GET] /notifications/:personId - should return only non-archived notifications when isArchived=false or not provided', async () => {
+	it('[GET] /notifications - should return only non-archived notifications when isArchived=false or not provided', async () => {
 		const { jwt } = await jwtFactory.makeJwt(true)
 
 		const archivedDate = new Date('2023-06-01')
@@ -260,12 +266,12 @@ describe('GetNotificationsController (E2E)', () => {
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10, isArchived: false })
+			.query({ page: 1, pageSize: 10, isArchived: false })
 			.expect(200)
 
 		expect(response.body).toBeDefined()
-		expect(response.body.notifications).toHaveLength(2)
-		expect(response.body.notifications).toEqual(
+		expect(response.body.data).toHaveLength(2)
+		expect(response.body.data).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
 					title: 'Active Notification 1',
@@ -279,7 +285,7 @@ describe('GetNotificationsController (E2E)', () => {
 		)
 	})
 
-	it('[GET] /notifications/:personId - should return 204 when no archived notifications exist', async () => {
+	it('[GET] /notifications - should return empty data when no archived notifications exist', async () => {
 		const { jwt } = await jwtFactory.makeJwt(true)
 
 		// Create only non-archived notifications
@@ -300,26 +306,32 @@ describe('GetNotificationsController (E2E)', () => {
 			],
 		})
 
-		await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.get('/notifications')
 			.set({
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10, isArchived: 'true' })
-			.expect(204) // Should return 204 as there are no archived notifications
+			.query({ page: 1, pageSize: 10, isArchived: 'true' })
+			.expect(200)
+
+		expect(response.body.data).toEqual([])
+		expect(response.body.meta.totalCount).toBe(0)
 	})
 
-	it('[GET] /notifications/:personId - should return 204 if no notifications are found', async () => {
+	it('[GET] /notifications - should return empty data if no notifications are found', async () => {
 		const { jwt } = await jwtFactory.makeJwt()
 
-		await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.get('/notifications')
 			.set({
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10 })
-			.expect(204)
+			.query({ page: 1, pageSize: 10 })
+			.expect(200)
+
+		expect(response.body.data).toEqual([])
+		expect(response.body.meta.totalCount).toBe(0)
 	})
 })

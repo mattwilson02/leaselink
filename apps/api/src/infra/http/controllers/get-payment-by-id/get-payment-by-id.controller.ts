@@ -34,7 +34,7 @@ export class GetPaymentByIdController {
 		}
 
 		return {
-			payment: HttpPaymentPresenter.toHTTP(response.value.payment),
+			data: HttpPaymentPresenter.toHTTP(response.value.payment),
 		}
 	}
 }

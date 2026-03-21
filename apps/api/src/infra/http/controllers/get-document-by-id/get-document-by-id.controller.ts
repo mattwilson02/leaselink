@@ -87,7 +87,7 @@ export class GetDocumentByIdController {
 		}
 
 		return res.status(HttpStatus.OK).json({
-			document: HttpDocumentSingleWithUrlPresenter.toHTTP(document),
+			data: HttpDocumentSingleWithUrlPresenter.toHTTP(document),
 		})
 	}
 }

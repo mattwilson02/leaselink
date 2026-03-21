@@ -3,12 +3,14 @@ export interface PaginationParams {
   pageSize: number;
 }
 
+export interface PaginationMeta {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
-  meta: {
-    page: number;
-    pageSize: number;
-    totalCount: number;
-    totalPages: number;
-  };
+  meta: PaginationMeta;
 }
