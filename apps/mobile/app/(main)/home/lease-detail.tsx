@@ -53,7 +53,7 @@ const LeaseDetail = () => {
 					<View style={styles.headerSpacer} />
 				</View>
 				<View style={styles.loadingContainer}>
-					{Array.from({ length: 6 }).map((, i) => (
+					{Array.from({ length: 6 }).map((_, i) => (
 						<View key={i} style={styles.skeleton} />
 					))}
 				</View>

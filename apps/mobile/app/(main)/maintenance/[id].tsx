@@ -84,7 +84,7 @@ const MaintenanceDetail = () => {
 					</Pressable>
 				</View>
 				<View style={styles.loadingContainer}>
-					{Array.from({ length: 5 }).map((, i) => (
+					{Array.from({ length: 5 }).map((_, i) => (
 						<View key={i} style={styles.skeleton} />
 					))}
 				</View>
