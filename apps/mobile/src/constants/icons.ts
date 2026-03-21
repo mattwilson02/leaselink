@@ -26,7 +26,6 @@ import SwitchHorizontal02 from '@/assets/icons/switch-horizontal-02.svg'
 import File06 from '@/assets/icons/file-06.svg'
 import Archive from '@/assets/icons/archive.svg'
 import Settings04 from '@/assets/icons/settings-04.svg'
-import FolderIcon from '@/assets/icons/folder-icon.svg'
 import ArrowLeft from '@/assets/icons/arrow-left.svg'
 import Send01 from '@/assets/icons/send-01.svg'
 import HomeLine from '@/assets/icons/home-line.svg'
@@ -67,7 +66,6 @@ export const iconRegistry = {
 	'file-06': File06,
 	archive: Archive,
 	'settings-04': Settings04,
-	'folder-icon': FolderIcon,
 	'arrow-left': ArrowLeft,
 	'send-01': Send01,
 	'home-line': HomeLine,

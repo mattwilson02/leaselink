@@ -1,10 +1,8 @@
 import { Pressable, View } from 'react-native'
-import { X } from 'lucide-react-native'
+import { X, FolderClosed, Search } from 'lucide-react-native'
 import { Heading, Text } from '@/design-system/components/Typography'
-import { Icon } from '@/components/Icon'
 import { colors } from '@/design-system/theme'
 import { useRouter, useLocalSearchParams } from 'expo-router'
-import { Search } from 'lucide-react-native'
 import DocumentsList from '@/components/Documents/DocumentsList'
 import { useTranslation } from 'react-i18next'
 
@@ -28,21 +26,15 @@ const DocumentFolder = () => {
 					justifyContent: 'space-between',
 				}}
 			>
-				<Icon.Root>
-					<Icon.IconContainer
-						style={{
-							borderColor: 'white',
-							height: 'auto',
-							width: 'auto',
-						}}
-					>
-						<Icon.Icon
-							name='folder-icon'
-							size={54}
-							stroke={colors.primary}
-						/>
-					</Icon.IconContainer>
-				</Icon.Root>
+				<View
+					style={{
+						backgroundColor: colors.secondary,
+						borderRadius: 12,
+						padding: 12,
+					}}
+				>
+					<FolderClosed size={24} color={colors.mutedForeground} />
+				</View>
 
 				<Pressable
 					style={{ padding: 16 }}
