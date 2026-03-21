@@ -10,9 +10,7 @@ type MarkAllNotificationsAsReadUseCaseResponse = Either<null, { count: number }>
 
 @Injectable()
 export class MarkAllNotificationsAsReadUseCase {
-	constructor(
-		private notificationRepository: NotificationRepository,
-	) {}
+	constructor(private notificationRepository: NotificationRepository) {}
 
 	async execute(
 		request: MarkAllNotificationsAsReadUseCaseRequest,

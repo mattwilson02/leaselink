@@ -104,7 +104,11 @@ export class UpdateLeaseStatusUseCase {
 
 		// Side effect: generate payment records only when transitioning from PENDING to ACTIVE
 		// (prevents double-generation if lease was already auto-activated)
-		if (status === 'ACTIVE' && wasPending && this.generateLeasePaymentsUseCase) {
+		if (
+			status === 'ACTIVE' &&
+			wasPending &&
+			this.generateLeasePaymentsUseCase
+		) {
 			await this.generateLeasePaymentsUseCase.execute({ leaseId })
 		}
 

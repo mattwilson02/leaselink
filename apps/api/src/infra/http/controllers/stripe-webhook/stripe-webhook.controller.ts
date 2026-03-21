@@ -47,9 +47,7 @@ export class StripeWebhookController {
 						`Payment not found for Stripe session: ${session.id}`,
 					)
 				} else {
-					this.logger.log(
-						`Payment confirmed for Stripe session: ${session.id}`,
-					)
+					this.logger.log(`Payment confirmed for Stripe session: ${session.id}`)
 				}
 			}
 

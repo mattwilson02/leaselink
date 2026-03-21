@@ -11,7 +11,8 @@ export class HttpNotificationsPresenter {
 			notificationType: notification.notificationType,
 			actionType: notification.actionType ?? null,
 			linkedDocumentId: notification.linkedDocumentId?.toString() ?? null,
-			linkedMaintenanceRequestId: notification.linkedTransactionId?.toString() ?? null,
+			linkedMaintenanceRequestId:
+				notification.linkedTransactionId?.toString() ?? null,
 			linkedPaymentId: notification.linkedPaymentId?.toString() ?? null,
 			isRead: notification.isRead,
 			isActionComplete: notification.isActionComplete,

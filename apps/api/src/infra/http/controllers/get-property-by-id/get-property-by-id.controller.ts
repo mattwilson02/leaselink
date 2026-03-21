@@ -69,7 +69,10 @@ export class GetPropertyByIdController {
 		}
 
 		return {
-			property: HttpPropertyPresenter.toHTTP(response.value.property, this.blobBaseUrl),
+			property: HttpPropertyPresenter.toHTTP(
+				response.value.property,
+				this.blobBaseUrl,
+			),
 		}
 	}
 }

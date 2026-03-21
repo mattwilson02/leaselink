@@ -87,8 +87,11 @@ export class GetDocumentRequestsByClientIdController {
 
 		// Employees (managers) see all document requests
 		if (user.type === 'EMPLOYEE') {
-			const documentRequests =
-				await this.documentRequestRepository.getMany(limit, offset, requestType)
+			const documentRequests = await this.documentRequestRepository.getMany(
+				limit,
+				offset,
+				requestType,
+			)
 
 			return {
 				documentRequests: HttpDocumentRequestsPresenter.toHTTP(
