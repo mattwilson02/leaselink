@@ -4,8 +4,9 @@ import {
 	useGetClientProfilePhotoControllerHandle,
 } from '@/gen/index'
 import { authClient } from '@/services/auth'
-import { Button, Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import {
 	Bell,
@@ -296,7 +297,7 @@ const Profile = () => {
 						onPress={onSignOut}
 					>
 						<Button.Prefix>
-							<LogOut size={20} color={colors['primary-green'][500]} />
+							<LogOut size={20} color={colors.primary} />
 						</Button.Prefix>
 						<Button.Text style={{ flex: 1 }}>{t('logout')}</Button.Text>
 					</Button.Root>

@@ -1,5 +1,6 @@
-import { Text, type TextProps } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
+import { Text } from '@/design-system/components/Typography'
+import type { TextProps } from '@/design-system/components/Typography'
 import type { PropsWithChildren } from 'react'
 import { View } from 'react-native'
 
@@ -9,7 +10,7 @@ type ErrorTextProps = TextProps & {
 
 export const ErrorText = ({
 	size = 'xs',
-	style = { color: colors.error['500'] },
+	style = { color: colors.error[500] },
 	children,
 	hasError = false,
 	...rest

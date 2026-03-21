@@ -1,6 +1,6 @@
 import { Icon } from '@/components/Icon'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { FileText, Image as ImageIcon, X } from 'lucide-react-native'
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -88,7 +88,7 @@ const DocumentPreview = () => {
 			>
 				<ActivityIndicator
 					size='large'
-					color={colors['primary-green']['500']}
+					color={colors.primary}
 				/>
 				<Text
 					style={{
@@ -114,12 +114,12 @@ const DocumentPreview = () => {
 				}}
 			>
 				{isPDF ? (
-					<FileText size={48} color={colors.error['500']} />
+					<FileText size={48} color={colors.error[500]} />
 				) : (
-					<ImageIcon size={48} color={colors.error['500']} />
+					<ImageIcon size={48} color={colors.error[500]} />
 				)}
 
-				<Text style={{ color: colors.error['500'] }} fontWeight='bold'>
+				<Text style={{ color: colors.error[500] }} fontWeight='bold'>
 					{error}
 				</Text>
 			</View>

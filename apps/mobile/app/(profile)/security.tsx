@@ -3,15 +3,12 @@ import { useAuthControllerHandle } from '@/gen/index'
 import { useVerifyPasswordControllerHandle } from '@/gen/api/react-query/useVerifyPasswordControllerHandle'
 import { useLocalCredentials } from '@/hooks/useLocalCredentials'
 import { authClient } from '@/services/auth'
-import {
-	Button,
-	Heading,
-	Modal,
-	Switch,
-	Text,
-	TextInput,
-} from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { TextInputCompound as TextInput } from '@/design-system/components/TextInputCompound'
+import { ModalCompound as Modal } from '@/design-system/components/ModalCompound'
+import { Switch } from 'react-native'
+import { colors } from '@/design-system/theme'
 import * as LocalAuthentication from 'expo-local-authentication'
 import { useRouter } from 'expo-router'
 import {
@@ -181,7 +178,6 @@ const Security = () => {
 							</Text>
 						</View>
 						<Switch
-							size='sm'
 							value={isBiometricEnabled}
 							onValueChange={handleToggleBiometrics}
 							disabled={!isBiometricSupported}

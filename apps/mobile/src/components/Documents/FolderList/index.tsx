@@ -4,7 +4,7 @@ import FolderItem from '../FolderItem'
 import type { FolderItemDTO } from '../../../gen/api/FolderItemDTO'
 import { useGetFolderSummaryControllerFindAll } from '../../../gen/api/react-query/useGetFolderSummaryControllerFindAll'
 import dayjs from 'dayjs'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 
 type FolderListSkeletonProps = {
 	shimmerInterpolation: Animated.AnimatedInterpolation<string | number>

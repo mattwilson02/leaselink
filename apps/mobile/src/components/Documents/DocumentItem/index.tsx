@@ -1,7 +1,8 @@
 import { memo } from 'react'
 import { View, Pressable } from 'react-native'
-import { colors } from '@sf-digital-ui/tokens'
-import { DropdownMenu, Text } from '@sf-digital-ui/react-native'
+import { colors } from '@/design-system/theme'
+import { Text } from '@/design-system/components/Typography'
+import { DropdownMenuCompound } from '@/design-system/components/DropdownMenuCompound'
 import { MoreVertical } from 'lucide-react-native'
 import DocIcon from '@/assets/icons/doc.svg'
 import { Icon } from '@/components/Icon'
@@ -51,9 +52,9 @@ const DocumentItem = ({ name, id, createdAt, size }: Props) => {
 				flexDirection: 'row',
 				justifyContent: 'space-between',
 				borderRadius: 8,
-				borderColor: colors.neutral['30'],
+				borderColor: colors.border,
 				borderWidth: 1,
-				backgroundColor: 'white',
+				backgroundColor: colors.card,
 				alignItems: 'center',
 			}}
 		>
@@ -96,14 +97,14 @@ const DocumentItem = ({ name, id, createdAt, size }: Props) => {
 				</View>
 			</View>
 
-			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
+			<DropdownMenuCompound.Root>
+				<DropdownMenuCompound.Trigger>
 					<View onTouchEnd={(e) => e.stopPropagation()}>
 						<MoreVertical size={20} color={colors.neutral['700']} />
 					</View>
-				</DropdownMenu.Trigger>
-				<DropdownMenu.Content>
-					<DropdownMenu.Item
+				</DropdownMenuCompound.Trigger>
+				<DropdownMenuCompound.Content>
+					<DropdownMenuCompound.Item
 						testID='document-item-download'
 						onPress={() => downloadDocument({ id, name })}
 					>
@@ -121,9 +122,9 @@ const DocumentItem = ({ name, id, createdAt, size }: Props) => {
 								{t('download')}
 							</Text>
 						</View>
-					</DropdownMenu.Item>
-				</DropdownMenu.Content>
-			</DropdownMenu.Root>
+					</DropdownMenuCompound.Item>
+				</DropdownMenuCompound.Content>
+			</DropdownMenuCompound.Root>
 		</Pressable>
 	)
 }

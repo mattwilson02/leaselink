@@ -3,8 +3,10 @@ import { Icon } from '@/components/Icon'
 import { Layout } from '@/components/Layout'
 import { extractErrorMessages } from '@/utils/form-errors'
 
-import { Button, Heading, Text, TextInput } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { TextInputCompound as TextInput } from '@/design-system/components/TextInputCompound'
+import { colors } from '@/design-system/theme'
 import { useForm } from '@tanstack/react-form'
 import { useRouter } from 'expo-router'
 import { useRef, useState } from 'react'
@@ -151,7 +153,6 @@ const SetPassword = () => {
 												<Form.GroupInput>
 													<TextInput.Root id={field.name}>
 														<TextInput.Control
-															// @ts-expect-error - ref works at runtime, library types incomplete
 															ref={passwordInputRef}
 															testID='password-input'
 															autoCapitalize='none'
@@ -226,7 +227,6 @@ const SetPassword = () => {
 												<View style={{ gap: 4 }}>
 													<TextInput.Root id={field.name}>
 														<TextInput.Control
-															// @ts-expect-error - ref works at runtime, library types incomplete
 															ref={retypePasswordInputRef}
 															testID='retypepassword-input'
 															autoCapitalize='none'

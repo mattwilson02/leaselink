@@ -3,54 +3,25 @@ import { render } from '@/utils/test-utils'
 import { DateRangePicker } from '@/components/DatePicker'
 import { Text } from 'react-native'
 
-jest.mock('@sf-digital-ui/tokens', () => ({
+jest.mock('@/design-system/theme', () => ({
 	colors: {
 		neutral: {
-			'40': '#f0f0f0',
+			'20': '#f0f0f0',
 			'300': '#cccccc',
 			'400': '#888888',
 			'500': '#666666',
 			'600': '#444444',
 			'700': '#222222',
 		},
-		'primary-green': {
-			'50': '#e6f7f0',
-			'200': '#80d9b5',
-			'300': '#4dcc99',
-			'600': '#00875a',
-			'700': '#006644',
-		},
+		primary: '#00875a',
+		foreground: '#006644',
+		background: '#ffffff',
+		border: '#e5e7eb',
+		card: '#ffffff',
+		muted: '#f3f4f6',
+		mutedForeground: '#6b7280',
 	},
 }))
-
-jest.mock('@sf-digital-ui/react-native', () => {
-	const { Text, TouchableOpacity } = require('react-native')
-	return {
-		Text: ({ children, ...props }: { children: React.ReactNode }) => (
-			<Text {...props}>{children}</Text>
-		),
-		Button: {
-			Root: ({
-				children,
-				onPress,
-				disabled,
-				style,
-			}: {
-				children: React.ReactNode
-				onPress?: () => void
-				disabled?: boolean
-				style?: object
-			}) => (
-				<TouchableOpacity onPress={onPress} disabled={disabled} style={style}>
-					{children}
-				</TouchableOpacity>
-			),
-			Text: ({ children }: { children: React.ReactNode }) => (
-				<Text>{children}</Text>
-			),
-		},
-	}
-})
 
 describe('DateRangePicker', () => {
 	beforeEach(() => {

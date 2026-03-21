@@ -1,7 +1,8 @@
 import { View, StyleSheet } from 'react-native'
-import { Button, Heading, Text } from '@sf-digital-ui/react-native'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
 import { Icon } from '@/components/Icon'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { FAILED_ATTEMPTS_KEY } from '@/hooks/useFailedAttempts'
@@ -55,14 +56,14 @@ const TooManyAttempts = () => {
 				<Button.Root
 					testID='reset-button'
 					variant='link'
-					color='warning'
+					color='default'
 					onPress={() => resetFailedAttempts()}
 				>
 					<Button.Text>Reset Attempts (DEV ONLY)</Button.Text>
 				</Button.Root>
 				<Button.Root
 					testID='back-button'
-					color='warning'
+					color='default'
 					onPress={() => {
 						resetFailedAttempts()
 						router.replace('/sign-in')

@@ -1,8 +1,8 @@
 import { Pressable, View } from 'react-native'
 import { X } from 'lucide-react-native'
-import { Text, Heading } from '@sf-digital-ui/react-native'
+import { Heading, Text } from '@/design-system/components/Typography'
 import { Icon } from '@/components/Icon'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import { Search } from 'lucide-react-native'
 import DocumentsList from '@/components/Documents/DocumentsList'
@@ -39,7 +39,7 @@ const DocumentFolder = () => {
 						<Icon.Icon
 							name='folder-icon'
 							size={54}
-							stroke={colors['primary-green']['500']}
+							stroke={colors.primary}
 						/>
 					</Icon.IconContainer>
 				</Icon.Root>
@@ -83,7 +83,7 @@ const DocumentFolder = () => {
 					<View style={{ flex: 1, gap: 8 }}>
 						<Text style={{ color: colors.neutral['700'] }}>{t('files')}</Text>
 						<Text
-							size='md'
+							size='base'
 							style={{
 								color: colors.neutral['300'],
 							}}
@@ -96,7 +96,7 @@ const DocumentFolder = () => {
 							{t('last_updated')}
 						</Text>
 						<Text
-							size='md'
+							size='base'
 							style={{
 								color: colors.neutral['300'],
 							}}
@@ -124,7 +124,7 @@ const DocumentFolder = () => {
 							router.push(`/documents/search?folderName=${folderName}`)
 						}
 					>
-						<Search size={20} color={colors['primary-green']['500']} />
+						<Search size={20} color={colors.primary} />
 					</Pressable>
 				</View>
 				<DocumentsList />

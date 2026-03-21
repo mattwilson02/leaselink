@@ -1,5 +1,5 @@
-import { Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { ChevronLeft } from 'lucide-react-native'
 import { useCallback } from 'react'
@@ -26,7 +26,7 @@ const PrivacyPolicy = () => {
 			>
 				<View style={{ gap: 16, alignItems: 'center' }}>
 					<View style={{ gap: 12 }}>
-						<Text size='sm' style={{ color: colors['primary-green'][500] }}>
+						<Text size='sm' style={{ color: colors.primary }}>
 							Current as of 20 Jan 2025
 						</Text>
 						<Heading

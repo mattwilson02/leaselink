@@ -1,6 +1,7 @@
 import { Icon } from '@/components/Icon'
-import { Heading, Text, TextInput } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { TextInputCompound as TextInput } from '@/design-system/components/TextInputCompound'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import {
 	ChevronLeft,
@@ -108,7 +109,7 @@ const Faqs = () => {
 								<Text
 									size='sm'
 									style={{
-										color: colors['primary-green'][500],
+										color: colors.primary,
 										textAlign: 'center',
 									}}
 								>

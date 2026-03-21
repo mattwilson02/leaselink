@@ -1,7 +1,8 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text, Button } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { withTranslation, type WithTranslation } from 'react-i18next'
 
 type Props = {
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
 	},
 	errorDetails: {
 		backgroundColor: colors.error['50'],
-		borderColor: colors.error['200'],
+		borderColor: colors.error[100],
 		borderWidth: 1,
 		borderRadius: 8,
 		padding: 12,

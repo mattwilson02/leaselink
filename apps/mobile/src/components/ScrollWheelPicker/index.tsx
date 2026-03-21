@@ -1,4 +1,4 @@
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { useCallback, useRef, useEffect, useMemo } from 'react'
 import {
 	View,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
 		left: 0,
 		right: 0,
 		height: ITEM_HEIGHT,
-		backgroundColor: colors['primary-green']['50'],
+		backgroundColor: colors.neutral['20'],
 		borderRadius: 8,
 		zIndex: 0,
 	},
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
 		color: colors.neutral['400'],
 	},
 	itemTextSelected: {
-		color: colors['primary-green']['700'],
+		color: colors.foreground,
 		fontWeight: '600',
 	},
 })

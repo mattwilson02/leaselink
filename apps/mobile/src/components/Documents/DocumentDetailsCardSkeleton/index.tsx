@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import {
 	View,
 	Animated,

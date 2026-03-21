@@ -6,8 +6,9 @@ import {
 	useGetDocumentRequestByIdControllerHandle,
 	useUploadDocumentControllerHandle,
 } from '@/gen/index'
-import { Button, Text, Modal } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { CheckCircle, Trash, X } from 'lucide-react-native'
 import { useState, useEffect, useRef } from 'react'
@@ -24,6 +25,7 @@ import * as ImagePicker from 'expo-image-picker'
 import * as DocumentPicker from 'expo-document-picker'
 import DocIcon from '@/assets/icons/doc.svg'
 import { ErrorModal } from '@/components/ErrorModal'
+import { ModalCompound as Modal } from '@/design-system/components/ModalCompound'
 import { queryClient } from '@/app/_layout'
 import { DocumentFolder, DocumentRequestType } from '@leaselink/shared'
 
@@ -368,12 +370,12 @@ const UploadDocument = () => {
 						>
 							<Icon.Root>
 								<Icon.IconContainer
-									color={colors['primary-green']['100']}
+									color={colors.neutral['20']}
 									style={{ padding: 12, borderRadius: 12 }}
 								>
 									{documentRequest ? (
 										<Icon.Icon
-											stroke={colors['primary-green']['500']}
+											stroke={colors.primary}
 											strokeWidth={
 												requestTypeIcon[documentRequest.requestType].strokeWidth
 											}

@@ -4,7 +4,7 @@ module.exports = {
 	setupFiles: ['./jest.setup.js'],
 	rootDir: './',
 	transformIgnorePatterns: [
-		'node_modules/(?!(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|expo-checkbox|@sf-digital-ui)',
+		'node_modules/(?!(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|expo-checkbox)',
 	],
 	moduleNameMapper: {
 		'^@/components/(.*)$': '<rootDir>/src/components/$1',
@@ -17,5 +17,6 @@ module.exports = {
 		'^@/gen/(.*)$': '<rootDir>/src/gen/$1',
 		'^@/atoms/(.*)$': '<rootDir>/src/atoms/$1',
 		'^@/context/(.*)$': '<rootDir>/src/context/$1',
+		'^@/design-system/(.*)$': '<rootDir>/src/design-system/$1',
 	},
 }

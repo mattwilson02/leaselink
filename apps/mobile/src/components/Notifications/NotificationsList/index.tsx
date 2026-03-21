@@ -4,12 +4,12 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import { useCallback, useMemo } from 'react'
 import NotificationItem from '../NotificationItem'
 import { useTranslation } from 'react-i18next'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { FlashList } from '@shopify/flash-list'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import NotificationsListSkeleton from '../NotificationsListSkeleton'
 import CloudWithHourGlass from '@/assets/icons/cloud-with-hourglass.svg'
-import { Text } from '@sf-digital-ui/react-native'
+import { Text } from '@/design-system/components/Typography'
 
 const limit = 10
 

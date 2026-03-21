@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, Switch, View } from 'react-native'
 import * as LocalAuthentication from 'expo-local-authentication'
 import { Icon } from '@/components/Icon'
-import { colors } from '@sf-digital-ui/tokens'
-import { Button, Heading, Switch, Text } from '@sf-digital-ui/react-native'
+import { colors } from '@/design-system/theme'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
@@ -174,7 +175,6 @@ const NewDeviceEnableBiometrics = () => {
 								</View>
 
 								<Switch
-									size='sm'
 									value={isBiometricActivated}
 									onValueChange={activateBiometrics}
 								/>

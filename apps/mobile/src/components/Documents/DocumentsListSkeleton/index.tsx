@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { View, StyleSheet, Animated, Easing } from 'react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 
 const DocumentSkeleton = ({ numberOfSkeletons = 3 }) => {
 	const shimmerAnimation = useRef(new Animated.Value(0)).current

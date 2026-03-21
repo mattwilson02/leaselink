@@ -7,8 +7,8 @@ import {
 	type DocumentRequestDTORequestTypeEnum,
 	type DocumentRequestDTOStatusEnum,
 } from '@/gen/index'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { ChevronRight } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
@@ -42,27 +42,40 @@ export const requestTypeIcon: Record<
 	},
 }
 
-const statusText: Record<
+const statusConfig: Record<
 	DocumentRequestDTOStatusEnum,
-	{ label: string; color: Record<string, string> }
+	{ label: string; background: string; text: string; border: string }
 > = {
 	[documentRequestDTOStatusEnum.PENDING]: {
 		label: 'pending',
-		color: colors.warning,
+		background: colors.warning[50],
+		text: colors.warning[600],
+		border: colors.warning[100],
 	},
 	[documentRequestDTOStatusEnum.UPLOADED]: {
 		label: 'uploaded',
-		color: colors.success,
+		background: colors.success[50],
+		text: colors.success[600],
+		border: colors.success[100],
 	},
 	[documentRequestDTOStatusEnum.CANCELED]: {
 		label: 'canceled',
-		color: colors.error,
+		background: colors.error[50],
+		text: colors.error[600],
+		border: colors.error[100],
 	},
 }
 
 const DocumentRequestItem = ({ requestType, status, requestId }: Props) => {
 	const { t } = useTranslation('document_requests')
 	const router = useRouter()
+
+	const sc = statusConfig[status] ?? {
+		label: status,
+		background: colors.muted,
+		text: colors.mutedForeground,
+		border: colors.border,
+	}
 
 	return (
 		<Pressable
@@ -78,21 +91,20 @@ const DocumentRequestItem = ({ requestType, status, requestId }: Props) => {
 				flexDirection: 'row',
 				justifyContent: 'space-between',
 				borderRadius: 8,
-				borderColor: colors.neutral['30'],
+				borderColor: colors.border,
 				borderWidth: 1,
 				alignItems: 'center',
-				backgroundColor: 'white',
-				boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.05)',
+				backgroundColor: colors.card,
 			}}
 		>
 			<View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
 				<Icon.Root>
 					<Icon.IconContainer
-						color={colors['primary-green']['100']}
+						color={colors.neutral['30']}
 						style={{ padding: 8, borderRadius: 8 }}
 					>
 						<Icon.Icon
-							stroke={colors['primary-green']['500']}
+							stroke={colors.neutral['600']}
 							strokeWidth={requestTypeIcon[requestType].strokeWidth}
 							name={requestTypeIcon[requestType].name}
 							size={16}
@@ -107,8 +119,8 @@ const DocumentRequestItem = ({ requestType, status, requestId }: Props) => {
 				style={{
 					borderRadius: 16,
 					borderWidth: 1,
-					borderColor: statusText[status].color['100'],
-					backgroundColor: statusText[status].color['50'],
+					borderColor: sc.border,
+					backgroundColor: sc.background,
 					paddingHorizontal: 8,
 					paddingVertical: 2,
 				}}
@@ -116,10 +128,10 @@ const DocumentRequestItem = ({ requestType, status, requestId }: Props) => {
 				<Text
 					size='sm'
 					style={{
-						color: statusText[status].color['500'],
+						color: sc.text,
 					}}
 				>
-					{t(statusText[status].label)}
+					{t(sc.label)}
 				</Text>
 			</View>
 

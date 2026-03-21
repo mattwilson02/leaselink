@@ -1,8 +1,5 @@
-import {
-	Select as DesignSystemSelect,
-	type SelectRootProps,
-} from '@sf-digital-ui/react-native'
+import { SelectCompound, type SelectRootProps } from '@/design-system/components/SelectCompound'
 
 export const Select = (props: SelectRootProps) => {
-	return <DesignSystemSelect.Root {...props} />
+	return <SelectCompound.Root {...props} />
 }

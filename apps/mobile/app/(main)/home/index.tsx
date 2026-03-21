@@ -1,5 +1,6 @@
-import { Heading, Text, Button } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { CreditCard, Wrench, ChevronRight, MapPin } from 'lucide-react-native'
@@ -89,7 +90,7 @@ const Home = () => {
 					<View style={styles.leaseCardContent}>
 						{/* Address row */}
 						<View style={styles.addressRow}>
-							<MapPin size={16} color={colors['primary-green']['500']} style={styles.addressIcon} />
+							<MapPin size={16} color={colors.primary} style={styles.addressIcon} />
 							<Text fontWeight='bold' style={styles.addressText}>
 								{activeLease.property?.address ?? 'Address unavailable'}
 								{activeLease.property?.city ? `, ${activeLease.property.city}` : ''}
@@ -127,7 +128,7 @@ const Home = () => {
 						{/* Tap hint */}
 						<View style={styles.tapHintRow}>
 							<Text size='sm' style={styles.tapHintText}>View lease details</Text>
-							<ChevronRight size={14} color={colors['primary-green']['500']} />
+							<ChevronRight size={14} color={colors.primary} />
 						</View>
 					</View>
 				) : (
@@ -195,7 +196,7 @@ const Home = () => {
 						onPress={() => router.push('/documents')}
 					>
 						<View style={styles.quickLinkIcon}>
-							<CreditCard size={20} color={colors['primary-green']['500']} />
+							<CreditCard size={20} color={colors.primary} />
 						</View>
 						<Text style={styles.quickLinkText}>Documents</Text>
 						<ChevronRight size={16} color={colors.neutral['400']} />
@@ -209,7 +210,7 @@ const Home = () => {
 						onPress={() => router.push('/maintenance')}
 					>
 						<View style={styles.quickLinkIcon}>
-							<Wrench size={20} color={colors['primary-green']['500']} />
+							<Wrench size={20} color={colors.primary} />
 						</View>
 						<Text style={styles.quickLinkText}>Maintenance</Text>
 						<ChevronRight size={16} color={colors.neutral['400']} />
@@ -271,13 +272,13 @@ const styles = StyleSheet.create({
 		flexWrap: 'wrap',
 	},
 	typeBadge: {
-		backgroundColor: colors['primary-green']['50'],
+		backgroundColor: colors.neutral['20'],
 		paddingHorizontal: 8,
 		paddingVertical: 2,
 		borderRadius: 4,
 	},
 	typeBadgeText: {
-		color: colors['primary-green']['700'],
+		color: colors.foreground,
 	},
 	statusBadge: {
 		paddingHorizontal: 8,
@@ -302,7 +303,7 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	tapHintText: {
-		color: colors['primary-green']['500'],
+		color: colors.primary,
 	},
 	noLeaseContainer: {
 		alignItems: 'center',
@@ -341,7 +342,7 @@ const styles = StyleSheet.create({
 		width: 36,
 		height: 36,
 		borderRadius: 8,
-		backgroundColor: colors['primary-green']['50'],
+		backgroundColor: colors.neutral['20'],
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

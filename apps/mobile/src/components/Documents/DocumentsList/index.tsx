@@ -9,10 +9,10 @@ import { useTranslation } from 'react-i18next'
 import DocumentItem from '../DocumentItem'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import DocumentsListSkeleton from '../DocumentsListSkeleton'
 import CloudWithHourGlass from '@/assets/icons/cloud-with-hourglass.svg'
-import { Text } from '@sf-digital-ui/react-native'
+import { Text } from '@/design-system/components/Typography'
 import { useLocalSearchParams } from 'expo-router'
 
 const limit = 10

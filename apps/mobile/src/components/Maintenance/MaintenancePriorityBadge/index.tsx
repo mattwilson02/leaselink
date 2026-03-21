@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { MaintenancePriority, MAINTENANCE_PRIORITY_LABELS } from '@leaselink/shared'
 
 type Props = {
@@ -14,16 +14,16 @@ const priorityColors: Record<string, { background: string; text: string }> = {
 		text: colors.neutral['500'],
 	},
 	[MaintenancePriority.MEDIUM]: {
-		background: colors['primary-green']['100'],
-		text: colors['primary-green']['700'],
+		background: colors.info[100],
+		text: colors.info[700],
 	},
 	[MaintenancePriority.HIGH]: {
-		background: colors.warning['100'],
-		text: colors.warning['700'],
+		background: colors.warning[100],
+		text: colors.warning[700],
 	},
 	[MaintenancePriority.EMERGENCY]: {
-		background: colors.error['100'],
-		text: colors.error['700'],
+		background: colors.error[100],
+		text: colors.error[700],
 	},
 }
 

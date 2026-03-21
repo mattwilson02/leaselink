@@ -170,7 +170,7 @@ describe('Privacy Policy Component', () => {
 		it('should render main heading component', () => {
 			const { UNSAFE_getAllByType } = render(<PrivacyPolicy />)
 			// biome-ignore lint/style/useNamingConvention: React Component
-			const Heading = require('@sf-digital-ui/react-native').Heading
+			const Heading = require('@/design-system/components/Typography').Heading
 			const headings = UNSAFE_getAllByType(Heading)
 
 			expect(headings.length).toBeGreaterThan(0)
@@ -179,7 +179,7 @@ describe('Privacy Policy Component', () => {
 		it('should render multiple text components', () => {
 			const { UNSAFE_getAllByType } = render(<PrivacyPolicy />)
 			// biome-ignore lint/style/useNamingConvention: React Component
-			const Text = require('@sf-digital-ui/react-native').Text
+			const Text = require('@/design-system/components/Typography').Text
 			const texts = UNSAFE_getAllByType(Text)
 
 			expect(texts.length).toBeGreaterThan(5)
@@ -220,7 +220,7 @@ describe('Privacy Policy Component', () => {
 		it('should render all section headings as Heading components', () => {
 			const { UNSAFE_getAllByType } = render(<PrivacyPolicy />)
 			// biome-ignore lint/style/useNamingConvention: React Component
-			const Heading = require('@sf-digital-ui/react-native').Heading
+			const Heading = require('@/design-system/components/Typography').Heading
 			const headings = UNSAFE_getAllByType(Heading)
 
 			// 1 main heading + 6 section headings
@@ -265,7 +265,7 @@ describe('Privacy Policy Component', () => {
 		it('should render all paragraph texts', () => {
 			const { UNSAFE_getAllByType } = render(<PrivacyPolicy />)
 			// biome-ignore lint/style/useNamingConvention: React Component
-			const Text = require('@sf-digital-ui/react-native').Text
+			const Text = require('@/design-system/components/Typography').Text
 			const texts = UNSAFE_getAllByType(Text)
 
 			// Should have date + intro + section content texts

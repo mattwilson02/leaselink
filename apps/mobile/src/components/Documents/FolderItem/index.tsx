@@ -1,6 +1,6 @@
 import { memo } from 'react'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { View, Pressable } from 'react-native'
 import { Icon } from '@/components/Icon'
 import { useRouter } from 'expo-router'
@@ -34,18 +34,18 @@ const FolderItem = ({
 			<Icon.Root>
 				<Icon.IconContainer
 					style={{
-						borderColor: colors.neutral['30'],
+						borderColor: colors.border,
 						borderWidth: 1,
 						height: 'auto',
 						width: 'auto',
-						backgroundColor: 'white',
+						backgroundColor: colors.card,
 					}}
 				>
 					<View style={{ gap: 10 }}>
 						<Icon.Icon
 							name='folder-icon'
 							size={54}
-							stroke={colors['primary-green']['500']}
+							stroke={colors.neutral['700']}
 						/>
 						<Text
 							style={{

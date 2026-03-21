@@ -7,8 +7,8 @@ import {
 	useGetHasUnreadNotificationsControllerHandle,
 } from "@/gen/index";
 import { authClient } from "@/services/auth";
-import { Text } from "@sf-digital-ui/react-native";
-import { colors } from "@sf-digital-ui/tokens";
+import { Text } from '@/design-system/components/Typography';
+import { colors } from "@/design-system/theme";
 import {
 	type RelativePathString,
 	Stack,
@@ -183,7 +183,7 @@ const MainFooter = (props: ViewProps) => {
 		>
 			{pagesWithFooter.map((page) => {
 				const iconColor = isSelected(page.path)
-					? colors["primary-green"]["500"]
+					? colors.primary
 					: colors.neutral["500"];
 				return (
 					<View
@@ -210,7 +210,7 @@ const MainFooter = (props: ViewProps) => {
 								height: 2,
 								width: "100%",
 								backgroundColor: isSelected(page.path)
-									? colors["primary-green"]["500"]
+									? colors.primary
 									: "transparent",
 							}}
 						/>

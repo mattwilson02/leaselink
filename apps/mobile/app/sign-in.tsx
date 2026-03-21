@@ -1,9 +1,11 @@
-import { Button, Heading, Text, TextInput } from '@sf-digital-ui/react-native'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { TextInputCompound as TextInput } from '@/design-system/components/TextInputCompound'
 import { useRouter } from 'expo-router'
 import { View, StyleSheet, Pressable } from 'react-native'
 import { z } from 'zod'
 import { useForm } from '@tanstack/react-form'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import LogoVertical from '@/assets/images/sf-logo-vertical.svg'
 import { Layout } from '@/components/Layout'
 import { useTranslation } from 'react-i18next'
@@ -161,7 +163,6 @@ const SignIn = () => {
 											<Form.GroupInput>
 												<TextInput.Root id={field.name}>
 													<TextInput.Control
-														// @ts-expect-error - ref works at runtime, library types incomplete
 														ref={emailInputRef}
 														autoCapitalize='none'
 														keyboardType='email-address'
@@ -207,7 +208,6 @@ const SignIn = () => {
 											<Form.GroupInput>
 												<TextInput.Root id={field.name}>
 													<TextInput.Control
-														// @ts-expect-error - ref works at runtime, library types incomplete
 														ref={passwordInputRef}
 														autoCapitalize='none'
 														keyboardType='default'
@@ -293,7 +293,7 @@ const SignIn = () => {
 										size='sm'
 										fontWeight='bold'
 										style={{
-											color: colors['primary-green']['500'],
+											color: colors.primary,
 										}}
 									>
 										{t('register_now')}

@@ -29,9 +29,8 @@ jest.mock('expo-router', () => ({
 	})),
 }))
 
-jest.mock('@sf-digital-ui/react-native', () => ({
-	...jest.requireActual('@sf-digital-ui/react-native'),
-	DropdownMenu: {
+jest.mock('@/design-system/components/DropdownMenuCompound', () => ({
+	DropdownMenuCompound: {
 		Root: ({ children }: { children: React.ReactNode }) => {
 			// biome-ignore lint/style/useNamingConvention: React Component
 			const MockView = require('react-native').View

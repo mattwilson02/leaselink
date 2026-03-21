@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { PaymentStatus } from '@leaselink/shared'
 
 type Props = {
@@ -21,16 +21,16 @@ const statusColors: Record<string, { background: string; text: string }> = {
 		text: '#FFFFFF',
 	},
 	[PaymentStatus.PENDING]: {
-		background: '#DBEAFE',
-		text: '#1D4ED8',
+		background: colors.info[100],
+		text: colors.info[700],
 	},
 	[PaymentStatus.PAID]: {
-		background: colors.success['100'],
-		text: colors.success['700'],
+		background: colors.success[100],
+		text: colors.success[700],
 	},
 	[PaymentStatus.OVERDUE]: {
-		background: '#FEE2E2',
-		text: '#DC2626',
+		background: colors.error[100],
+		text: colors.error[700],
 	},
 }
 

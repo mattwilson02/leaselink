@@ -1,5 +1,6 @@
-import { Text, type TextProps } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import type { TextProps } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 
 export const Label = ({
 	children,

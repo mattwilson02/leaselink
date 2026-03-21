@@ -1,5 +1,5 @@
-import { Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { Plus } from 'lucide-react-native'
 import { useState } from 'react'
 import { Pressable, View } from 'react-native'
@@ -50,7 +50,7 @@ const Maintenance = () => {
 						testID='create-request-button'
 						onPress={() => router.push('/maintenance/create')}
 						style={{
-							backgroundColor: colors['primary-green']['500'],
+							backgroundColor: colors.primary,
 							borderRadius: 8,
 							padding: 10,
 							marginLeft: 12,

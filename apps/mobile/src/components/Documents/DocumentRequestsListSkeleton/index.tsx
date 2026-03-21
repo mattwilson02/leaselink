@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { View, StyleSheet, Animated, Easing } from 'react-native'
 import { ChevronRight } from 'lucide-react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 
 const DocumentRequestsListSkeleton = ({ numberOfSkeletons = 3 }) => {
 	const shimmerAnimation = useRef(new Animated.Value(0)).current
@@ -63,7 +63,7 @@ const DocumentRequestsListSkeleton = ({ numberOfSkeletons = 3 }) => {
 				/>
 			</View>
 
-			<ChevronRight size={20} color={colors.neutral['80']} />
+			<ChevronRight size={20} color={colors.neutral[50]} />
 		</View>
 	)
 
