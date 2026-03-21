@@ -163,6 +163,9 @@ import { SignDocumentUseCase } from '@/domain/signature/application/use-cases/si
 import { GetSignatureByDocumentIdUseCase } from '@/domain/signature/application/use-cases/get-signature-by-document-id'
 import { SignDocumentController } from './controllers/sign-document/sign-document.controller'
 import { GetSignatureController } from './controllers/get-signature/get-signature.controller'
+import { ExportPaymentsCsvController } from './controllers/export-payments-csv/export-payments-csv.controller'
+import { ExportExpensesCsvController } from './controllers/export-expenses-csv/export-expenses-csv.controller'
+import { ExportTenantsCsvController } from './controllers/export-tenants-csv/export-tenants-csv.controller'
 
 @Module({
 	imports: [
@@ -210,7 +213,8 @@ import { GetSignatureController } from './controllers/get-signature/get-signatur
 		UpdatePropertyStatusController,
 		DeletePropertyController,
 		UploadPropertyPhotosController,
-		GetClientsController,
+		// Tenants — export before :id to avoid route conflict
+		ExportTenantsCsvController,
 		GetClientByIdController,
 		CreateLeaseController,
 		GetLeasesController,
@@ -233,12 +237,14 @@ import { GetSignatureController } from './controllers/get-signature/get-signatur
 		GetDashboardSummaryController,
 		// Scheduler
 		GetSchedulerStatusController,
+		GetClientsController,
 		// Payments — static routes before :id to avoid route conflicts
 		CheckoutRedirectController,
 		StripeWebhookController,
 		GeneratePaymentsController,
 		MarkOverduePaymentsController,
 		GetPaymentsByTenantController,
+		ExportPaymentsCsvController,
 		GetPaymentsController,
 		GetPaymentByIdController,
 		CreateCheckoutSessionController,
@@ -246,6 +252,7 @@ import { GetSignatureController } from './controllers/get-signature/get-signatur
 		// Expenses — summary before :id to avoid route conflict
 		CreateExpenseController,
 		GetExpenseSummaryController,
+		ExportExpensesCsvController,
 		GetExpensesController,
 		GetExpenseByIdController,
 		UpdateExpenseController,

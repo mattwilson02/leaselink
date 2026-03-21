@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, Edit, Trash2, Plus, Paperclip } from "lucide-react";
+import { Eye, Edit, Trash2, Plus, Paperclip, Download } from "lucide-react";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -84,6 +85,34 @@ export default function ExpensesPage() {
   const totalPages = data?.meta?.totalPages ?? 1;
 
   const deleteMutation = useDeleteExpense();
+  const [isExporting, setIsExporting] = useState(false);
+
+  async function handleExportCsv() {
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (propertyFilter !== ALL) params.set("propertyId", propertyFilter);
+      if (categoryFilter !== ALL) params.set("category", categoryFilter);
+      if (dateFrom) params.set("dateFrom", new Date(dateFrom).toISOString());
+      if (dateTo) params.set("dateTo", new Date(dateTo).toISOString());
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
+      const url = `${baseUrl}/expenses/export${params.toString() ? `?${params.toString()}` : ""}`;
+      const token = Cookies.get("auth_token");
+      const headers: HeadersInit = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const response = await fetch(url, { headers });
+      if (!response.ok) throw new Error("Export failed");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `expenses-export.csv`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   function handleDelete() {
     if (!deleteId) return;
@@ -109,12 +138,23 @@ export default function ExpensesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Expenses</h1>
-        <Link href="/expenses/new">
-          <Button size="sm">
-            <Plus className="mr-2 h-4 w-4" />
-            Add Expense
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCsv}
+            disabled={isExporting}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            {isExporting ? "Exporting..." : "Download CSV"}
           </Button>
-        </Link>
+          <Link href="/expenses/new">
+            <Button size="sm">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Expense
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <ExpenseSummaryCards />

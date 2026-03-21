@@ -1975,34 +1975,12 @@
         ]
       }
     },
-    "/tenants": {
+    "/tenants/export": {
       "get": {
-        "operationId": "GetClientsController_handle",
+        "operationId": "ExportTenantsCsvController_handle",
         "parameters": [
           {
-            "name": "pageSize",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "example": 20
-            }
-          },
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "example": 1
-            }
-          },
-          {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {}
-          },
-          {
-            "name": "onboardingStatus",
             "required": false,
             "in": "query",
             "schema": {}
@@ -2023,7 +2001,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Paginated list of tenants"
+            "description": "CSV file download"
           }
         },
         "security": [
@@ -2031,7 +2009,7 @@
             "bearer": []
           }
         ],
-        "summary": "List all tenants",
+        "summary": "Export tenants as CSV (manager only)",
         "tags": [
           "Tenants"
         ]
@@ -2464,6 +2442,12 @@
             }
           },
           {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
             "name": "propertyId",
             "required": false,
             "in": "query",
@@ -2819,6 +2803,68 @@
         ]
       }
     },
+    "/tenants": {
+      "get": {
+        "operationId": "GetClientsController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 20
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "onboardingStatus",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "INVITED",
+                "ACTIVE",
+                "INACTIVE"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of tenants"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all tenants",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
     "/payments/generate": {
       "post": {
         "operationId": "GeneratePaymentsController_handle",
@@ -2919,6 +2965,45 @@
           }
         ],
         "summary": "Get tenant's own payments",
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/export": {
+      "get": {
+        "operationId": "ExportPaymentsCsvController_handle",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file download"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export payments as CSV (manager only)",
         "tags": [
           "Payments"
         ]
@@ -3224,6 +3309,51 @@
           }
         ],
         "summary": "Get expense summary by property",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/expenses/export": {
+      "get": {
+        "operationId": "ExportExpensesCsvController_handle",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file download"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export expenses as CSV (manager only)",
         "tags": [
           "Expenses"
         ]

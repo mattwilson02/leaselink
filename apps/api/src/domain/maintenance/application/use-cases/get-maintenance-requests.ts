@@ -9,6 +9,7 @@ export interface GetMaintenanceRequestsUseCaseRequest {
 	priority?: string
 	category?: string
 	propertyId?: string
+	tenantId?: string
 	page: number
 	pageSize: number
 }
@@ -33,6 +34,7 @@ export class GetMaintenanceRequestsUseCase {
 			priority: input.priority,
 			category: input.category,
 			propertyId: input.propertyId,
+			tenantId: input.tenantId,
 			page: input.page,
 			pageSize: input.pageSize,
 		})

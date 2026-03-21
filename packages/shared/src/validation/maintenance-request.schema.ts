@@ -31,6 +31,7 @@ export const maintenanceRequestFilterSchema = z.object({
   priority: z.nativeEnum(MaintenancePriority).optional(),
   category: z.nativeEnum(MaintenanceCategory).optional(),
   propertyId: z.string().uuid().optional(),
+  tenantId: z.string().uuid().optional(),
   page: z.coerce.number().int().positive().default(1),
   pageSize: z.coerce.number().int().positive().max(200).default(20),
 });
