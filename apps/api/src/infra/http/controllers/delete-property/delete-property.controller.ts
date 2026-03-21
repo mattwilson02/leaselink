@@ -1,6 +1,7 @@
 import { DeletePropertyUseCase } from '@/domain/property-management/application/use-cases/delete-property'
 import { PropertyNotFoundError } from '@/domain/property-management/application/use-cases/errors/property-not-found-error'
 import { PropertyHasActiveLeaseError } from '@/domain/property-management/application/use-cases/errors/property-has-active-lease-error'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import {
 	ConflictException,
 	Controller,
@@ -8,6 +9,7 @@ import {
 	HttpCode,
 	HttpStatus,
 	NotFoundException,
+	Optional,
 	Param,
 	UseGuards,
 } from '@nestjs/common'
@@ -25,7 +27,10 @@ import { HttpUserResponse } from '../../presenters/http-user-presenter'
 @ApiTags('Properties')
 @Controller('/properties')
 export class DeletePropertyController {
-	constructor(private deleteProperty: DeletePropertyUseCase) {}
+	constructor(
+		private deleteProperty: DeletePropertyUseCase,
+		@Optional() private createAuditLog?: CreateAuditLogUseCase,
+	) {}
 
 	private errorMap: Record<string, any> = {
 		[PropertyNotFoundError.name]: NotFoundException,
@@ -65,5 +70,15 @@ export class DeletePropertyController {
 				this.errorMap[error.constructor.name] || NotFoundException
 			throw new exception(error.message)
 		}
+
+		this.createAuditLog
+			?.execute({
+				actorId: user.id,
+				actorType: 'EMPLOYEE',
+				action: 'DELETE',
+				resourceType: 'PROPERTY',
+				resourceId: propertyId,
+			})
+			.catch((err) => console.error('Audit log failed:', err))
 	}
 }

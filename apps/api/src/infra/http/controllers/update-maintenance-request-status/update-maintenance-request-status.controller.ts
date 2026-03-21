@@ -1,12 +1,14 @@
 import { UpdateMaintenanceRequestStatusUseCase } from '@/domain/maintenance/application/use-cases/update-maintenance-request-status'
 import { MaintenanceRequestNotFoundError } from '@/domain/maintenance/application/use-cases/errors/maintenance-request-not-found-error'
 import { MaintenanceOnlyManagerCanUpdateStatusError } from '@/domain/maintenance/application/use-cases/errors/maintenance-only-manager-can-update-status-error'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import {
 	BadRequestException,
 	Body,
 	Controller,
 	ForbiddenException,
 	NotFoundException,
+	Optional,
 	Param,
 	Patch,
 } from '@nestjs/common'
@@ -26,6 +28,7 @@ import { HttpMaintenanceRequestPresenter } from '../../presenters/http-maintenan
 
 const updateStatusSchema = z.object({
 	status: z.string().min(1),
+	vendorId: z.string().uuid().nullable().optional(),
 })
 
 type UpdateStatusBody = z.infer<typeof updateStatusSchema>
@@ -37,6 +40,7 @@ const bodyValidationPipe = new ZodValidationPipe(updateStatusSchema)
 export class UpdateMaintenanceRequestStatusController {
 	constructor(
 		private updateMaintenanceRequestStatus: UpdateMaintenanceRequestStatusUseCase,
+		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
 	@Patch(':id/status')
@@ -71,6 +75,7 @@ export class UpdateMaintenanceRequestStatusController {
 			userId: user.id,
 			userRole,
 			status: body.status,
+			vendorId: body.vendorId,
 		})
 
 		if (response.isLeft()) {
@@ -84,10 +89,23 @@ export class UpdateMaintenanceRequestStatusController {
 			throw new BadRequestException(error.message)
 		}
 
-		return {
+		const result = {
 			maintenanceRequest: HttpMaintenanceRequestPresenter.toHTTP(
 				response.value.request,
 			),
 		}
+
+		this.createAuditLog
+			?.execute({
+				actorId: user.id,
+				actorType: user.type === 'EMPLOYEE' ? 'EMPLOYEE' : 'CLIENT',
+				action: 'STATUS_CHANGE',
+				resourceType: 'MAINTENANCE_REQUEST',
+				resourceId: requestId,
+				metadata: { to: body.status },
+			})
+			.catch((err) => console.error('Audit log failed:', err))
+
+		return result
 	}
 }

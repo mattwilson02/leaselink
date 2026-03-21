@@ -4,6 +4,7 @@ export interface MaintenanceRequestHttpResponse {
 	id: string
 	propertyId: string
 	tenantId: string
+	vendorId: string | null
 	title: string
 	description: string
 	priority: string
@@ -21,6 +22,7 @@ export class HttpMaintenanceRequestPresenter {
 			id: request.id.toString(),
 			propertyId: request.propertyId.toString(),
 			tenantId: request.tenantId.toString(),
+			vendorId: request.vendorId?.toString() ?? null,
 			title: request.title,
 			description: request.description,
 			priority: request.priority,

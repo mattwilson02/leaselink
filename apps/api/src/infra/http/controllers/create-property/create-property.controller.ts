@@ -1,9 +1,11 @@
 import { CreatePropertyUseCase } from '@/domain/property-management/application/use-cases/create-property'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import {
 	Body,
 	Controller,
 	HttpCode,
 	HttpStatus,
+	Optional,
 	Post,
 	UseGuards,
 } from '@nestjs/common'
@@ -30,7 +32,10 @@ const bodyValidationPipe = new ZodValidationPipe(createPropertySchema)
 @ApiTags('Properties')
 @Controller('/properties')
 export class CreatePropertyController {
-	constructor(private createProperty: CreatePropertyUseCase) {}
+	constructor(
+		private createProperty: CreatePropertyUseCase,
+		@Optional() private createAuditLog?: CreateAuditLogUseCase,
+	) {}
 
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -63,8 +68,21 @@ export class CreatePropertyController {
 			throw response.value
 		}
 
-		return {
+		const result = {
 			property: HttpPropertyPresenter.toHTTP(response.value.property),
 		}
+
+		this.createAuditLog
+			?.execute({
+				actorId: user.id,
+				actorType: 'EMPLOYEE',
+				action: 'CREATE',
+				resourceType: 'PROPERTY',
+				resourceId: response.value.property.id.toString(),
+				metadata: { address: body.address },
+			})
+			.catch((err) => console.error('Audit log failed:', err))
+
+		return result
 	}
 }

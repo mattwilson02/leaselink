@@ -196,6 +196,44 @@ describe('Update maintenance request status', () => {
 		expect(result.value).toBeInstanceOf(MaintenanceRequestNotFoundError)
 	})
 
+	it('should assign vendor to request', async () => {
+		const request = makeMaintenanceRequest()
+		await inMemoryMaintenanceRequestsRepository.create(request)
+
+		const vendorId = 'vendor-uuid-1234'
+		const result = await sut.execute({
+			requestId: request.id.toString(),
+			userId: 'manager-1',
+			userRole: 'manager',
+			status: 'IN_PROGRESS',
+			vendorId,
+		})
+
+		expect(result.isRight()).toBeTruthy()
+		if (result.isRight()) {
+			expect(result.value.request.vendorId?.toString()).toBe(vendorId)
+		}
+	})
+
+	it('should unassign vendor when vendorId is null', async () => {
+		const request = makeMaintenanceRequest()
+		request.vendorId = new UniqueEntityId('vendor-uuid-1234')
+		await inMemoryMaintenanceRequestsRepository.create(request)
+
+		const result = await sut.execute({
+			requestId: request.id.toString(),
+			userId: 'manager-1',
+			userRole: 'manager',
+			status: 'IN_PROGRESS',
+			vendorId: null,
+		})
+
+		expect(result.isRight()).toBeTruthy()
+		if (result.isRight()) {
+			expect(result.value.request.vendorId).toBeNull()
+		}
+	})
+
 	it('should send notification to tenant when manager updates', async () => {
 		const tenantId = new UniqueEntityId('tenant-1')
 		const request = makeMaintenanceRequest({ tenantId })

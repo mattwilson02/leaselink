@@ -46,6 +46,16 @@ export const PAYMENT_NO_ACTIVE_LEASE =
   "Tenant can only pay rent for an active lease";
 export const PAYMENT_ALREADY_PAID = "This payment has already been paid";
 
+// Expense errors
+export const EXPENSE_NOT_FOUND = "Expense not found";
+export const EXPENSE_PROPERTY_NOT_FOUND =
+  "Property not found or does not belong to this manager";
+
+// Vendor errors
+export const VENDOR_NOT_FOUND = "Vendor not found";
+export const VENDOR_HAS_ASSIGNED_REQUESTS =
+  "Vendor cannot be deleted while assigned to open or in-progress maintenance requests";
+
 // Generic errors
 export const UNAUTHORIZED = "Unauthorized";
 export const FORBIDDEN = "You do not have permission to perform this action";

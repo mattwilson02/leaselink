@@ -95,6 +95,11 @@ jest.mock('lucide-react-native', () => ({
 		const MockText = require('react-native').Text
 		return <MockText>Search Icon</MockText>
 	},
+	Folder: () => {
+		// biome-ignore lint/style/useNamingConvention: React Component
+		const MockView = require('react-native').View
+		return <MockView testID='folder-icon' />
+	},
 }))
 describe('FolderContent Component', () => {
 	const mockRouter = {
@@ -196,7 +201,7 @@ describe('FolderContent Component', () => {
 
 			const { getByTestId } = render(<DocumentFolder />)
 
-			expect(getByTestId('icon-folder-icon')).toBeTruthy()
+			expect(getByTestId('folder-icon')).toBeTruthy()
 		})
 	})
 
