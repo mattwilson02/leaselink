@@ -1,4 +1,3 @@
-import { GetDocumentFolderSummaryUseCase } from '@/domain/document/application/use-cases/get-document-folder-summary'
 import { DocumentRepository } from '@/domain/document/application/repositories/document-repository'
 import { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
@@ -21,10 +20,7 @@ import { GetFolderSummaryResponseDTO } from '../../DTOs/document/get-folder-summ
 @ApiTags('Documents')
 @Controller('/documents/folder-summary')
 export class GetFolderSummaryController {
-	constructor(
-		private readonly getDocumentCountByFolderUseCase: GetDocumentFolderSummaryUseCase,
-		private readonly documentRepository: DocumentRepository,
-	) {}
+	constructor(private readonly documentRepository: DocumentRepository) {}
 
 	@Get()
 	@ApiBearerAuth()
@@ -53,14 +49,11 @@ export class GetFolderSummaryController {
 		}
 
 		// Tenants see only their own documents
-		const result = await this.getDocumentCountByFolderUseCase.execute({
-			clientId: user.id,
-		})
+		const documentsByFolder =
+			await this.documentRepository.getManyByClientIdGroupedByDocumentType(
+				user.id,
+			)
 
-		if (result.isLeft()) {
-			return HttpDocumentByFolderPresenter.toHTTP([])
-		}
-
-		return HttpDocumentByFolderPresenter.toHTTP(result.value)
+		return HttpDocumentByFolderPresenter.toHTTP(documentsByFolder ?? [])
 	}
 }
