@@ -4,6 +4,9 @@ import {
   createLeaseSchema,
   createMaintenanceRequestSchema,
   propertyFilterSchema,
+  createExpenseSchema,
+  createVendorSchema,
+  auditLogFilterSchema,
 } from "../index";
 
 const validUuid = "550e8400-e29b-41d4-a716-446655440000";
@@ -181,5 +184,108 @@ describe("Filter schemas", () => {
   it("rejects pageSize over max", () => {
     const result = propertyFilterSchema.safeParse({ pageSize: 201 });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("Expense schema", () => {
+  const validExpense = {
+    propertyId: validUuid,
+    category: "MAINTENANCE",
+    amount: 500,
+    description: "Plumber visit",
+    expenseDate: "2026-03-01T00:00:00.000Z",
+  };
+
+  it("accepts valid create input", () => {
+    const result = createExpenseSchema.safeParse(validExpense);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects negative amount", () => {
+    const result = createExpenseSchema.safeParse({
+      ...validExpense,
+      amount: -100,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty description", () => {
+    const result = createExpenseSchema.safeParse({
+      ...validExpense,
+      description: "",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid category", () => {
+    const result = createExpenseSchema.safeParse({
+      ...validExpense,
+      category: "FAKE",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts valid input with maintenance request link", () => {
+    const result = createExpenseSchema.safeParse({
+      ...validExpense,
+      maintenanceRequestId: validUuid,
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("Vendor schema", () => {
+  it("accepts valid create input", () => {
+    const result = createVendorSchema.safeParse({
+      name: "Joe's Plumbing",
+      specialty: "PLUMBING",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects empty name", () => {
+    const result = createVendorSchema.safeParse({
+      name: "",
+      specialty: "PLUMBING",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid specialty", () => {
+    const result = createVendorSchema.safeParse({
+      name: "X",
+      specialty: "MAGIC",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts valid input with all fields", () => {
+    const result = createVendorSchema.safeParse({
+      name: "X",
+      specialty: "HVAC",
+      phone: "555-1234",
+      email: "x@y.com",
+      notes: "Good vendor",
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("AuditLog filter schema", () => {
+  it("accepts empty filter with defaults", () => {
+    const result = auditLogFilterSchema.safeParse({});
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.page).toBe(1);
+      expect(result.data.pageSize).toBe(20);
+    }
+  });
+
+  it("accepts filter by resource type and resource ID", () => {
+    const result = auditLogFilterSchema.safeParse({
+      resourceType: "PROPERTY",
+      resourceId: validUuid,
+    });
+    expect(result.success).toBe(true);
   });
 });

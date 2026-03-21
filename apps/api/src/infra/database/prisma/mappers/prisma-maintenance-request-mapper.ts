@@ -14,6 +14,7 @@ export class PrismaMaintenanceRequestMapper {
 			{
 				propertyId: new UniqueEntityId(raw.propertyId),
 				tenantId: new UniqueEntityId(raw.tenantId),
+				vendorId: raw.vendorId ? new UniqueEntityId(raw.vendorId) : null,
 				title: raw.title,
 				description: raw.description,
 				priority: MaintenancePriority.create(raw.priority),
@@ -35,6 +36,7 @@ export class PrismaMaintenanceRequestMapper {
 			id: request.id.toString(),
 			propertyId: request.propertyId.toString(),
 			tenantId: request.tenantId.toString(),
+			vendorId: request.vendorId?.toString() ?? null,
 			title: request.title,
 			description: request.description,
 			priority: request.priority as any,

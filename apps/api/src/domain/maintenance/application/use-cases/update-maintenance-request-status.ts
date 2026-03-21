@@ -16,12 +16,14 @@ import {
 	isValidTransition,
 	MaintenanceStatus,
 } from '@leaselink/shared'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 export interface UpdateMaintenanceRequestStatusUseCaseRequest {
 	requestId: string
 	userId: string
 	userRole: 'manager' | 'tenant'
 	status: string
+	vendorId?: string | null
 }
 
 type UpdateMaintenanceRequestStatusUseCaseResponse = Either<
@@ -78,6 +80,12 @@ export class UpdateMaintenanceRequestStatusUseCase {
 
 		if (newStatus === MaintenanceStatus.RESOLVED) {
 			request.resolvedAt = new Date()
+		}
+
+		// Handle vendor assignment
+		if (input.vendorId !== undefined) {
+			request.vendorId =
+				input.vendorId !== null ? new UniqueEntityId(input.vendorId) : null
 		}
 
 		const updatedRequest =

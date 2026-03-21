@@ -128,6 +128,37 @@ import { GetDashboardSummaryController } from './controllers/get-dashboard-summa
 import { GetSchedulerStatusController } from './controllers/get-scheduler-status/get-scheduler-status.controller'
 import { VerifyPaymentController } from './controllers/verify-payment/verify-payment.controller'
 import { CheckoutRedirectController } from './controllers/checkout-redirect/checkout-redirect.controller'
+import { CreateExpenseController } from './controllers/create-expense/create-expense.controller'
+import { GetExpensesController } from './controllers/get-expenses/get-expenses.controller'
+import { GetExpenseSummaryController } from './controllers/get-expense-summary/get-expense-summary.controller'
+import { GetExpenseByIdController } from './controllers/get-expense-by-id/get-expense-by-id.controller'
+import { UpdateExpenseController } from './controllers/update-expense/update-expense.controller'
+import { DeleteExpenseController } from './controllers/delete-expense/delete-expense.controller'
+import { UploadExpenseReceiptController } from './controllers/upload-expense-receipt/upload-expense-receipt.controller'
+import { ConfirmExpenseReceiptController } from './controllers/confirm-expense-receipt/confirm-expense-receipt.controller'
+import { CreateVendorController } from './controllers/create-vendor/create-vendor.controller'
+import { GetVendorsController } from './controllers/get-vendors/get-vendors.controller'
+import { GetVendorByIdController } from './controllers/get-vendor-by-id/get-vendor-by-id.controller'
+import { UpdateVendorController } from './controllers/update-vendor/update-vendor.controller'
+import { DeleteVendorController } from './controllers/delete-vendor/delete-vendor.controller'
+import { GetAuditLogsController } from './controllers/get-audit-logs/get-audit-logs.controller'
+import { GetAuditLogsByResourceController } from './controllers/get-audit-logs-by-resource/get-audit-logs-by-resource.controller'
+import { CreateExpenseUseCase } from '@/domain/expense-management/application/use-cases/create-expense'
+import { GetExpensesUseCase } from '@/domain/expense-management/application/use-cases/get-expenses'
+import { GetExpenseSummaryUseCase } from '@/domain/expense-management/application/use-cases/get-expense-summary'
+import { GetExpenseByIdUseCase } from '@/domain/expense-management/application/use-cases/get-expense-by-id'
+import { UpdateExpenseUseCase } from '@/domain/expense-management/application/use-cases/update-expense'
+import { DeleteExpenseUseCase } from '@/domain/expense-management/application/use-cases/delete-expense'
+import { UploadExpenseReceiptUseCase } from '@/domain/expense-management/application/use-cases/upload-expense-receipt'
+import { ConfirmExpenseReceiptUseCase } from '@/domain/expense-management/application/use-cases/confirm-expense-receipt'
+import { CreateVendorUseCase } from '@/domain/expense-management/application/use-cases/create-vendor'
+import { GetVendorsUseCase } from '@/domain/expense-management/application/use-cases/get-vendors'
+import { GetVendorByIdUseCase } from '@/domain/expense-management/application/use-cases/get-vendor-by-id'
+import { UpdateVendorUseCase } from '@/domain/expense-management/application/use-cases/update-vendor'
+import { DeleteVendorUseCase } from '@/domain/expense-management/application/use-cases/delete-vendor'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
+import { GetAuditLogsUseCase } from '@/domain/audit/application/use-cases/get-audit-logs'
+import { GetAuditLogsByResourceUseCase } from '@/domain/audit/application/use-cases/get-audit-logs-by-resource'
 
 @Module({
 	imports: [
@@ -208,6 +239,24 @@ import { CheckoutRedirectController } from './controllers/checkout-redirect/chec
 		GetPaymentByIdController,
 		CreateCheckoutSessionController,
 		VerifyPaymentController,
+		// Expenses — summary before :id to avoid route conflict
+		CreateExpenseController,
+		GetExpenseSummaryController,
+		GetExpensesController,
+		GetExpenseByIdController,
+		UpdateExpenseController,
+		DeleteExpenseController,
+		UploadExpenseReceiptController,
+		ConfirmExpenseReceiptController,
+		// Vendors
+		CreateVendorController,
+		GetVendorsController,
+		GetVendorByIdController,
+		UpdateVendorController,
+		DeleteVendorController,
+		// Audit Logs
+		GetAuditLogsController,
+		GetAuditLogsByResourceController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -269,6 +318,25 @@ import { CheckoutRedirectController } from './controllers/checkout-redirect/chec
 		ActivateUpcomingPaymentsUseCase,
 		MarkOverduePaymentsUseCase,
 		StripeServiceImpl,
+		// Expense use cases
+		CreateExpenseUseCase,
+		GetExpensesUseCase,
+		GetExpenseSummaryUseCase,
+		GetExpenseByIdUseCase,
+		UpdateExpenseUseCase,
+		DeleteExpenseUseCase,
+		UploadExpenseReceiptUseCase,
+		ConfirmExpenseReceiptUseCase,
+		// Vendor use cases
+		CreateVendorUseCase,
+		GetVendorsUseCase,
+		GetVendorByIdUseCase,
+		UpdateVendorUseCase,
+		DeleteVendorUseCase,
+		// Audit log use cases
+		CreateAuditLogUseCase,
+		GetAuditLogsUseCase,
+		GetAuditLogsByResourceUseCase,
 	],
 })
 export class HttpModule {}

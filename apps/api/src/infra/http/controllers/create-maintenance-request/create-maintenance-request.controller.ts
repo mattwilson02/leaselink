@@ -1,11 +1,13 @@
 import { CreateMaintenanceRequestUseCase } from '@/domain/maintenance/application/use-cases/create-maintenance-request'
 import { MaintenanceNoActiveLeaseError } from '@/domain/maintenance/application/use-cases/errors/maintenance-no-active-lease-error'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import {
 	BadRequestException,
 	Body,
 	Controller,
 	HttpCode,
 	HttpStatus,
+	Optional,
 	Post,
 	UnauthorizedException,
 } from '@nestjs/common'
@@ -34,6 +36,7 @@ const bodyValidationPipe = new ZodValidationPipe(createMaintenanceRequestSchema)
 export class CreateMaintenanceRequestController {
 	constructor(
 		private createMaintenanceRequest: CreateMaintenanceRequestUseCase,
+		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
 	private errorMap: Record<string, any> = {
@@ -102,10 +105,23 @@ export class CreateMaintenanceRequestController {
 			throw new exception(error.message)
 		}
 
-		return {
+		const result = {
 			maintenanceRequest: HttpMaintenanceRequestPresenter.toHTTP(
 				response.value.request,
 			),
 		}
+
+		this.createAuditLog
+			?.execute({
+				actorId: user.id,
+				actorType: 'CLIENT',
+				action: 'CREATE',
+				resourceType: 'MAINTENANCE_REQUEST',
+				resourceId: response.value.request.id.toString(),
+				metadata: { title: body.title, priority: body.priority },
+			})
+			.catch((err) => console.error('Audit log failed:', err))
+
+		return result
 	}
 }

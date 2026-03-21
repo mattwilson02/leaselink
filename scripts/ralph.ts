@@ -262,7 +262,12 @@ ${previousSpecsSummary || "Sprint 1 (foundation) has been implemented — shared
    - **Mobile agent** — apps/mobile
    Mark each task clearly with which agent handles it.
 
-7. The sprint should be sized for a few hours of agent work — not too small, not too large.
+7. **Sprint sizing is critical.** Each sprint must be completable in a single session. Hard constraints:
+   - Maximum **15 new files** per sprint (across all agents)
+   - Maximum **5 tasks** per sprint
+   - If a feature requires both backend AND frontend work totaling more than 15 files, split it: one sprint for backend, one for frontend
+   - Never bundle more than 2 related features in a single sprint
+   - When in doubt, make the sprint SMALLER. A sprint that finishes cleanly is worth more than an ambitious one that times out halfway through.
 
 IMPORTANT: Write the spec file to docs/sprints/sprint-${sprintNumber}-<descriptive-name>.md
 The filename should describe the sprint's focus (e.g., sprint-2-property-crud-api.md).
