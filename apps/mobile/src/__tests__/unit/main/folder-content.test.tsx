@@ -95,7 +95,7 @@ jest.mock('lucide-react-native', () => ({
 		const MockText = require('react-native').Text
 		return <MockText>Search Icon</MockText>
 	},
-	Folder: () => {
+	FolderClosed: () => {
 		// biome-ignore lint/style/useNamingConvention: React Component
 		const MockView = require('react-native').View
 		return <MockView testID='folder-icon' />
