@@ -8,6 +8,7 @@ import {
   FileText,
   FolderOpen,
   LayoutDashboard,
+  Receipt,
   Settings,
   Users,
   Wrench,
@@ -32,6 +33,7 @@ const mainNavItems = [
   { title: "Leases", href: "/leases", icon: FileText },
   { title: "Maintenance", href: "/maintenance", icon: Wrench },
   { title: "Payments", href: "/payments", icon: CreditCard },
+  { title: "Expenses", href: "/expenses", icon: Receipt },
   { title: "Documents", href: "/documents", icon: FolderOpen },
 ];
 

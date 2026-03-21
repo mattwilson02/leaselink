@@ -35,10 +35,12 @@ import {
 import { useActiveLeaseByProperty } from "@/hooks/use-leases";
 import { useTenant } from "@/hooks/use-tenants";
 import { useMaintenanceRequestsByProperty } from "@/hooks/use-maintenance-requests";
+import { useExpenses } from "@/hooks/use-expenses";
 import { MaintenanceStatusBadge } from "@/components/maintenance/maintenance-status-badge";
 import { MaintenancePriorityBadge } from "@/components/maintenance/maintenance-priority-badge";
 import { LeaseStatusBadge } from "@/components/leases/lease-status-badge";
 import { TenantStatusBadge } from "@/components/tenants/tenant-status-badge";
+import { ExpenseCategoryBadge } from "@/components/expenses/expense-category-badge";
 import {
   PropertyStatus,
   PROPERTY_TYPE_LABELS,
@@ -65,6 +67,7 @@ export default function PropertyDetailPage() {
   const { data: maintenanceData } = useMaintenanceRequestsByProperty(id, {
     pageSize: 5,
   });
+  const { data: expensesData } = useExpenses({ propertyId: id, pageSize: 5 });
 
   const [showDelete, setShowDelete] = useState(false);
   const [showStatusChange, setShowStatusChange] = useState(false);
@@ -417,6 +420,58 @@ export default function PropertyDetailPage() {
                       </Link>
                     </div>
                   )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Expenses</CardTitle>
+                <Link
+                  href={`/expenses?propertyId=${id}`}
+                  className="text-sm text-muted-foreground hover:underline"
+                >
+                  View all
+                </Link>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!expensesData?.data || expensesData.data.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No expenses recorded for this property.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {expensesData.data.map((expense) => (
+                    <Link
+                      key={expense.id}
+                      href={`/expenses/${expense.id}`}
+                      className="flex items-start justify-between gap-2 rounded-md p-2 hover:bg-muted transition-colors"
+                    >
+                      <div className="min-w-0 space-y-1">
+                        <p className="text-sm font-medium truncate">
+                          {expense.description}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(expense.expenseDate).toLocaleDateString(
+                            "en-US",
+                            { month: "short", day: "numeric", year: "numeric" }
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <ExpenseCategoryBadge category={expense.category} />
+                        <span className="text-sm font-medium">
+                          {new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                            minimumFractionDigits: 2,
+                          }).format(expense.amount)}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               )}
             </CardContent>
