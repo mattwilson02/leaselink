@@ -166,6 +166,8 @@ import { GetSignatureController } from './controllers/get-signature/get-signatur
 import { ExportPaymentsCsvController } from './controllers/export-payments-csv/export-payments-csv.controller'
 import { ExportExpensesCsvController } from './controllers/export-expenses-csv/export-expenses-csv.controller'
 import { ExportTenantsCsvController } from './controllers/export-tenants-csv/export-tenants-csv.controller'
+import { GetSessionsController } from './controllers/get-sessions/get-sessions.controller'
+import { RevokeSessionController } from './controllers/revoke-session/revoke-session.controller'
 
 @Module({
 	imports: [
@@ -271,6 +273,9 @@ import { ExportTenantsCsvController } from './controllers/export-tenants-csv/exp
 		// Signatures — static routes before :id to avoid route conflicts
 		SignDocumentController,
 		GetSignatureController,
+		// Sessions
+		GetSessionsController,
+		RevokeSessionController,
 	],
 	providers: [
 		CreateClientUseCase,

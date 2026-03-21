@@ -12,6 +12,7 @@ import {
   Receipt,
   ScrollText,
   Settings,
+  Shield,
   Users,
   Wrench,
 } from "lucide-react";
@@ -42,6 +43,7 @@ const mainNavItems = [
 
 const bottomNavItems = [
   { title: "Settings", href: "/settings/profile", icon: Settings },
+  { title: "Security", href: "/settings/security", icon: Shield },
   { title: "Audit Log", href: "/settings/audit-log", icon: ScrollText },
 ];
 
