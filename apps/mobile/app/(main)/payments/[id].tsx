@@ -1,5 +1,6 @@
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { X, CheckCircle } from 'lucide-react-native'
 import { useState } from 'react'

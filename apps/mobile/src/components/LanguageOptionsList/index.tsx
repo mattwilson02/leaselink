@@ -1,4 +1,4 @@
-import { Select } from '@sf-digital-ui/react-native'
+import { SelectCompound as Select } from '@/design-system/components/SelectCompound'
 import { useTranslation } from 'react-i18next'
 import { StyleSheet } from 'react-native'
 import type { Languages } from '../../../src/i18n'

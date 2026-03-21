@@ -1,4 +1,4 @@
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { ChevronLeft } from 'lucide-react-native'
 import { useCallback, useState } from 'react'
@@ -12,14 +12,11 @@ import i18next, {
 } from '../../src/i18n'
 import { useForm } from '@tanstack/react-form'
 import { Form } from '@/components/Form'
-import {
-	Button,
-	Heading,
-	Modal,
-	Select,
-	Text,
-	TextInput,
-} from '@sf-digital-ui/react-native'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { SelectCompound as Select } from '@/design-system/components/SelectCompound'
+import { TextInputCompound as TextInput } from '@/design-system/components/TextInputCompound'
+import { ModalCompound as Modal } from '@/design-system/components/ModalCompound'
 import { Icon } from '@/components/Icon'
 import { LanguageOptionsList } from '@/components/LanguageOptionsList'
 import { useTranslation } from 'react-i18next'

@@ -1,4 +1,4 @@
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { View } from 'react-native'
 
 export const CircleBackground = ({ color = colors.neutral['40'] }) => {

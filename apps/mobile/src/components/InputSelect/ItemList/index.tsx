@@ -1,9 +1,9 @@
-import { Select, type SelectViewportProps } from '@sf-digital-ui/react-native'
+import { SelectCompound, type SelectViewportProps } from '@/design-system/components/SelectCompound'
 
 export const ItemList = (props: SelectViewportProps) => {
 	return (
-		<Select.Content>
-			<Select.Viewport {...props} />
-		</Select.Content>
+		<SelectCompound.Content>
+			<SelectCompound.Viewport {...props} />
+		</SelectCompound.Content>
 	)
 }

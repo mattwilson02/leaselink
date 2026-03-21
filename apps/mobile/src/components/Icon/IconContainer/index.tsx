@@ -1,4 +1,4 @@
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import { View, type ViewProps } from 'react-native'
 
 interface IconContainerProps extends ViewProps {

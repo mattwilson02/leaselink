@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { View, Pressable, StyleSheet } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { MAINTENANCE_CATEGORY_LABELS, MaintenanceCategory } from '@leaselink/shared'
@@ -59,8 +59,8 @@ const styles = StyleSheet.create({
 		padding: 16,
 		borderRadius: 8,
 		borderWidth: 1,
-		borderColor: colors.neutral['30'],
-		backgroundColor: 'white',
+		borderColor: colors.border,
+		backgroundColor: colors.card,
 		gap: 8,
 	},
 	topRow: {
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	category: {
-		color: colors.neutral['500'],
+		color: colors.mutedForeground,
 	},
 	badgeRow: {
 		flexDirection: 'row',

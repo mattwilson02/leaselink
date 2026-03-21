@@ -1,5 +1,5 @@
-import { Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { Filter, Search } from 'lucide-react-native'
 import { Pressable, View } from 'react-native'
 import { useTranslation } from 'react-i18next'

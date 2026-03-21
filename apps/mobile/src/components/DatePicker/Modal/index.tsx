@@ -5,8 +5,8 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useTranslation } from 'react-i18next'
 import { useDatePickerContext } from '../context'
 import type { DatePickerModalProps } from '../types'
@@ -59,7 +59,7 @@ const Modal = ({
 						<TouchableOpacity onPress={confirm}>
 							<Text
 								style={{
-									color: colors['primary-green']['600'],
+									color: colors.primary,
 									fontWeight: '600',
 								}}
 							>

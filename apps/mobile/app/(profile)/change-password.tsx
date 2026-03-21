@@ -6,8 +6,10 @@ import { useAuthControllerHandle } from '@/gen/index'
 import { useLocalCredentials } from '@/hooks/useLocalCredentials'
 import { authClient } from '@/services/auth'
 import { extractErrorMessages } from '@/utils/form-errors'
-import { Button, Heading, Text, TextInput } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { TextInputCompound as TextInput } from '@/design-system/components/TextInputCompound'
+import { colors } from '@/design-system/theme'
 import { useForm } from '@tanstack/react-form'
 import * as LocalAuthentication from 'expo-local-authentication'
 import { useRouter } from 'expo-router'
@@ -236,7 +238,6 @@ const ChangePassword = () => {
 									<Form.GroupInput>
 										<TextInput.Root id={field.name}>
 											<TextInput.Control
-												// @ts-expect-error - ref works at runtime, library types incomplete
 												ref={currentPasswordRef}
 												testID='current-password-input'
 												autoCapitalize='none'
@@ -286,7 +287,6 @@ const ChangePassword = () => {
 									<Form.GroupInput>
 										<TextInput.Root id={field.name}>
 											<TextInput.Control
-												// @ts-expect-error - ref works at runtime, library types incomplete
 												ref={newPasswordRef}
 												testID='new-password-input'
 												autoCapitalize='none'
@@ -363,7 +363,6 @@ const ChangePassword = () => {
 									<Form.GroupInput>
 										<TextInput.Root id={field.name}>
 											<TextInput.Control
-												// @ts-expect-error - ref works at runtime, library types incomplete
 												ref={confirmPasswordRef}
 												testID='confirm-password-input'
 												autoCapitalize='none'
@@ -468,8 +467,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	requirementCheckboxMet: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	buttonContainer: {
 		flexDirection: 'row',

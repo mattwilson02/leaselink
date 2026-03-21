@@ -4,13 +4,12 @@ import {
 	ThemeProvider,
 } from '@react-navigation/native'
 import {
-	Lato_100Thin,
-	Lato_300Light,
-	Lato_400Regular,
-	Lato_700Bold,
-	Lato_900Black,
+	Inter_400Regular,
+	Inter_500Medium,
+	Inter_600SemiBold,
+	Inter_700Bold,
 	useFonts,
-} from '@expo-google-fonts/lato'
+} from '@expo-google-fonts/inter'
 import { Slot } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
@@ -41,14 +40,12 @@ const RootLayout = () => {
 	const [isI18nInitialized, setIsI18nInitialized] = useState(false)
 	const colorScheme = useColorScheme()
 
-	const tokens = {
-		'thin-100': Lato_100Thin,
-		'light-300': Lato_300Light,
-		'regular-400': Lato_400Regular,
-		'bold-700': Lato_700Bold,
-		'black-900': Lato_900Black,
-	}
-	const [loaded] = useFonts(tokens)
+	const [loaded] = useFonts({
+		Inter_400Regular,
+		Inter_500Medium,
+		Inter_600SemiBold,
+		Inter_700Bold,
+	})
 
 	useEffect(() => {
 		const setup = async () => {

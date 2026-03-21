@@ -4,8 +4,9 @@ import {
 	type FolderItemDTOFolderNameEnum,
 	useGetDocumentByIdControllerFindById,
 } from '@/gen/index'
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { X } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
@@ -52,10 +53,10 @@ const DocumentDetails = () => {
 						}}
 					>
 						<Icon.Root>
-							<Icon.IconContainer color={colors['primary-green']['100']}>
+							<Icon.IconContainer color={colors.neutral['20']}>
 								<Icon.Icon
 									name='coins-hand'
-									stroke={colors['primary-green']['500']}
+									stroke={colors.primary}
 									strokeWidth={2}
 								/>
 							</Icon.IconContainer>

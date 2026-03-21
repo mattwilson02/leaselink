@@ -1,5 +1,6 @@
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { X, CheckCircle } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
@@ -428,12 +429,12 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	timelineDotCompleted: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	timelineDotActive: {
 		backgroundColor: 'white',
-		borderColor: colors['primary-green']['500'],
+		borderColor: colors.primary,
 		borderWidth: 3,
 	},
 	timelineLine: {
@@ -444,7 +445,7 @@ const styles = StyleSheet.create({
 		minHeight: 24,
 	},
 	timelineLineCompleted: {
-		backgroundColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
 	},
 	timelineLabel: {
 		color: colors.neutral['400'],

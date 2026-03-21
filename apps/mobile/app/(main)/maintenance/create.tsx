@@ -1,5 +1,6 @@
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { CheckCircle, Plus, Trash, X } from 'lucide-react-native'
 import { useState } from 'react'
@@ -557,8 +558,8 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 	},
 	optionChipSelected: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	optionChipText: {
 		color: colors.neutral['600'],

@@ -1,7 +1,8 @@
 import { InputSelect } from '@/components/InputSelect'
 import { Layout } from '@/components/Layout'
-import { Button, Heading, PinInput, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useForm } from '@tanstack/react-form'
 import { useRouter } from 'expo-router'
 import { useState, useRef } from 'react'
@@ -20,6 +21,7 @@ import {
 	useVerifyPhoneNumberOtpControllerHandle,
 } from '@/gen/index'
 import { ErrorModal } from '@/components/ErrorModal'
+import { PinInputCompound as PinInput } from '@/design-system/components/PinInputCompound'
 import { extractErrorMessages } from '@/utils/form-errors'
 
 const confirmMobileNumberSchema = z.object({

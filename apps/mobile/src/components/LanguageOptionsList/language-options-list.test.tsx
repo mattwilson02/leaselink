@@ -1,7 +1,7 @@
 import { render, fireEvent } from '@testing-library/react-native'
 import { LanguageOptionsList } from '.'
 import { Languages } from '../../../src/i18n'
-import { Select } from '@sf-digital-ui/react-native'
+import { SelectCompound } from '@/design-system/components/SelectCompound'
 
 describe('LanguageOptionsList', () => {
 	const languageOptions = [
@@ -13,10 +13,10 @@ describe('LanguageOptionsList', () => {
 
 	const renderWithSelectProvider = (component: React.ReactNode) => {
 		return render(
-			<Select.Root value='' onValueChange={() => {}}>
-				<Select.Trigger testID='select-trigger' />
+			<SelectCompound.Root value='' onValueChange={() => {}}>
+				<SelectCompound.Trigger testID='select-trigger' />
 				{component}
-			</Select.Root>,
+			</SelectCompound.Root>,
 		)
 	}
 

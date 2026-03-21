@@ -1,5 +1,5 @@
-import { Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useState } from 'react'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { PaymentStatus } from '@leaselink/shared'
@@ -90,8 +90,8 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 	},
 	chipSelected: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	chipText: {
 		color: colors.neutral['600'],

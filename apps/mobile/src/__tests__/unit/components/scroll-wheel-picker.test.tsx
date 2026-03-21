@@ -1,16 +1,18 @@
 import { render, fireEvent, waitFor } from '@testing-library/react-native'
 import { ScrollWheelPicker } from '@/components/ScrollWheelPicker'
 
-jest.mock('@sf-digital-ui/tokens', () => ({
+jest.mock('@/design-system/theme', () => ({
 	colors: {
 		neutral: {
+			'20': '#f0f0f0',
 			'400': '#888888',
 			'600': '#444444',
+			'700': '#222222',
 		},
-		'primary-green': {
-			'50': '#e6f7f0',
-			'700': '#006644',
-		},
+		primary: '#00875a',
+		foreground: '#006644',
+		background: '#ffffff',
+		border: '#e5e7eb',
 	},
 }))
 

@@ -1,4 +1,4 @@
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 
 import { useEffect, useCallback, type ReactNode } from 'react'
 import { StyleSheet, View } from 'react-native'
