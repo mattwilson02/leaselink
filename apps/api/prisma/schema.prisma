@@ -210,6 +210,7 @@ model Client {
   leases                              Lease[]
   maintenanceRequests                 MaintenanceRequest[]
   payments                            Payment[]
+  signatures                          Signature[]
 
   @@map("clients")
 }
@@ -246,6 +247,7 @@ model Document {
   client          Client            @relation(fields: [clientId], references: [id], map: "client_id")
   property        Property?         @relation(fields: [propertyId], references: [id])
   DocumentRequest DocumentRequest[]
+  signature       Signature?
 
   @@map("documents")
 }
@@ -536,4 +538,21 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+model Signature {
+  id                String   @id @default(uuid())
+  documentId        String   @unique @map("document_id")
+  signedBy          String   @map("signed_by")
+  signatureImageKey String   @map("signature_image_key")
+  ipAddress         String?  @map("ip_address")
+  userAgent         String?  @map("user_agent")
+  signedAt          DateTime @default(now()) @map("signed_at")
+
+  document Document @relation(fields: [documentId], references: [id])
+  signer   Client   @relation(fields: [signedBy], references: [id])
+
+  @@index([documentId])
+  @@index([signedBy])
+  @@map("signatures")
 }

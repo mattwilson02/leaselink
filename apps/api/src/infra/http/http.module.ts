@@ -159,6 +159,10 @@ import { DeleteVendorUseCase } from '@/domain/expense-management/application/use
 import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import { GetAuditLogsUseCase } from '@/domain/audit/application/use-cases/get-audit-logs'
 import { GetAuditLogsByResourceUseCase } from '@/domain/audit/application/use-cases/get-audit-logs-by-resource'
+import { SignDocumentUseCase } from '@/domain/signature/application/use-cases/sign-document'
+import { GetSignatureByDocumentIdUseCase } from '@/domain/signature/application/use-cases/get-signature-by-document-id'
+import { SignDocumentController } from './controllers/sign-document/sign-document.controller'
+import { GetSignatureController } from './controllers/get-signature/get-signature.controller'
 
 @Module({
 	imports: [
@@ -257,6 +261,9 @@ import { GetAuditLogsByResourceUseCase } from '@/domain/audit/application/use-ca
 		// Audit Logs
 		GetAuditLogsController,
 		GetAuditLogsByResourceController,
+		// Signatures — static routes before :id to avoid route conflicts
+		SignDocumentController,
+		GetSignatureController,
 	],
 	providers: [
 		CreateClientUseCase,
@@ -337,6 +344,9 @@ import { GetAuditLogsByResourceUseCase } from '@/domain/audit/application/use-ca
 		CreateAuditLogUseCase,
 		GetAuditLogsUseCase,
 		GetAuditLogsByResourceUseCase,
+		// Signature use cases
+		SignDocumentUseCase,
+		GetSignatureByDocumentIdUseCase,
 	],
 })
 export class HttpModule {}
