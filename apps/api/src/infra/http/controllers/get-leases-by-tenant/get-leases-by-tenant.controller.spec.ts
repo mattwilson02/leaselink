@@ -36,7 +36,10 @@ describe('GetLeasesByTenantController', () => {
 		leasesRepository = new InMemoryLeasesRepository()
 		propertiesRepository = new InMemoryPropertiesRepository()
 		getLeasesUseCase = new GetLeasesUseCase(leasesRepository)
-		sut = new GetLeasesByTenantController(getLeasesUseCase, propertiesRepository)
+		sut = new GetLeasesByTenantController(
+			getLeasesUseCase,
+			propertiesRepository,
+		)
 	})
 
 	it('returns tenant leases with pagination meta', async () => {

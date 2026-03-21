@@ -607,7 +607,7 @@ function verify(scope: "backend" | "full" = "full"): VerifyResult {
     { name: "Mobile Type Check", cmd: "npx tsc --noEmit", cwd: join(ROOT, "apps/mobile") },
   ];
 
-  const checks = scope === "backend" ? backendChecks : [...backendChecks, ...e2eChecks, ...frontendChecks];
+  const checks = scope === "backend" ? [...backendChecks, ...e2eChecks] : [...backendChecks, ...e2eChecks, ...frontendChecks];
 
   const results: string[] = [];
   let allPassed = true;

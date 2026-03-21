@@ -82,7 +82,9 @@ export class DownloadDocumentController {
 			if (docResult.isRight()) {
 				const doc = docResult.value.document
 				if (doc.clientId.toString() !== user.id) {
-					throw new ForbiddenException('You do not have access to this document')
+					throw new ForbiddenException(
+						'You do not have access to this document',
+					)
 				}
 			}
 		}

@@ -13,9 +13,7 @@ describe('MarkAllNotificationsAsReadUseCase', () => {
 
 	beforeEach(() => {
 		inMemoryNotificationsRepository = new InMemoryNotificationsRepository()
-		sut = new MarkAllNotificationsAsReadUseCase(
-			inMemoryNotificationsRepository,
-		)
+		sut = new MarkAllNotificationsAsReadUseCase(inMemoryNotificationsRepository)
 	})
 
 	it('should return count 0 if no unread notifications exist', async () => {

@@ -4,6 +4,8 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	HttpCode,
+	HttpStatus,
 	NotFoundException,
 	Param,
 	Post,
@@ -41,6 +43,7 @@ export class ConfirmMaintenancePhotosController {
 	) {}
 
 	@Post(':id/photos/confirm')
+	@HttpCode(HttpStatus.OK)
 	@ApiBearerAuth()
 	@ApiOperation({
 		summary: 'Confirm photo uploads for maintenance request (tenant only)',

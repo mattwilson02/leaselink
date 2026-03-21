@@ -133,7 +133,11 @@ export class InMemoryDocumentRepository implements DocumentRepository {
 
 		const folderMap = new Map<
 			string,
-			{ fileCount: number; totalFileSizeSum: number; mostRecentUpdatedDate: Date | null }
+			{
+				fileCount: number
+				totalFileSizeSum: number
+				mostRecentUpdatedDate: Date | null
+			}
 		>()
 
 		for (const doc of this.items) {
@@ -142,11 +146,18 @@ export class InMemoryDocumentRepository implements DocumentRepository {
 			const updatedAt = doc.updatedAt ?? doc.createdAt
 			const entry = folderMap.get(folder)
 			if (!entry) {
-				folderMap.set(folder, { fileCount: 1, totalFileSizeSum: fileSize, mostRecentUpdatedDate: updatedAt })
+				folderMap.set(folder, {
+					fileCount: 1,
+					totalFileSizeSum: fileSize,
+					mostRecentUpdatedDate: updatedAt,
+				})
 			} else {
 				entry.fileCount += 1
 				entry.totalFileSizeSum += fileSize
-				if (!entry.mostRecentUpdatedDate || updatedAt > entry.mostRecentUpdatedDate) {
+				if (
+					!entry.mostRecentUpdatedDate ||
+					updatedAt > entry.mostRecentUpdatedDate
+				) {
 					entry.mostRecentUpdatedDate = updatedAt
 				}
 			}
