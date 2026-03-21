@@ -17,7 +17,7 @@ import dayjs from 'dayjs'
 import {
 	MAINTENANCE_CATEGORY_LABELS,
 	MAINTENANCE_STATUS_LABELS,
-	MaintenanceCategory,
+	type MaintenanceCategory,
 	MaintenancePriority,
 	MaintenanceStatus,
 } from '@leaselink/shared'
@@ -60,7 +60,8 @@ const MaintenanceDetail = () => {
 			setShowSuccessModal(true)
 		} catch (error) {
 			setShowCloseConfirm(false)
-			const msg = error instanceof Error ? error.message : 'Failed to close request'
+			const msg =
+				error instanceof Error ? error.message : 'Failed to close request'
 			setErrorMessage(msg)
 			setShowErrorModal(true)
 		}
@@ -83,7 +84,7 @@ const MaintenanceDetail = () => {
 					</Pressable>
 				</View>
 				<View style={styles.loadingContainer}>
-					{Array.from({ length: 5 }).map((_, i) => (
+					{Array.from({ length: 5 }).map((, i) => (
 						<View key={i} style={styles.skeleton} />
 					))}
 				</View>
@@ -189,7 +190,8 @@ const MaintenanceDetail = () => {
 												<View
 													style={[
 														styles.timelineLine,
-														index < currentStepIndex && styles.timelineLineCompleted,
+														index < currentStepIndex &&
+															styles.timelineLineCompleted,
 													]}
 												/>
 											)}
@@ -273,8 +275,15 @@ const MaintenanceDetail = () => {
 					{request.status !== MaintenanceStatus.RESOLVED &&
 						request.status !== MaintenanceStatus.CLOSED && (
 							<View style={styles.statusInfo}>
-								<Text size='sm' style={{ color: colors.neutral['500'], textAlign: 'center' }}>
-									{MAINTENANCE_STATUS_LABELS[request.status as MaintenanceStatus]}
+								<Text
+									size='sm'
+									style={{ color: colors.neutral['500'], textAlign: 'center' }}
+								>
+									{
+										MAINTENANCE_STATUS_LABELS[
+											request.status as MaintenanceStatus
+										]
+									}
 								</Text>
 							</View>
 						)}

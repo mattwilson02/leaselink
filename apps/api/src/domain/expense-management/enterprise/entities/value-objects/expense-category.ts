@@ -15,6 +15,7 @@ interface ExpenseCategoryProps {
 }
 
 export class ExpenseCategory extends ValueObject<ExpenseCategoryProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_CATEGORIES: ExpenseCategoryType[] = [
 		'MAINTENANCE',
 		'INSURANCE',

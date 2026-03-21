@@ -19,7 +19,7 @@ import { HttpDownloadUrlPresenter } from '../../presenters/http-download-url-pre
 import { DownloadDocumentRequestDTO } from '../../DTOs/document/download-document-request-dto'
 import { DownloadDocumentBadRequestDTO } from '../../DTOs/document/download-document-bad-request-dto'
 import { DownloadDocumentInternalServerErrorDTO } from '../../DTOs/document/download-document-internal-server-error-dto'
-import { DownloadDocumentNotFoundDTO } from '../../DTOs/document/download-document-not-found-dto copy'
+import { DownloadDocumentNotFoundDTO } from '../../DTOs/document/download-document-not-found-dto'
 import { DownloadDocumentUseCase } from '@/domain/document/application/use-cases/download-document'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
 import type { HttpUserResponse } from '../../presenters/http-user-presenter'

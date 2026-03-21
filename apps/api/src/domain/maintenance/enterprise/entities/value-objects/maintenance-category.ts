@@ -14,6 +14,7 @@ interface MaintenanceCategoryProps {
 }
 
 export class MaintenanceCategory extends ValueObject<MaintenanceCategoryProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_CATEGORIES: MaintenanceCategoryType[] = [
 		'PLUMBING',
 		'ELECTRICAL',

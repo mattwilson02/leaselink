@@ -95,7 +95,7 @@ describe('GetLeasesByTenantController', () => {
 		)
 
 		const result = await sut.handle(makeTenantUser('tenant-filter'), {
-			status: 'ACTIVE' as any,
+			status: 'ACTIVE',
 			propertyId: undefined,
 			tenantId: undefined,
 			page: 1,

@@ -100,7 +100,7 @@ describe('GetSessionsController (E2E)', () => {
 			data: {
 				id: `expired-${crypto.randomUUID()}`,
 				token: `expired-token-${crypto.randomUUID()}`,
-				userId: userAuthResponse.user!.id,
+				userId: userAuthResponse.user?.id,
 				expiresAt: new Date(Date.now() - 1000), // already expired
 				createdAt: new Date(Date.now() - 5000),
 				updatedAt: new Date(Date.now() - 5000),
@@ -179,7 +179,7 @@ describe('GetSessionsController (E2E)', () => {
 
 		// All sessions belong to user1's authUserId
 		const sessionIds = await prisma.session.findMany({
-			where: { userId: user2.user!.id },
+			where: { userId: user2.user?.id },
 		})
 		const user2SessionIds = sessionIds.map((s) => s.id)
 

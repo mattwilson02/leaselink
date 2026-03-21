@@ -162,23 +162,19 @@ const Security = () => {
 			setTwoFactorStep('password')
 		} else {
 			// Disabling: confirm then collect password
-			Alert.alert(
-				twoFactorT('disable_title'),
-				twoFactorT('disable_message'),
-				[
-					{ text: twoFactorT('disable_cancel'), style: 'cancel' },
-					{
-						text: twoFactorT('disable_confirm'),
-						style: 'destructive',
-						onPress: () => {
-							setTwoFactorPassword('')
-							setTwoFactorPasswordError(null)
-							setShowTwoFactorPassword(false)
-							setTwoFactorStep('disable_password')
-						},
+			Alert.alert(twoFactorT('disable_title'), twoFactorT('disable_message'), [
+				{ text: twoFactorT('disable_cancel'), style: 'cancel' },
+				{
+					text: twoFactorT('disable_confirm'),
+					style: 'destructive',
+					onPress: () => {
+						setTwoFactorPassword('')
+						setTwoFactorPasswordError(null)
+						setShowTwoFactorPassword(false)
+						setTwoFactorStep('disable_password')
 					},
-				],
-			)
+				},
+			])
 		}
 	}
 
@@ -613,9 +609,7 @@ const Security = () => {
 											? handleTwoFactorEnableSubmitPassword
 											: handleTwoFactorDisableSubmitPassword
 									}
-									disabled={
-										twoFactorPassword.length < 1 || isTwoFactorLoading
-									}
+									disabled={twoFactorPassword.length < 1 || isTwoFactorLoading}
 									loading={isTwoFactorLoading}
 									testID='confirm-two-factor-password'
 								>
@@ -695,9 +689,7 @@ const Security = () => {
 								circularBackgroundColor={colors.neutral['30']}
 							/>
 							<Modal.Body>
-								<Modal.Title>
-									{twoFactorT('backup_codes_title')}
-								</Modal.Title>
+								<Modal.Title>{twoFactorT('backup_codes_title')}</Modal.Title>
 								<Modal.Description>
 									{twoFactorT('backup_codes_description')}
 								</Modal.Description>

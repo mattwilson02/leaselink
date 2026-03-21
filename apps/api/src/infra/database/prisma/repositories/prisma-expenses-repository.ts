@@ -8,7 +8,7 @@ import type {
 	ExpenseSummaryResult,
 } from '@/domain/expense-management/application/repositories/expenses-repository'
 import type { Expense } from '@/domain/expense-management/enterprise/entities/expense'
-import { Prisma } from '@prisma/client'
+import { Prisma, EXPENSE_CATEGORY } from '@prisma/client'
 
 @Injectable()
 export class PrismaExpensesRepository implements ExpensesRepository {
@@ -39,7 +39,7 @@ export class PrismaExpensesRepository implements ExpensesRepository {
 		}
 
 		if (params.category) {
-			where.category = params.category as any
+			where.category = params.category as EXPENSE_CATEGORY
 		}
 
 		if (params.dateFrom || params.dateTo) {
@@ -82,9 +82,11 @@ export class PrismaExpensesRepository implements ExpensesRepository {
 					lte: endDate,
 				},
 			},
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_sum: {
 				amount: true,
 			},
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_count: {
 				id: true,
 			},

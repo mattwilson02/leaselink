@@ -39,7 +39,7 @@ export class CreateMaintenanceRequestController {
 		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[MaintenanceNoActiveLeaseError.name]: BadRequestException,
 	}
 

@@ -70,7 +70,11 @@ const DocumentRequestsList = ({ showPreview = false }: Props) => {
 					onPress={() => router.push('/document-requests')}
 					style={{ padding: 4 }}
 				>
-					<Text size='sm' fontWeight='bold' style={{ color: colors.mutedForeground }}>
+					<Text
+						size='sm'
+						fontWeight='bold'
+						style={{ color: colors.mutedForeground }}
+					>
 						{t('see_more')}
 					</Text>
 				</Pressable>

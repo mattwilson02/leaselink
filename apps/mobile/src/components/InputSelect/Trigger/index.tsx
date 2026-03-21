@@ -1,4 +1,7 @@
-import { SelectCompound, type SelectTriggerProps } from '@/design-system/components/SelectCompound'
+import {
+	SelectCompound,
+	type SelectTriggerProps,
+} from '@/design-system/components/SelectCompound'
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
 
 export const Trigger = ({ style, ...props }: SelectTriggerProps) => {

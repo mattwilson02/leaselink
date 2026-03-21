@@ -556,3 +556,15 @@ model Signature {
   @@index([signedBy])
   @@map("signatures")
 }
+
+
+model FailedWebhook {
+  id           String   @id @default(uuid())
+  eventId      String   @map("event_id")
+  eventType    String   @map("event_type")
+  payload      Json
+  errorMessage String   @map("error_message")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("failed_webhooks")
+}

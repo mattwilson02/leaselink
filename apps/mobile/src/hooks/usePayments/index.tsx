@@ -1,5 +1,10 @@
 import api from '@/services/api'
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from '@tanstack/react-query'
 import { PaymentStatus } from '@leaselink/shared'
 
 export interface PaymentDTO {
@@ -88,8 +93,7 @@ export const useVerifyPayment = () => {
 export const useNextPaymentDue = () => {
 	const { data, isLoading } = useMyPayments()
 
-	const allPayments =
-		data?.pages.flatMap((page) => page.payments || []) || []
+	const allPayments = data?.pages.flatMap((page) => page.payments || []) || []
 
 	const nextPayment = allPayments.find(
 		(p) =>

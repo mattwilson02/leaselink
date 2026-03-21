@@ -12,10 +12,16 @@ type Props = {
 }
 
 const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-		useMyPayments({
-			status: statusFilter === 'ALL' ? undefined : statusFilter,
-		})
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+		refetch,
+	} = useMyPayments({
+		status: statusFilter === 'ALL' ? undefined : statusFilter,
+	})
 
 	const payments = useMemo(
 		() => data?.pages.flatMap((page) => page.payments || []) || [],
@@ -42,7 +48,10 @@ const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
 		)
 	}, [isFetchingNextPage])
 
-	const renderSeparator = useCallback(() => <View style={styles.separator} />, [])
+	const renderSeparator = useCallback(
+		() => <View style={styles.separator} />,
+		[],
+	)
 
 	const renderEmpty = useCallback(() => {
 		if (isLoading) return null
@@ -63,7 +72,7 @@ const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
 	if (isLoading) {
 		return (
 			<View style={styles.loadingContainer}>
-				{Array.from({ length: 4 }).map((_, i) => (
+				{Array.from({ length: 4 }).map((, i) => (
 					<View key={i} style={styles.skeleton} />
 				))}
 			</View>

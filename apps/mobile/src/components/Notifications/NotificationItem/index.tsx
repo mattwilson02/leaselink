@@ -109,9 +109,7 @@ const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
 		case 'BASIC_COMPLETE':
 			return {
 				backgroundColor: colors.warning[50],
-				icon: (
-					<Info testID='icon-info' size={24} color={colors.warning[600]} />
-				),
+				icon: <Info testID='icon-info' size={24} color={colors.warning[600]} />,
 			}
 
 		case 'INSPECTION_SCHEDULED':
@@ -128,9 +126,7 @@ const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
 	if (notification.linkedPaymentId) {
 		return {
 			backgroundColor: colors.success[50],
-			icon: (
-				<CreditCard size={24} color={colors.success[600]} />
-			),
+			icon: <CreditCard size={24} color={colors.success[600]} />,
 		}
 	}
 	if (notification.linkedTransactionId) {
@@ -211,8 +207,13 @@ const NotificationItem = ({ notification }: Props) => {
 		} else if (notification.linkedTransactionId) {
 			router.push(`/maintenance/${notification.linkedTransactionId}`)
 		} else if (notification.linkedDocumentId) {
-			if (notification.actionType === 'UPLOAD_DOCUMENT' || notification.actionType === 'SIGN_DOCUMENT') {
-				router.push(`/upload-document?requestId=${notification.linkedDocumentId}`)
+			if (
+				notification.actionType === 'UPLOAD_DOCUMENT' ||
+				notification.actionType === 'SIGN_DOCUMENT'
+			) {
+				router.push(
+					`/upload-document?requestId=${notification.linkedDocumentId}`,
+				)
 			} else {
 				router.push(`/documents/${notification.linkedDocumentId}`)
 			}
@@ -349,14 +350,19 @@ const NotificationItem = ({ notification }: Props) => {
 			style={[
 				styles.notificationContainer,
 				{
-					backgroundColor: notification.isRead ? colors.card : colors.neutral['10'],
+					backgroundColor: notification.isRead
+						? colors.card
+						: colors.neutral['10'],
 				},
 				notificationAnimatedStyle,
 			]}
 		>
 			<Pressable
 				testID={`notification-${notification.id}`}
-				accessibilityLabel={(notification as unknown as { title: string }).title ?? notification.text}
+				accessibilityLabel={
+					(notification as unknown as { title: string }).title ??
+					notification.text
+				}
 				onPress={onRead}
 				style={{
 					flexDirection: 'row',
@@ -398,7 +404,8 @@ const NotificationItem = ({ notification }: Props) => {
 								flexWrap: 'wrap',
 							}}
 						>
-							{(notification as unknown as { title: string }).title ?? notification.text}
+							{(notification as unknown as { title: string }).title ??
+								notification.text}
 						</Text>
 						{(notification as unknown as { body?: string }).body ? (
 							<Text

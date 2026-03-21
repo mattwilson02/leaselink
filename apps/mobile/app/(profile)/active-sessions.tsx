@@ -96,7 +96,11 @@ const ActiveSessions = () => {
 			</Pressable>
 
 			<View style={styles.header}>
-				<Heading size='h3' fontWeight='bold' style={{ color: colors.neutral['700'] }}>
+				<Heading
+					size='h3'
+					fontWeight='bold'
+					style={{ color: colors.neutral['700'] }}
+				>
 					{t('title')}
 				</Heading>
 				<Text size='sm' style={{ color: colors.neutral['500'] }}>
@@ -104,12 +108,21 @@ const ActiveSessions = () => {
 				</Text>
 			</View>
 
-			<View style={{ height: 1, backgroundColor: colors.neutral['30'], marginHorizontal: 16 }} />
+			<View
+				style={{
+					height: 1,
+					backgroundColor: colors.neutral['30'],
+					marginHorizontal: 16,
+				}}
+			/>
 
 			{isLoading ? (
 				<View style={styles.centerContent}>
 					<ActivityIndicator color={colors.neutral['500']} />
-					<Text size='sm' style={{ color: colors.neutral['400'], marginTop: 8 }}>
+					<Text
+						size='sm'
+						style={{ color: colors.neutral['400'], marginTop: 8 }}
+					>
 						{t('loading')}
 					</Text>
 				</View>
@@ -133,7 +146,8 @@ const ActiveSessions = () => {
 						/>
 					}
 					renderItem={({ item }) => {
-						const deviceLabel = parseUserAgent(item.userAgent) || t('unknown_device')
+						const deviceLabel =
+							parseUserAgent(item.userAgent) || t('unknown_device')
 						const isMobile = isMobileUserAgent(item.userAgent)
 						const ipLabel = item.ipAddress || t('unknown_ip')
 						const dateLabel = dayjs(item.createdAt).format('DD MMM YYYY, HH:mm')

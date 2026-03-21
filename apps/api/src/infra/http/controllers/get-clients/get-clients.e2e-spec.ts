@@ -67,10 +67,9 @@ describe('GetClientsController (E2E)', () => {
 			.expect(200)
 
 		expect(Array.isArray(response.body.data)).toBe(true)
-		// biome-ignore lint/suspicious/noExplicitAny: test assertion
-		response.body.data.forEach((client: any) => {
+		for (const client of response.body.data as Array<Record<string, unknown>>) {
 			expect(client.status).toBe('ACTIVE')
-		})
+		}
 	})
 
 	it('[GET] /tenants - should reject CLIENT auth', async () => {

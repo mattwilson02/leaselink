@@ -11,6 +11,8 @@ import {
 } from '@/domain/notification/enterprise/entities/notification'
 import { MaintenanceNoActiveLeaseError } from './errors/maintenance-no-active-lease-error'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { MaintenanceCategory } from '../../enterprise/entities/value-objects/maintenance-category'
+import { MaintenancePriority } from '../../enterprise/entities/value-objects/maintenance-priority'
 
 export interface CreateMaintenanceRequestUseCaseRequest {
 	tenantId: string
@@ -54,8 +56,10 @@ export class CreateMaintenanceRequestUseCase {
 			tenantId: new UniqueEntityId(input.tenantId),
 			title: input.title,
 			description: input.description,
-			category: input.category as any,
-			priority: input.priority as any,
+			category: MaintenanceCategory.create(input.category),
+			priority: input.priority
+				? MaintenancePriority.create(input.priority)
+				: undefined,
 		})
 
 		await this.maintenanceRequestsRepository.create(request)

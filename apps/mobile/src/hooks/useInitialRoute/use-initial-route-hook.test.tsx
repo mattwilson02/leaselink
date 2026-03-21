@@ -80,7 +80,7 @@ describe('useInitialRoute', () => {
 			expect(mockAuthenticate).toHaveBeenCalled()
 
 			expect(mockRefetch).toHaveBeenCalled()
-			expect(mockRouter.replace).toHaveBeenCalledWith('/(main)/documents')
+			expect(mockRouter.replace).toHaveBeenCalledWith('/(main)/home')
 		})
 	})
 
@@ -208,7 +208,7 @@ describe('useInitialRoute', () => {
 		})
 
 		await waitFor(() => {
-			expect(mockRouter.replace).toHaveBeenCalledWith('/(main)/documents')
+			expect(mockRouter.replace).toHaveBeenCalledWith('/(main)/home')
 		})
 	})
 

@@ -64,6 +64,7 @@ describe('GetSignatureController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.get(`/documents/${document.id.toString()}/signature`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 
 			expect(response.status).toBe(404)
@@ -86,12 +87,14 @@ describe('GetSignatureController (E2E)', () => {
 			// Sign the document first
 			await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: blobName })
 
 			// Now get the signature
 			const response = await request(app.getHttpServer())
 				.get(`/documents/${document.id.toString()}/signature`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 
 			expect(response.status).toBe(200)
@@ -105,6 +108,7 @@ describe('GetSignatureController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.get('/documents/non-existent-id/signature')
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 
 			expect(response.status).toBe(404)

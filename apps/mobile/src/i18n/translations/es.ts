@@ -287,7 +287,8 @@ export default {
 	},
 	maintenance: {
 		maintenance: 'Solicitudes de Mantenimiento',
-		maintenance_description: 'Envíe y realice seguimiento de solicitudes de mantenimiento',
+		maintenance_description:
+			'Envíe y realice seguimiento de solicitudes de mantenimiento',
 		new_request: 'Nueva Solicitud',
 		request_details: 'Detalles de la Solicitud',
 		all: 'Todos',
@@ -300,16 +301,20 @@ export default {
 		submit: 'Enviar Solicitud',
 		no_requests: 'Sin solicitudes de mantenimiento',
 		no_requests_description: 'Envíe una si tiene un problema con su propiedad.',
-		no_active_lease: 'Debe tener un contrato activo para enviar una solicitud de mantenimiento.',
+		no_active_lease:
+			'Debe tener un contrato activo para enviar una solicitud de mantenimiento.',
 		request_submitted: 'Solicitud enviada',
-		request_submitted_description: 'Su solicitud de mantenimiento fue enviada con éxito.',
+		request_submitted_description:
+			'Su solicitud de mantenimiento fue enviada con éxito.',
 		close_request: 'Cerrar Solicitud',
 		request_closed: 'Solicitud cerrada',
-		request_closed_description: 'Su solicitud de mantenimiento ha sido cerrada.',
+		request_closed_description:
+			'Su solicitud de mantenimiento ha sido cerrada.',
 		title_required: 'El título es obligatorio',
 		title_max_length: 'El título debe tener como máximo 200 caracteres',
 		description_required: 'La descripción es obligatoria',
-		description_max_length: 'La descripción debe tener como máximo 5000 caracteres',
+		description_max_length:
+			'La descripción debe tener como máximo 5000 caracteres',
 		category_required: 'La categoría es obligatoria',
 		priority_required: 'La prioridad es obligatoria',
 		status: 'Estado',
@@ -495,7 +500,8 @@ export default {
 		current_session: 'Actual',
 		revoke: 'Revocar',
 		revoke_confirm_title: 'Revocar sesión',
-		revoke_confirm_message: '¿Estás seguro de que quieres cerrar sesión en este dispositivo?',
+		revoke_confirm_message:
+			'¿Estás seguro de que quieres cerrar sesión en este dispositivo?',
 		revoke_cancel: 'Cancelar',
 		revoke_confirm: 'Revocar',
 		unknown_device: 'Dispositivo desconocido',

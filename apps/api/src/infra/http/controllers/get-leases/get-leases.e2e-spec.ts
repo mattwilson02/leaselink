@@ -135,10 +135,9 @@ describe('GetLeasesController (E2E)', () => {
 			.expect(200)
 
 		expect(Array.isArray(response.body.data)).toBe(true)
-		// biome-ignore lint/suspicious/noExplicitAny: test assertion
-		response.body.data.forEach((lease: any) => {
+		for (const lease of response.body.data as Array<Record<string, unknown>>) {
 			expect(lease.status).toBe('ACTIVE')
-		})
+		}
 	})
 
 	it('[GET] /leases - should reject CLIENT auth', async () => {

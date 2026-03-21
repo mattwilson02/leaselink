@@ -1,6 +1,5 @@
 import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
-import { Property } from '../../enterprise/entities/property'
 import { PropertiesRepository } from '../repositories/properties-repository'
 import { PropertyNotFoundError } from './errors/property-not-found-error'
 import { StorageRepository } from '@/domain/document/application/repositories/storage-repository'

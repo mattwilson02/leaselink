@@ -18,7 +18,7 @@ class MockCreateAuditLogUseCase {
 	calls: unknown[] = []
 	async execute(input: unknown) {
 		this.calls.push(input)
-		return right({ auditLog: {} as any })
+		return right({ auditLog: {} as unknown })
 	}
 }
 
@@ -26,7 +26,7 @@ class MockCreateNotificationUseCase {
 	calls: unknown[] = []
 	async execute(input: unknown) {
 		this.calls.push(input)
-		return right({ notification: {} as any })
+		return right({ notification: {} as unknown })
 	}
 }
 
@@ -129,8 +129,12 @@ describe('SignDocumentUseCase', () => {
 		})
 
 		expect(mockAuditLog.calls).toHaveLength(1)
-		expect((mockAuditLog.calls[0] as any).action).toBe('SIGN')
-		expect((mockAuditLog.calls[0] as any).resourceType).toBe('DOCUMENT')
+		expect((mockAuditLog.calls[0] as Record<string, unknown>).action).toBe(
+			'SIGN',
+		)
+		expect(
+			(mockAuditLog.calls[0] as Record<string, unknown>).resourceType,
+		).toBe('DOCUMENT')
 	})
 
 	it('should send a notification on successful signing', async () => {
@@ -151,9 +155,9 @@ describe('SignDocumentUseCase', () => {
 		})
 
 		expect(mockNotification.calls).toHaveLength(1)
-		expect((mockNotification.calls[0] as any).linkedDocumentId).toBe(
-			document.id.toString(),
-		)
+		expect(
+			(mockNotification.calls[0] as Record<string, unknown>).linkedDocumentId,
+		).toBe(document.id.toString())
 	})
 
 	it('should return DocumentNotFoundError when document does not exist', async () => {

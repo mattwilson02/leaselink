@@ -7,6 +7,7 @@ interface LeaseStatusProps {
 }
 
 export class LeaseStatus extends ValueObject<LeaseStatusProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_STATUSES: LeaseStatusType[] = [
 		'PENDING',
 		'ACTIVE',

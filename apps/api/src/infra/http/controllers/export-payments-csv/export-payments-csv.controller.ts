@@ -13,6 +13,7 @@ import { PaymentStatus } from '@leaselink/shared'
 import { EmployeeOnlyGuard } from '../../guards/employee-only.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import type { Prisma } from '@prisma/client'
+import type { PAYMENT_STATUS } from '@prisma/client'
 
 const paymentExportQuerySchema = z.object({
 	status: z.nativeEnum(PaymentStatus).optional(),
@@ -58,7 +59,7 @@ export class ExportPaymentsCsvController {
 	) {
 		const where: Prisma.PaymentWhereInput = {}
 
-		if (query.status) where.status = query.status as any
+		if (query.status) where.status = query.status as PAYMENT_STATUS
 		if (query.tenantId) where.tenantId = query.tenantId
 		if (query.propertyId) {
 			where.lease = { propertyId: query.propertyId }

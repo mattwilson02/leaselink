@@ -32,7 +32,7 @@ export class DeletePropertyController {
 		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 		[PropertyHasActiveLeaseError.name]: ConflictException,
 	}

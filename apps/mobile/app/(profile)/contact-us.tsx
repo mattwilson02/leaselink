@@ -85,10 +85,7 @@ const ContactUs = () => {
 									{t('we_are_here_to_help')}
 								</Text>
 							</View>
-							<Text
-								fontWeight='bold'
-								style={{ color: colors.primary }}
-							>
+							<Text fontWeight='bold' style={{ color: colors.primary }}>
 								{t('support_email')}
 							</Text>
 						</View>
@@ -133,10 +130,7 @@ const ContactUs = () => {
 									{t('hours')}
 								</Text>
 							</View>
-							<Text
-								fontWeight='bold'
-								style={{ color: colors.primary }}
-							>
+							<Text fontWeight='bold' style={{ color: colors.primary }}>
 								{t('phone_number')}
 							</Text>
 						</View>

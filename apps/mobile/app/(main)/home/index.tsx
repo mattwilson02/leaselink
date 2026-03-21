@@ -5,7 +5,12 @@ import { useRouter } from 'expo-router'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { CreditCard, Wrench, ChevronRight, MapPin } from 'lucide-react-native'
 import dayjs from 'dayjs'
-import { PaymentStatus, PROPERTY_TYPE_LABELS, LEASE_STATUS_LABELS, LeaseStatus } from '@leaselink/shared'
+import {
+	PaymentStatus,
+	PROPERTY_TYPE_LABELS,
+	LEASE_STATUS_LABELS,
+	LeaseStatus,
+} from '@leaselink/shared'
 import { useNextPaymentDue } from '@/hooks/usePayments'
 import { useMyActiveLease } from '@/hooks/useLeases'
 import PaymentStatusBadge from '@/components/Payments/PaymentStatusBadge'
@@ -46,17 +51,18 @@ const Home = () => {
 		? `${dayjs(activeLease.startDate).format('D MMM YYYY')} — ${dayjs(activeLease.endDate).format('D MMM YYYY')}`
 		: ''
 
-	const propertyTypeLabel =
-		activeLease?.property?.propertyType
-			? PROPERTY_TYPE_LABELS[activeLease.property.propertyType]
-			: null
-
-	const leaseStatusLabel = activeLease
-		? LEASE_STATUS_LABELS[activeLease.status as LeaseStatus] ?? activeLease.status
+	const propertyTypeLabel = activeLease?.property?.propertyType
+		? PROPERTY_TYPE_LABELS[activeLease.property.propertyType]
 		: null
 
-	const leaseStatusTextColor =
-		activeLease ? (leaseStatusColor[activeLease.status] ?? colors.neutral['500']) : colors.neutral['500']
+	const leaseStatusLabel = activeLease
+		? (LEASE_STATUS_LABELS[activeLease.status as LeaseStatus] ??
+			activeLease.status)
+		: null
+
+	const leaseStatusTextColor = activeLease
+		? (leaseStatusColor[activeLease.status] ?? colors.neutral['500'])
+		: colors.neutral['500']
 
 	return (
 		<ScrollView
@@ -90,10 +96,16 @@ const Home = () => {
 					<View style={styles.leaseCardContent}>
 						{/* Address row */}
 						<View style={styles.addressRow}>
-							<MapPin size={16} color={colors.primary} style={styles.addressIcon} />
+							<MapPin
+								size={16}
+								color={colors.primary}
+								style={styles.addressIcon}
+							/>
 							<Text fontWeight='bold' style={styles.addressText}>
 								{activeLease.property?.address ?? 'Address unavailable'}
-								{activeLease.property?.city ? `, ${activeLease.property.city}` : ''}
+								{activeLease.property?.city
+									? `, ${activeLease.property.city}`
+									: ''}
 							</Text>
 						</View>
 
@@ -107,8 +119,19 @@ const Home = () => {
 								</View>
 							)}
 							{leaseStatusLabel && (
-								<View style={[styles.statusBadge, { borderColor: leaseStatusTextColor }]}>
-									<Text size='sm' style={[styles.statusBadgeText, { color: leaseStatusTextColor }]}>
+								<View
+									style={[
+										styles.statusBadge,
+										{ borderColor: leaseStatusTextColor },
+									]}
+								>
+									<Text
+										size='sm'
+										style={[
+											styles.statusBadgeText,
+											{ color: leaseStatusTextColor },
+										]}
+									>
 										{leaseStatusLabel}
 									</Text>
 								</View>
@@ -127,7 +150,9 @@ const Home = () => {
 
 						{/* Tap hint */}
 						<View style={styles.tapHintRow}>
-							<Text size='sm' style={styles.tapHintText}>View lease details</Text>
+							<Text size='sm' style={styles.tapHintText}>
+								View lease details
+							</Text>
 							<ChevronRight size={14} color={colors.primary} />
 						</View>
 					</View>

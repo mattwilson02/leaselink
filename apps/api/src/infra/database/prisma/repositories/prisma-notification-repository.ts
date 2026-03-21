@@ -10,6 +10,7 @@ import type {
 	NotificationType,
 } from '@/domain/notification/enterprise/entities/notification'
 import { PrismaNotificationMapper } from '../mappers/prisma-notification-mapper'
+import { ActionType } from '@prisma/client'
 
 @Injectable()
 export class PrismaNotificationRepository implements NotificationRepository {
@@ -104,7 +105,7 @@ export class PrismaNotificationRepository implements NotificationRepository {
 	): Promise<boolean> {
 		const count = await this.prisma.notification.count({
 			where: {
-				actionType: params.actionType as any,
+				actionType: params.actionType as ActionType,
 				personId: params.personId,
 				...(params.linkedTransactionId && {
 					linkedMaintenanceRequestId: params.linkedTransactionId,

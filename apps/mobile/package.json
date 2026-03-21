@@ -15,7 +15,7 @@
     "rebuild:fresh": "rm -rf node_modules && npm install && npx expo prebuild --clean ",
     "rebuild:fresh:android": "rm -rf node_modules && npm install && npx expo prebuild --clean && npx expo run:android",
     "rebuild:fresh:ios": "rm -rf node_modules && npm install && npx expo prebuild --clean && npx expo run:ios",
-    "test": "jest --watchAll",
+    "test": "jest",
     "test:unit": "jest",
     "test:coverage": "jest --coverage",
     "test:e2e:ios": "./scripts/run-e2e-tests.sh ios",

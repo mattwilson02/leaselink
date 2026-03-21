@@ -286,7 +286,9 @@ const UploadDocument = () => {
 					fileSize: selectedImage?.size
 						? Number((selectedImage.size / 1024).toFixed(1))
 						: 0,
-					folder: requestTypeToFolder[documentRequest?.requestType ?? ''] ?? DocumentFolder.OTHER,
+					folder:
+						requestTypeToFolder[documentRequest?.requestType ?? ''] ??
+						DocumentFolder.OTHER,
 					name: selectedImage.name,
 					blobName: blobName,
 				},

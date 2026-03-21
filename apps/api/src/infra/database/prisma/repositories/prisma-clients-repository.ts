@@ -5,7 +5,7 @@ import type {
 } from '@/domain/financial-management/application/repositories/clients-repository'
 import type { Client } from '@/domain/financial-management/enterprise/entities/client'
 import { Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { Prisma, STATUS, ONBOARDING_STATUS } from '@prisma/client'
 import { PrismaClientMapper } from '../mappers/prisma-client-mapper'
 import { PrismaService } from '../prisma.service'
 
@@ -61,11 +61,11 @@ export class PrismaClientsRepository implements ClientsRepository {
 		const where: Prisma.ClientWhereInput = {}
 
 		if (params.status) {
-			where.status = params.status as any
+			where.status = params.status as STATUS
 		}
 
 		if (params.onboardingStatus) {
-			where.onboardingStatus = params.onboardingStatus as any
+			where.onboardingStatus = params.onboardingStatus as ONBOARDING_STATUS
 		}
 
 		if (params.search) {

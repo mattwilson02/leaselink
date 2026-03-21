@@ -41,7 +41,7 @@ export class UpdateLeaseStatusController {
 		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[LeaseNotFoundError.name]: NotFoundException,
 		[InvalidLeaseStatusTransitionError.name]: BadRequestException,
 		[LeaseActivationFutureStartError.name]: BadRequestException,

@@ -5,15 +5,19 @@ import { makeProperty } from 'test/factories/make-property'
 import { makeMaintenanceRequest } from 'test/factories/make-maintenance-request'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ExpensePropertyNotFoundError } from './errors/expense-property-not-found-error'
-import { ExpenseNotFoundError } from './errors/expense-not-found-error'
+import type { MaintenanceRequestsRepository } from '@/domain/maintenance/application/repositories/maintenance-requests-repository'
 
 // Minimal in-memory maintenance repo for tests
 class InMemoryMaintenanceRequestsRepository {
-	public items: any[] = []
+	public items: unknown[] = []
 	async findById(id: string) {
-		return this.items.find((r) => r.id.toString() === id) ?? null
+		return (
+			(this.items as Array<{ id: { toString(): string } }>).find(
+				(r) => r.id.toString() === id,
+			) ?? null
+		)
 	}
-	async create(r: any) {
+	async create(r: unknown) {
 		this.items.push(r)
 	}
 	async findMany() {
@@ -25,7 +29,7 @@ class InMemoryMaintenanceRequestsRepository {
 	async findManyByTenant() {
 		return { requests: [], totalCount: 0 }
 	}
-	async update(r: any) {
+	async update(r: unknown) {
 		return r
 	}
 }
@@ -43,7 +47,7 @@ describe('CreateExpense', () => {
 		sut = new CreateExpenseUseCase(
 			expensesRepository,
 			propertiesRepository,
-			maintenanceRequestsRepository as any,
+			maintenanceRequestsRepository as unknown as MaintenanceRequestsRepository,
 		)
 	})
 

@@ -56,9 +56,7 @@ const Modal = ({
 						<TouchableOpacity onPress={confirm} disabled={!canConfirm}>
 							<Text
 								style={{
-									color: canConfirm
-										? colors.primary
-										: colors.neutral['300'],
+									color: canConfirm ? colors.primary : colors.neutral['300'],
 									fontWeight: '600',
 								}}
 							>

@@ -18,16 +18,17 @@ import { right } from '@/core/either'
 import { ActionType } from '@/domain/notification/enterprise/entities/notification'
 
 class MockCreateNotificationUseCase {
+	// biome-ignore lint/suspicious/noExplicitAny: test mock needs property access
 	calls: any[] = []
-	async execute(input: any) {
+	async execute(input: unknown) {
 		this.calls.push(input)
-		return right({ notification: {} as any })
+		return right({ notification: {} as unknown })
 	}
 }
 
 class MockGenerateLeasePaymentsUseCase {
-	calls: any[] = []
-	async execute(input: any) {
+	calls: unknown[] = []
+	async execute(input: unknown) {
 		this.calls.push(input)
 		return right({ payments: [] })
 	}

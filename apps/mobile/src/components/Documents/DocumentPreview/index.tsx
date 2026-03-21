@@ -86,10 +86,7 @@ const DocumentPreview = () => {
 					gap: 16,
 				}}
 			>
-				<ActivityIndicator
-					size='large'
-					color={colors.primary}
-				/>
+				<ActivityIndicator size='large' color={colors.primary} />
 				<Text
 					style={{
 						color: colors.neutral['500'],

@@ -46,7 +46,7 @@ export class UpdatePropertyStatusController {
 		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 		[InvalidPropertyStatusTransitionError.name]: BadRequestException,
 		[PropertyHasActiveLeaseError.name]: ConflictException,

@@ -59,9 +59,7 @@ const NotificationSwitch = ({
 				{label}
 			</Text>
 		)}
-		{tooltip && (
-			<HelpCircleIcon size={16} color={colors.neutral['500']} />
-		)}
+		{tooltip && <HelpCircleIcon size={16} color={colors.neutral['500']} />}
 	</View>
 )
 

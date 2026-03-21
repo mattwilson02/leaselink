@@ -48,12 +48,12 @@ export class GetVendorByIdController {
 
 		if (response.isLeft()) {
 			const error = response.value
-			const errorMap: Record<string, any> = {
+			const errorMap = {
 				[VendorNotFoundError.name]: NotFoundException,
 			}
-			const ExceptionClass =
+			const exceptionClass =
 				errorMap[error.constructor.name] ?? NotFoundException
-			throw new ExceptionClass(error.message)
+			throw new exceptionClass(error.message)
 		}
 
 		return { vendor: HttpVendorPresenter.toHTTP(response.value.vendor) }

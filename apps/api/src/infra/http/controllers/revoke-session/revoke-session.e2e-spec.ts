@@ -54,7 +54,7 @@ describe('RevokeSessionController (E2E)', () => {
 		// Get the session IDs from the DB
 		const dbSessions = await prisma.session.findMany({
 			where: {
-				userId: userAuthResponse.user!.id,
+				userId: userAuthResponse.user?.id,
 				expiresAt: { gt: new Date() },
 			},
 		})
@@ -65,7 +65,7 @@ describe('RevokeSessionController (E2E)', () => {
 
 		// Use session2 to revoke session1
 		await request(app.getHttpServer())
-			.delete(`/sessions/${sessionToRevoke!.id}`)
+			.delete(`/sessions/${sessionToRevoke?.id}`)
 			.set({
 				// biome-ignore lint/style/useNamingConvention: header casing
 				Authorization: `Bearer ${session2.token}`,
@@ -74,7 +74,7 @@ describe('RevokeSessionController (E2E)', () => {
 
 		// Verify it's gone
 		const deleted = await prisma.session.findUnique({
-			where: { id: sessionToRevoke!.id },
+			where: { id: sessionToRevoke?.id },
 		})
 		expect(deleted).toBeNull()
 
@@ -109,7 +109,7 @@ describe('RevokeSessionController (E2E)', () => {
 		// Find current session ID
 		const currentSession = await prisma.session.findFirst({
 			where: {
-				userId: userAuthResponse.user!.id,
+				userId: userAuthResponse.user?.id,
 				token: jwt,
 			},
 		})
@@ -117,7 +117,7 @@ describe('RevokeSessionController (E2E)', () => {
 		expect(currentSession).toBeDefined()
 
 		const response = await request(app.getHttpServer())
-			.delete(`/sessions/${currentSession!.id}`)
+			.delete(`/sessions/${currentSession?.id}`)
 			.set({
 				// biome-ignore lint/style/useNamingConvention: header casing
 				Authorization: `Bearer ${jwt}`,
@@ -162,7 +162,7 @@ describe('RevokeSessionController (E2E)', () => {
 		// Find user2's session
 		const user2Session = await prisma.session.findFirst({
 			where: {
-				userId: user2.user!.id,
+				userId: user2.user?.id,
 				token: signIn2.token,
 			},
 		})
@@ -171,7 +171,7 @@ describe('RevokeSessionController (E2E)', () => {
 
 		// Try to revoke user2's session using user1's token → 404
 		const response = await request(app.getHttpServer())
-			.delete(`/sessions/${user2Session!.id}`)
+			.delete(`/sessions/${user2Session?.id}`)
 			.set({
 				// biome-ignore lint/style/useNamingConvention: header casing
 				Authorization: `Bearer ${signIn1.token}`,

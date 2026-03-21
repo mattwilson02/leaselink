@@ -7,7 +7,7 @@ import type {
 	VendorsPaginatedResult,
 } from '@/domain/expense-management/application/repositories/vendors-repository'
 import type { Vendor } from '@/domain/expense-management/enterprise/entities/vendor'
-import { Prisma } from '@prisma/client'
+import { Prisma, MAINTENANCE_CATEGORY } from '@prisma/client'
 
 @Injectable()
 export class PrismaVendorsRepository implements VendorsRepository {
@@ -34,7 +34,7 @@ export class PrismaVendorsRepository implements VendorsRepository {
 		}
 
 		if (params.specialty) {
-			where.specialty = params.specialty as any
+			where.specialty = params.specialty as MAINTENANCE_CATEGORY
 		}
 
 		if (params.search) {

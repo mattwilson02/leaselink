@@ -6,6 +6,9 @@ import { MaintenanceCategory } from '@/domain/maintenance/enterprise/entities/va
 import {
 	Prisma,
 	MaintenanceRequest as PrismaMaintenanceRequest,
+	MAINTENANCE_PRIORITY,
+	MAINTENANCE_STATUS,
+	MAINTENANCE_CATEGORY,
 } from '@prisma/client'
 
 export class PrismaMaintenanceRequestMapper {
@@ -39,9 +42,9 @@ export class PrismaMaintenanceRequestMapper {
 			vendorId: request.vendorId?.toString() ?? null,
 			title: request.title,
 			description: request.description,
-			priority: request.priority as any,
-			status: request.status as any,
-			category: request.category as any,
+			priority: request.priority as MAINTENANCE_PRIORITY,
+			status: request.status as MAINTENANCE_STATUS,
+			category: request.category as MAINTENANCE_CATEGORY,
 			photos: request.photos,
 			resolvedAt: request.resolvedAt,
 			createdAt: request.createdAt,

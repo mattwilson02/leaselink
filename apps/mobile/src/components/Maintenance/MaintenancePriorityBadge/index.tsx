@@ -2,7 +2,10 @@ import { memo } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Text } from '@/design-system/components/Typography'
 import { colors } from '@/design-system/theme'
-import { MaintenancePriority, MAINTENANCE_PRIORITY_LABELS } from '@leaselink/shared'
+import {
+	MaintenancePriority,
+	MAINTENANCE_PRIORITY_LABELS,
+} from '@leaselink/shared'
 
 type Props = {
 	priority: string
@@ -38,7 +41,11 @@ const MaintenancePriorityBadge = ({ priority }: Props) => {
 
 	return (
 		<View style={[styles.badge, { backgroundColor: colorScheme.background }]}>
-			<Text size='xs' style={[styles.text, { color: colorScheme.text }]} fontWeight='bold'>
+			<Text
+				size='xs'
+				style={[styles.text, { color: colorScheme.text }]}
+				fontWeight='bold'
+			>
 				{label}
 			</Text>
 		</View>

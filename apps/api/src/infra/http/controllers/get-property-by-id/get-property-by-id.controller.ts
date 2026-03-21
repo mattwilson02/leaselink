@@ -35,7 +35,7 @@ export class GetPropertyByIdController {
 		this.blobBaseUrl = `${endpoint}/${container}`
 	}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 	}
 

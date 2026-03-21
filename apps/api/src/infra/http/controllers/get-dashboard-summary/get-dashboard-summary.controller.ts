@@ -91,6 +91,7 @@ export class GetDashboardSummaryController {
 		] = await Promise.all([
 			this.prisma.property.groupBy({
 				by: ['status'],
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 				_count: { _all: true },
 				where: { managerId },
 			}),
@@ -128,6 +129,7 @@ export class GetDashboardSummaryController {
 			}),
 			this.prisma.maintenanceRequest.groupBy({
 				by: ['status'],
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 				_count: { _all: true },
 				where: { property: { managerId } },
 			}),
@@ -139,6 +141,7 @@ export class GetDashboardSummaryController {
 				},
 			}),
 			this.prisma.payment.aggregate({
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 				_sum: { amount: true },
 				where: {
 					lease: { property: { managerId } },
@@ -146,6 +149,7 @@ export class GetDashboardSummaryController {
 				},
 			}),
 			this.prisma.payment.aggregate({
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 				_sum: { amount: true },
 				where: {
 					lease: { property: { managerId } },
@@ -154,7 +158,9 @@ export class GetDashboardSummaryController {
 				},
 			}),
 			this.prisma.payment.aggregate({
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 				_sum: { amount: true },
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 				_count: { _all: true },
 				where: {
 					lease: { property: { managerId } },
@@ -198,10 +204,10 @@ export class GetDashboardSummaryController {
 					(sum, count) => sum + count,
 					0,
 				),
-				vacant: propertyCountByStatus['VACANT'] ?? 0,
-				listed: propertyCountByStatus['LISTED'] ?? 0,
-				occupied: propertyCountByStatus['OCCUPIED'] ?? 0,
-				maintenance: propertyCountByStatus['MAINTENANCE'] ?? 0,
+				vacant: propertyCountByStatus.VACANT ?? 0,
+				listed: propertyCountByStatus.LISTED ?? 0,
+				occupied: propertyCountByStatus.OCCUPIED ?? 0,
+				maintenance: propertyCountByStatus.MAINTENANCE ?? 0,
 			},
 			tenants: {
 				total: activeTenantsCount + invitedTenantsCount,
@@ -215,9 +221,9 @@ export class GetDashboardSummaryController {
 				expiringWithin60Days: expiringIn60DaysCount,
 			},
 			maintenance: {
-				open: maintenanceCountByStatus['OPEN'] ?? 0,
-				inProgress: maintenanceCountByStatus['IN_PROGRESS'] ?? 0,
-				resolved: maintenanceCountByStatus['RESOLVED'] ?? 0,
+				open: maintenanceCountByStatus.OPEN ?? 0,
+				inProgress: maintenanceCountByStatus.IN_PROGRESS ?? 0,
+				resolved: maintenanceCountByStatus.RESOLVED ?? 0,
 				emergencyOpen: emergencyOpenCount,
 			},
 			payments: {
