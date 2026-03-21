@@ -189,6 +189,15 @@ export default function LeaseDetailPage() {
         </div>
       </div>
 
+      <div className="flex items-center justify-end">
+        <Link
+          href={`/settings/audit-log?resourceType=LEASE&resourceId=${id}`}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          View Audit Trail
+        </Link>
+      </div>
+
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
           <Card>
