@@ -7,8 +7,10 @@ import {
   CreditCard,
   FileText,
   FolderOpen,
+  HardHat,
   LayoutDashboard,
   Receipt,
+  ScrollText,
   Settings,
   Users,
   Wrench,
@@ -35,10 +37,12 @@ const mainNavItems = [
   { title: "Payments", href: "/payments", icon: CreditCard },
   { title: "Expenses", href: "/expenses", icon: Receipt },
   { title: "Documents", href: "/documents", icon: FolderOpen },
+  { title: "Vendors", href: "/vendors", icon: HardHat },
 ];
 
 const bottomNavItems = [
   { title: "Settings", href: "/settings/profile", icon: Settings },
+  { title: "Audit Log", href: "/settings/audit-log", icon: ScrollText },
 ];
 
 export function AppSidebar() {

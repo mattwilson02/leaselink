@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import type { MaintenanceRequest, PaginatedResponse } from "@leaselink/shared";
+import { MaintenanceStatus } from "@leaselink/shared";
 
 interface MaintenanceRequestFilters {
   status?: string;
@@ -67,6 +68,46 @@ export function useUpdateMaintenanceRequestStatus(id: string) {
       apiClient.patch<{ maintenanceRequest: MaintenanceRequest }>(
         `/maintenance-requests/${id}/status`,
         { status }
+      ),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["maintenance-requests"] });
+    },
+  });
+}
+
+export function useMaintenanceRequestsByVendor(vendorId: string) {
+  return useQuery({
+    queryKey: ["maintenance-requests", "vendor", vendorId],
+    queryFn: async () => {
+      const result = await apiClient.get<{
+        maintenanceRequests: MaintenanceRequest[];
+        totalCount: number;
+      }>(`/maintenance-requests${buildQueryString({ pageSize: 200 })}`);
+      const activeStatuses = [
+        MaintenanceStatus.OPEN,
+        MaintenanceStatus.IN_PROGRESS,
+      ] as string[];
+      return result.maintenanceRequests.filter(
+        (r) => r.vendorId === vendorId && activeStatuses.includes(r.status)
+      );
+    },
+    enabled: !!vendorId,
+  });
+}
+
+export function useAssignMaintenanceVendor(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      status,
+      vendorId,
+    }: {
+      status: string;
+      vendorId: string | null;
+    }) =>
+      apiClient.patch<{ maintenanceRequest: MaintenanceRequest }>(
+        `/maintenance-requests/${id}/status`,
+        { status, vendorId }
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["maintenance-requests"] });

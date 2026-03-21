@@ -174,7 +174,7 @@ export default function PropertyDetailPage() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -198,6 +198,15 @@ export default function PropertyDetailPage() {
             Delete
           </Button>
         </div>
+      </div>
+
+      <div className="flex items-center justify-end">
+        <Link
+          href={`/settings/audit-log?resourceType=PROPERTY&resourceId=${id}`}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          View Audit Trail
+        </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
