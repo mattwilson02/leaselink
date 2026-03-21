@@ -148,8 +148,11 @@ export class PrismaDocumentRepository implements DocumentRepository {
 	async getAllGroupedByDocumentType(): Promise<FolderSummary[] | null> {
 		const documentsByFolder = await this.prisma.document.groupBy({
 			by: ['folder'],
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_count: { folder: true },
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_sum: { fileSize: true },
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_max: { updatedAt: true },
 		})
 

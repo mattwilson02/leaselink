@@ -53,7 +53,7 @@ const LeaseDetail = () => {
 					<View style={styles.headerSpacer} />
 				</View>
 				<View style={styles.loadingContainer}>
-					{Array.from({ length: 6 }).map((_, i) => (
+					{Array.from({ length: 6 }).map((, i) => (
 						<View key={i} style={styles.skeleton} />
 					))}
 				</View>
@@ -86,8 +86,10 @@ const LeaseDetail = () => {
 		)
 	}
 
-	const statusColor = leaseStatusColor[activeLease.status] ?? colors.neutral['500']
-	const statusBg = leaseStatusBackground[activeLease.status] ?? colors.neutral['30']
+	const statusColor =
+		leaseStatusColor[activeLease.status] ?? colors.neutral['500']
+	const statusBg =
+		leaseStatusBackground[activeLease.status] ?? colors.neutral['30']
 	const statusLabel =
 		LEASE_STATUS_LABELS[activeLease.status as LeaseStatus] ?? activeLease.status
 
@@ -95,7 +97,9 @@ const LeaseDetail = () => {
 		? PROPERTY_TYPE_LABELS[activeLease.property.propertyType]
 		: null
 
-	const leaseAgreementsFolder = encodeURIComponent(DocumentFolder.LEASE_AGREEMENTS)
+	const leaseAgreementsFolder = encodeURIComponent(
+		DocumentFolder.LEASE_AGREEMENTS,
+	)
 
 	return (
 		<View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -120,7 +124,12 @@ const LeaseDetail = () => {
 			>
 				{/* Status badge */}
 				<View style={styles.statusRow}>
-					<View style={[styles.statusBadge, { backgroundColor: statusBg, borderColor: statusColor }]}>
+					<View
+						style={[
+							styles.statusBadge,
+							{ backgroundColor: statusBg, borderColor: statusColor },
+						]}
+					>
 						<Text size='sm' fontWeight='bold' style={{ color: statusColor }}>
 							{statusLabel}
 						</Text>
@@ -187,7 +196,10 @@ const LeaseDetail = () => {
 
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>Monthly rent</Text>
-						<Text fontWeight='bold' style={[styles.infoValue, { color: colors.neutral['700'] }]}>
+						<Text
+							fontWeight='bold'
+							style={[styles.infoValue, { color: colors.neutral['700'] }]}
+						>
 							{formatCurrency(activeLease.monthlyRent)}
 						</Text>
 					</View>

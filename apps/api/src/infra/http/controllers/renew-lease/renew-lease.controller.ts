@@ -37,7 +37,7 @@ const bodyValidationPipe = new ZodValidationPipe(renewLeaseSchema)
 export class RenewLeaseController {
 	constructor(private renewLease: RenewLeaseUseCase) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[LeaseNotFoundError.name]: NotFoundException,
 		[LeaseRenewalInvalidSourceError.name]: BadRequestException,
 		[LeaseRenewalStartDateInvalidError.name]: BadRequestException,

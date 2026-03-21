@@ -2228,6 +2228,9 @@
           "200": {
             "description": "Lease details"
           },
+          "403": {
+            "description": "Access denied"
+          },
           "404": {
             "description": "Lease not found"
           }

@@ -1,7 +1,11 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Expense } from '@/domain/expense-management/enterprise/entities/expense'
 import { ExpenseCategory } from '@/domain/expense-management/enterprise/entities/value-objects/expense-category'
-import { Prisma, Expense as PrismaExpense } from '@prisma/client'
+import {
+	Prisma,
+	Expense as PrismaExpense,
+	EXPENSE_CATEGORY,
+} from '@prisma/client'
 
 export class PrismaExpenseMapper {
 	static toDomain(raw: PrismaExpense): Expense {
@@ -30,7 +34,7 @@ export class PrismaExpenseMapper {
 			propertyId: expense.propertyId.toString(),
 			managerId: expense.managerId.toString(),
 			maintenanceRequestId: expense.maintenanceRequestId?.toString() ?? null,
-			category: expense.category as any,
+			category: expense.category as EXPENSE_CATEGORY,
 			amount: expense.amount,
 			description: expense.description,
 			receiptBlobKey: expense.receiptBlobKey,

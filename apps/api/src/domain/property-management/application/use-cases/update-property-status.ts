@@ -8,6 +8,7 @@ import { PropertyHasActiveLeaseError } from './errors/property-has-active-lease-
 import {
 	PROPERTY_STATUS_TRANSITIONS,
 	isValidTransition,
+	PropertyStatus as SharedPropertyStatus,
 } from '@leaselink/shared'
 import type { PropertyStatusType } from '../../enterprise/entities/value-objects/property-status'
 
@@ -45,8 +46,8 @@ export class UpdatePropertyStatusUseCase {
 		if (
 			!isValidTransition(
 				PROPERTY_STATUS_TRANSITIONS,
-				currentStatus as any,
-				newStatus as any,
+				currentStatus as unknown as SharedPropertyStatus,
+				newStatus as unknown as SharedPropertyStatus,
 			)
 		) {
 			return left(

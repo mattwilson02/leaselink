@@ -117,10 +117,9 @@ describe('GetPropertiesController (E2E)', () => {
 			.expect(200)
 
 		expect(Array.isArray(response.body.data)).toBe(true)
-		// biome-ignore lint/suspicious/noExplicitAny: test assertion
-		response.body.data.forEach((p: any) => {
+		for (const p of response.body.data as Array<Record<string, unknown>>) {
 			expect(p.status).toBe('VACANT')
-		})
+		}
 	})
 
 	it('[GET] /properties - should reject CLIENT auth', async () => {

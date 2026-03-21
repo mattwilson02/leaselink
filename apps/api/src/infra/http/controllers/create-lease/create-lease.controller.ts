@@ -18,7 +18,6 @@ import {
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
-	ApiBody,
 	ApiOperation,
 	ApiResponse,
 	ApiTags,
@@ -43,7 +42,7 @@ export class CreateLeaseController {
 		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 		[LeasePropertyNotAvailableError.name]: BadRequestException,
 		[LeasePropertyHasActiveLeaseError.name]: ConflictException,

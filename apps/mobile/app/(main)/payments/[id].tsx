@@ -8,7 +8,11 @@ import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import dayjs from 'dayjs'
 import { PaymentStatus } from '@leaselink/shared'
 import * as WebBrowser from 'expo-web-browser'
-import { usePayment, useCreateCheckoutSession, useVerifyPayment } from '@/hooks/usePayments'
+import {
+	usePayment,
+	useCreateCheckoutSession,
+	useVerifyPayment,
+} from '@/hooks/usePayments'
 import PaymentStatusBadge from '@/components/Payments/PaymentStatusBadge'
 import { ErrorModal } from '@/components/ErrorModal'
 
@@ -71,7 +75,7 @@ const PaymentDetail = () => {
 					</Pressable>
 				</View>
 				<View style={styles.loadingContainer}>
-					{Array.from({ length: 5 }).map((_, i) => (
+					{Array.from({ length: 5 }).map((, i) => (
 						<View key={i} style={styles.skeleton} />
 					))}
 				</View>
@@ -131,16 +135,10 @@ const PaymentDetail = () => {
 				>
 					{/* Amount */}
 					<View style={styles.amountContainer}>
-						<Text
-							size='sm'
-							style={{ color: colors.neutral['500'] }}
-						>
+						<Text size='sm' style={{ color: colors.neutral['500'] }}>
 							Amount due
 						</Text>
-						<Text
-							fontWeight='bold'
-							style={styles.amountText}
-						>
+						<Text fontWeight='bold' style={styles.amountText}>
 							{formattedAmount}
 						</Text>
 						<PaymentStatusBadge status={payment.status} />
@@ -162,7 +160,9 @@ const PaymentDetail = () => {
 							<Text fontWeight='bold' style={styles.infoLabel}>
 								Paid On
 							</Text>
-							<Text style={[styles.infoValue, { color: colors.success['600'] }]}>
+							<Text
+								style={[styles.infoValue, { color: colors.success['600'] }]}
+							>
 								{dayjs(payment.paidAt).format('DD MMM YYYY')}
 							</Text>
 						</View>
@@ -171,7 +171,10 @@ const PaymentDetail = () => {
 					{/* Upcoming info */}
 					{payment.status === PaymentStatus.UPCOMING && (
 						<View style={styles.statusInfo}>
-							<Text size='sm' style={{ color: colors.neutral['500'], textAlign: 'center' }}>
+							<Text
+								size='sm'
+								style={{ color: colors.neutral['500'], textAlign: 'center' }}
+							>
 								Payment not yet due
 							</Text>
 						</View>
@@ -179,7 +182,12 @@ const PaymentDetail = () => {
 
 					{/* Paid state */}
 					{payment.status === PaymentStatus.PAID && (
-						<View style={[styles.statusInfo, { backgroundColor: colors.success['50'] }]}>
+						<View
+							style={[
+								styles.statusInfo,
+								{ backgroundColor: colors.success['50'] },
+							]}
+						>
 							<CheckCircle size={20} color={colors.success['600']} />
 							<Text
 								size='sm'

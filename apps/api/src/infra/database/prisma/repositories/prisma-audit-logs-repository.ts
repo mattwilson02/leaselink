@@ -7,7 +7,7 @@ import type {
 	AuditLogsPaginatedResult,
 } from '@/domain/audit/application/repositories/audit-logs-repository'
 import type { AuditLog } from '@/domain/audit/enterprise/entities/audit-log'
-import { Prisma } from '@prisma/client'
+import { Prisma, AUDIT_ACTION, AUDIT_RESOURCE_TYPE } from '@prisma/client'
 
 @Injectable()
 export class PrismaAuditLogsRepository implements AuditLogsRepository {
@@ -24,7 +24,7 @@ export class PrismaAuditLogsRepository implements AuditLogsRepository {
 		const where: Prisma.AuditLogWhereInput = {}
 
 		if (params.resourceType) {
-			where.resourceType = params.resourceType as any
+			where.resourceType = params.resourceType as AUDIT_RESOURCE_TYPE
 		}
 
 		if (params.resourceId) {
@@ -32,7 +32,7 @@ export class PrismaAuditLogsRepository implements AuditLogsRepository {
 		}
 
 		if (params.action) {
-			where.action = params.action as any
+			where.action = params.action as AUDIT_ACTION
 		}
 
 		if (params.actorId) {
@@ -72,7 +72,7 @@ export class PrismaAuditLogsRepository implements AuditLogsRepository {
 		pageSize: number,
 	): Promise<AuditLogsPaginatedResult> {
 		const where: Prisma.AuditLogWhereInput = {
-			resourceType: resourceType as any,
+			resourceType: resourceType as AUDIT_RESOURCE_TYPE,
 			resourceId,
 		}
 

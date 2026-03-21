@@ -11,6 +11,7 @@ interface MaintenanceStatusProps {
 }
 
 export class MaintenanceStatus extends ValueObject<MaintenanceStatusProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_STATUSES: MaintenanceStatusType[] = [
 		'OPEN',
 		'IN_PROGRESS',

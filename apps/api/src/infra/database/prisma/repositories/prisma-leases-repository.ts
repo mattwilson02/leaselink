@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import { Prisma } from '@prisma/client'
+import { Prisma, LEASE_STATUS } from '@prisma/client'
 import type {
 	LeasesRepository,
 	LeasesFilterParams,
@@ -30,7 +30,7 @@ export class PrismaLeasesRepository implements LeasesRepository {
 		const where: Prisma.LeaseWhereInput = {}
 
 		if (params.status) {
-			where.status = params.status as any
+			where.status = params.status as LEASE_STATUS
 		}
 
 		if (params.propertyId) {

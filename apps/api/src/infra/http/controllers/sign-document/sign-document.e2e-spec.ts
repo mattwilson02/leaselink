@@ -64,6 +64,7 @@ describe('SignDocumentController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign/upload`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 
 			expect(response.status).toBe(201)
@@ -79,6 +80,7 @@ describe('SignDocumentController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.post('/documents/non-existent-id/sign/upload')
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 
 			expect(response.status).toBe(404)
@@ -110,6 +112,7 @@ describe('SignDocumentController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: blobName })
 
@@ -128,6 +131,7 @@ describe('SignDocumentController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: 'some-key.png' })
 
@@ -144,6 +148,7 @@ describe('SignDocumentController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: 'non-existent-signature.png' })
 
@@ -167,12 +172,14 @@ describe('SignDocumentController (E2E)', () => {
 			// First sign
 			await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: blobName })
 
 			// Attempt to sign again
 			const response = await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: blobName })
 
@@ -184,6 +191,7 @@ describe('SignDocumentController (E2E)', () => {
 
 			const response = await request(app.getHttpServer())
 				.post('/documents/non-existent-id/sign')
+				// biome-ignore lint/style/useNamingConvention: HTTP header name
 				.set({ Authorization: `Bearer ${jwt}` })
 				.send({ signatureImageKey: 'some-blob.png' })
 

@@ -2,9 +2,9 @@ import { TextInputCompound } from '@/design-system/components/TextInputCompound'
 import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
 
 interface RootProps {
-  style?: StyleProp<ViewStyle>
-  children?: React.ReactNode
-  testID?: string
+	style?: StyleProp<ViewStyle>
+	children?: React.ReactNode
+	testID?: string
 }
 
 export const Root = ({ style, children, testID }: RootProps) => {

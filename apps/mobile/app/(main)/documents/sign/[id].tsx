@@ -52,7 +52,10 @@ const SignDocumentScreen = () => {
 
 	const handleSubmit = async () => {
 		if (!capturedBase64) {
-			Alert.alert('No signature', 'Please draw your signature before submitting.')
+			Alert.alert(
+				'No signature',
+				'Please draw your signature before submitting.',
+			)
 			return
 		}
 

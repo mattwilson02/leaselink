@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { Vendor } from '../../enterprise/entities/vendor'
 import { VendorsRepository } from '../repositories/vendors-repository'
 import { VendorNotFoundError } from './errors/vendor-not-found-error'
+import type { MaintenanceCategoryType } from '@/domain/maintenance/enterprise/entities/value-objects/maintenance-category'
 
 export interface UpdateVendorUseCaseRequest {
 	vendorId: string
@@ -37,7 +38,7 @@ export class UpdateVendorUseCase {
 		}
 
 		if (request.specialty !== undefined) {
-			vendor.specialty = request.specialty as any
+			vendor.specialty = request.specialty as MaintenanceCategoryType
 		}
 
 		if (request.phone !== undefined) {

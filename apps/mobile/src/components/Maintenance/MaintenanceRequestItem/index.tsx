@@ -4,7 +4,10 @@ import { Text } from '@/design-system/components/Typography'
 import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
-import { MAINTENANCE_CATEGORY_LABELS, MaintenanceCategory } from '@leaselink/shared'
+import {
+	MAINTENANCE_CATEGORY_LABELS,
+	type MaintenanceCategory,
+} from '@leaselink/shared'
 import { formatDate } from '@/utils/format-date'
 import MaintenanceStatusBadge from '../MaintenanceStatusBadge'
 import MaintenancePriorityBadge from '../MaintenancePriorityBadge'
@@ -31,7 +34,12 @@ const MaintenanceRequestItem = ({ request }: Props) => {
 			onPress={() => router.push(`/maintenance/${request.id}`)}
 		>
 			<View style={styles.topRow}>
-				<Text style={styles.title} fontWeight='bold' numberOfLines={1} ellipsizeMode='tail'>
+				<Text
+					style={styles.title}
+					fontWeight='bold'
+					numberOfLines={1}
+					ellipsizeMode='tail'
+				>
 					{request.title}
 				</Text>
 			</View>

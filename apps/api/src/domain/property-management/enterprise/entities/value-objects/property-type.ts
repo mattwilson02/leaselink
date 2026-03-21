@@ -12,6 +12,7 @@ interface PropertyTypeProps {
 }
 
 export class PropertyType extends ValueObject<PropertyTypeProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_TYPES: PropertyTypeValue[] = [
 		'APARTMENT',
 		'HOUSE',

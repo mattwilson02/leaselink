@@ -1,7 +1,11 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Payment } from '@/domain/payment/enterprise/entities/payment'
 import { PaymentStatus } from '@/domain/payment/enterprise/entities/value-objects/payment-status'
-import { Prisma, Payment as PrismaPayment } from '@prisma/client'
+import {
+	Prisma,
+	Payment as PrismaPayment,
+	PAYMENT_STATUS,
+} from '@prisma/client'
 
 export class PrismaPaymentMapper {
 	static toDomain(raw: PrismaPayment): Payment {
@@ -29,7 +33,7 @@ export class PrismaPaymentMapper {
 			tenantId: payment.tenantId.toString(),
 			amount: payment.amount,
 			dueDate: payment.dueDate,
-			status: payment.status as any,
+			status: payment.status as PAYMENT_STATUS,
 			stripeCheckoutSessionId: payment.stripeCheckoutSessionId,
 			stripePaymentIntentId: payment.stripePaymentIntentId,
 			paidAt: payment.paidAt,

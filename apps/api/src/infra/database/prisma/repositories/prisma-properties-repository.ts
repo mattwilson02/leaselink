@@ -7,7 +7,7 @@ import type {
 	PropertiesPaginatedResult,
 } from '@/domain/property-management/application/repositories/properties-repository'
 import type { Property } from '@/domain/property-management/enterprise/entities/property'
-import { Prisma } from '@prisma/client'
+import { Prisma, PROPERTY_STATUS } from '@prisma/client'
 
 @Injectable()
 export class PrismaPropertiesRepository implements PropertiesRepository {
@@ -34,7 +34,7 @@ export class PrismaPropertiesRepository implements PropertiesRepository {
 		}
 
 		if (params.status) {
-			where.status = params.status as any
+			where.status = params.status as PROPERTY_STATUS
 		}
 
 		if (params.search) {

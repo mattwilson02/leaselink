@@ -28,8 +28,7 @@ const MaintenanceRequestList = ({
 		})
 
 	const requests = useMemo(
-		() =>
-			data?.pages.flatMap((page) => page.maintenanceRequests || []) || [],
+		() => data?.pages.flatMap((page) => page.maintenanceRequests || []) || [],
 		[data?.pages],
 	)
 
@@ -73,7 +72,10 @@ const MaintenanceRequestList = ({
 				>
 					{t('no_requests')}
 				</Text>
-				<Text style={{ color: colors.neutral['500'] }} testID='no-requests-description'>
+				<Text
+					style={{ color: colors.neutral['500'] }}
+					testID='no-requests-description'
+				>
 					{t('no_requests_description')}
 				</Text>
 			</View>
@@ -83,7 +85,7 @@ const MaintenanceRequestList = ({
 	if (isLoading) {
 		return (
 			<View style={styles.loadingContainer}>
-				{Array.from({ length: 4 }).map((_, i) => (
+				{Array.from({ length: 4 }).map((, i) => (
 					<View key={i} style={styles.skeleton} />
 				))}
 			</View>

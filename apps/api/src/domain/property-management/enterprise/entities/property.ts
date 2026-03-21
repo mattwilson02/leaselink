@@ -6,6 +6,21 @@ import {
 	PropertyStatusType,
 } from './value-objects/property-status'
 import { PropertyType, PropertyTypeValue } from './value-objects/property-type'
+import { InvalidPropertyStatusTransitionError } from '@/domain/property-management/application/use-cases/errors/invalid-property-status-transition-error'
+
+const VALID_PROPERTY_TRANSITIONS: Record<
+	PropertyStatusType,
+	PropertyStatusType[]
+> = {
+	// biome-ignore lint/style/useNamingConvention: keys must match PropertyStatusType enum values
+	VACANT: ['LISTED', 'OCCUPIED'],
+	// biome-ignore lint/style/useNamingConvention: keys must match PropertyStatusType enum values
+	LISTED: ['VACANT', 'OCCUPIED'],
+	// biome-ignore lint/style/useNamingConvention: keys must match PropertyStatusType enum values
+	OCCUPIED: ['VACANT', 'MAINTENANCE'],
+	// biome-ignore lint/style/useNamingConvention: keys must match PropertyStatusType enum values
+	MAINTENANCE: ['VACANT', 'LISTED'],
+}
 
 export interface PropertyProps {
 	managerId: UniqueEntityId
@@ -106,6 +121,13 @@ export class Property extends Entity<PropertyProps> {
 		return this.props.status.value
 	}
 	set status(value: PropertyStatusType) {
+		const current = this.props.status?.value
+		if (current !== undefined) {
+			const allowed = VALID_PROPERTY_TRANSITIONS[current]
+			if (!allowed.includes(value)) {
+				throw new InvalidPropertyStatusTransitionError(current, value)
+			}
+		}
 		this.props.status = PropertyStatus.create(value)
 		this.touch()
 	}

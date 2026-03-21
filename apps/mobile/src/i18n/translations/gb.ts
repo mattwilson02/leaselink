@@ -279,7 +279,8 @@ export default {
 	},
 	maintenance: {
 		maintenance: 'Maintenance Requests',
-		maintenance_description: 'Submit and track maintenance requests for your property',
+		maintenance_description:
+			'Submit and track maintenance requests for your property',
 		new_request: 'New Request',
 		request_details: 'Request Details',
 		all: 'All',
@@ -291,10 +292,13 @@ export default {
 		add_photos: 'Add Photos',
 		submit: 'Submit Request',
 		no_requests: 'No maintenance requests',
-		no_requests_description: 'Submit one if you have an issue with your property.',
-		no_active_lease: 'You must have an active lease to submit a maintenance request.',
+		no_requests_description:
+			'Submit one if you have an issue with your property.',
+		no_active_lease:
+			'You must have an active lease to submit a maintenance request.',
 		request_submitted: 'Request submitted',
-		request_submitted_description: 'Your maintenance request has been submitted successfully.',
+		request_submitted_description:
+			'Your maintenance request has been submitted successfully.',
 		close_request: 'Close Request',
 		request_closed: 'Request closed',
 		request_closed_description: 'Your maintenance request has been closed.',

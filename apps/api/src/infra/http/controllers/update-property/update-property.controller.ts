@@ -40,7 +40,7 @@ export class UpdatePropertyController {
 		@Optional() private createAuditLog?: CreateAuditLogUseCase,
 	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 	}
 
@@ -89,7 +89,7 @@ export class UpdatePropertyController {
 				resourceId: propertyId,
 				metadata: {
 					updatedFields: Object.keys(body).filter(
-						(k) => (body as any)[k] !== undefined,
+						(k) => (body as Record<string, unknown>)[k] !== undefined,
 					),
 				},
 			})

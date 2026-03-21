@@ -15,6 +15,7 @@ import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
 import { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import type { Prisma } from '@prisma/client'
+import type { EXPENSE_CATEGORY } from '@prisma/client'
 
 const expenseExportQuerySchema = z.object({
 	propertyId: z.string().uuid().optional(),
@@ -66,7 +67,7 @@ export class ExportExpensesCsvController {
 		}
 
 		if (query.propertyId) where.propertyId = query.propertyId
-		if (query.category) where.category = query.category as any
+		if (query.category) where.category = query.category as EXPENSE_CATEGORY
 
 		if (query.dateFrom || query.dateTo) {
 			where.expenseDate = {}

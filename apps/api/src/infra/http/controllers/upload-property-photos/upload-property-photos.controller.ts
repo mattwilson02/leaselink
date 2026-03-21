@@ -39,7 +39,7 @@ const bodyValidationPipe = new ZodValidationPipe(uploadPhotosSchema)
 export class UploadPropertyPhotosController {
 	constructor(private uploadPropertyPhotos: UploadPropertyPhotosUseCase) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 	}
 

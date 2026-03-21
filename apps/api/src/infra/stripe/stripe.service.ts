@@ -43,7 +43,7 @@ export class StripeServiceImpl extends AbstractStripeService {
 
 		return {
 			sessionId: session.id,
-			url: session.url!,
+			url: session.url ?? '',
 		}
 	}
 

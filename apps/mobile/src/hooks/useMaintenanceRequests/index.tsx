@@ -1,5 +1,10 @@
 import api from '@/services/api'
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from '@tanstack/react-query'
 import type { MaintenanceStatus } from '@leaselink/shared'
 import type * as ImagePicker from 'expo-image-picker'
 
@@ -68,9 +73,9 @@ export const useMaintenanceRequest = (id: string) => {
 	return useQuery({
 		queryKey: ['maintenanceRequests', id],
 		queryFn: async () => {
-			const response = await api.get<{ maintenanceRequest: MaintenanceRequestDTO }>(
-				`/maintenance-requests/${id}`,
-			)
+			const response = await api.get<{
+				maintenanceRequest: MaintenanceRequestDTO
+			}>(`/maintenance-requests/${id}`)
 			const request = response.data.maintenanceRequest
 			// Replace blob storage hostname for local dev
 			if (request.photos) {
@@ -90,16 +95,15 @@ export const useCreateMaintenanceRequest = () => {
 	return useMutation({
 		mutationFn: async (input: CreateMaintenanceRequestInput) => {
 			// Step 1: Create the maintenance request
-			const createResponse = await api.post<{ maintenanceRequest: MaintenanceRequestDTO }>(
-				'/maintenance-requests',
-				{
-					propertyId: input.propertyId,
-					title: input.title,
-					description: input.description,
-					category: input.category,
-					priority: input.priority,
-				},
-			)
+			const createResponse = await api.post<{
+				maintenanceRequest: MaintenanceRequestDTO
+			}>('/maintenance-requests', {
+				propertyId: input.propertyId,
+				title: input.title,
+				description: input.description,
+				category: input.category,
+				priority: input.priority,
+			})
 
 			const maintenanceRequest = createResponse.data.maintenanceRequest
 
@@ -120,7 +124,9 @@ export const useCreateMaintenanceRequest = () => {
 				// Step 3: Upload each photo directly to blob storage
 				await Promise.all(
 					uploadUrls.map(async (uploadUrl, index) => {
-						const photo = (input.photos as ImagePicker.ImagePickerAsset[])[index]
+						const photo = (input.photos as ImagePicker.ImagePickerAsset[])[
+							index
+						]
 						const fileResponse = await fetch(photo.uri)
 						const fileBlob = await fileResponse.blob()
 
@@ -139,9 +145,12 @@ export const useCreateMaintenanceRequest = () => {
 						})
 					}),
 				)
-				await api.post(`/maintenance-requests/${maintenanceRequest.id}/photos/confirm`, {
-					blobKeys,
-				})
+				await api.post(
+					`/maintenance-requests/${maintenanceRequest.id}/photos/confirm`,
+					{
+						blobKeys,
+					},
+				)
 			}
 
 			return maintenanceRequest
@@ -157,15 +166,18 @@ export const useCloseMaintenanceRequest = () => {
 
 	return useMutation({
 		mutationFn: async (id: string) => {
-			const response = await api.patch<{ maintenanceRequest: MaintenanceRequestDTO }>(
-				`/maintenance-requests/${id}/status`,
-				{ status: 'CLOSED' as MaintenanceStatus },
-			)
+			const response = await api.patch<{
+				maintenanceRequest: MaintenanceRequestDTO
+			}>(`/maintenance-requests/${id}/status`, {
+				status: 'CLOSED' as MaintenanceStatus,
+			})
 			return response.data.maintenanceRequest
 		},
-		onSuccess: (_data, id) => {
+		onSuccess: (data, id) => {
 			queryClient.invalidateQueries({ queryKey: ['maintenanceRequests', id] })
-			queryClient.invalidateQueries({ queryKey: ['maintenanceRequests', 'tenant'] })
+			queryClient.invalidateQueries({
+				queryKey: ['maintenanceRequests', 'tenant'],
+			})
 		},
 	})
 }

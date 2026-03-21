@@ -298,10 +298,13 @@ export default {
 		add_photos: 'Fotos hinzufügen',
 		submit: 'Anfrage einreichen',
 		no_requests: 'Keine Wartungsanfragen',
-		no_requests_description: 'Reichen Sie eine ein, wenn Sie ein Problem mit Ihrer Immobilie haben.',
-		no_active_lease: 'Sie müssen einen aktiven Mietvertrag haben, um eine Wartungsanfrage einzureichen.',
+		no_requests_description:
+			'Reichen Sie eine ein, wenn Sie ein Problem mit Ihrer Immobilie haben.',
+		no_active_lease:
+			'Sie müssen einen aktiven Mietvertrag haben, um eine Wartungsanfrage einzureichen.',
 		request_submitted: 'Anfrage eingereicht',
-		request_submitted_description: 'Ihre Wartungsanfrage wurde erfolgreich eingereicht.',
+		request_submitted_description:
+			'Ihre Wartungsanfrage wurde erfolgreich eingereicht.',
 		close_request: 'Anfrage schließen',
 		request_closed: 'Anfrage geschlossen',
 		request_closed_description: 'Ihre Wartungsanfrage wurde geschlossen.',
@@ -482,7 +485,8 @@ export default {
 		two_factor_authentication: 'Zwei-Faktor-Authentifizierung',
 		two_factor_enabled: '2FA ist aktiviert',
 		two_factor_disabled: '2FA ist deaktiviert',
-		two_factor_description: 'Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu',
+		two_factor_description:
+			'Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu',
 		enter_password_title: 'Geben Sie Ihr Passwort ein',
 		enter_password_description:
 			'Geben Sie Ihr aktuelles Passwort ein, um die biometrische Anmeldung auf diesem Gerät zu aktivieren.',
@@ -527,8 +531,10 @@ export default {
 			'Damit wird die zusätzliche Sicherheitsebene aus Ihrem Konto entfernt. Sind Sie sicher?',
 		disable_cancel: 'Abbrechen',
 		disable_confirm: '2FA deaktivieren',
-		enable_error: '2FA konnte nicht aktiviert werden. Bitte versuchen Sie es erneut.',
-		disable_error: '2FA konnte nicht deaktiviert werden. Bitte versuchen Sie es erneut.',
+		enable_error:
+			'2FA konnte nicht aktiviert werden. Bitte versuchen Sie es erneut.',
+		disable_error:
+			'2FA konnte nicht deaktiviert werden. Bitte versuchen Sie es erneut.',
 		verify_error: 'Ungültiger Code. Bitte versuchen Sie es erneut.',
 	},
 	change_password: {

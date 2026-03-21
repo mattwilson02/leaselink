@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { Vendor } from '../../enterprise/entities/vendor'
 import { VendorsRepository } from '../repositories/vendors-repository'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { MaintenanceCategory } from '@/domain/maintenance/enterprise/entities/value-objects/maintenance-category'
 
 export interface CreateVendorUseCaseRequest {
 	managerId: string
@@ -25,7 +26,7 @@ export class CreateVendorUseCase {
 		const vendor = Vendor.create({
 			managerId: new UniqueEntityId(request.managerId),
 			name: request.name,
-			specialty: request.specialty as any,
+			specialty: MaintenanceCategory.create(request.specialty),
 			phone: request.phone ?? null,
 			email: request.email ?? null,
 			notes: request.notes ?? null,

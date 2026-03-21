@@ -1,5 +1,4 @@
 import { GetPaymentByIdUseCase } from '@/domain/payment/application/use-cases/get-payment-by-id'
-import { PaymentNotFoundError } from '@/domain/payment/application/use-cases/errors/payment-not-found-error'
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common'
 import {
 	ApiBearerAuth,

@@ -12,11 +12,12 @@ import type { CreateNotificationUseCase } from '@/domain/notification/applicatio
 import { right } from '@/core/either'
 
 class MockCreateNotificationUseCase {
+	// biome-ignore lint/suspicious/noExplicitAny: test mock needs property access
 	calls: any[] = []
 
-	async execute(input: any) {
+	async execute(input: unknown) {
 		this.calls.push(input)
-		return right({ notification: {} as any })
+		return right({ notification: {} as unknown })
 	}
 }
 

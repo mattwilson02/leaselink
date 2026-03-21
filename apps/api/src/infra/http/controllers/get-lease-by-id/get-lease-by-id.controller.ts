@@ -1,12 +1,12 @@
 import { GetLeaseByIdUseCase } from '@/domain/lease-management/application/use-cases/get-lease-by-id'
-import { LeaseNotFoundError } from '@/domain/lease-management/application/use-cases/errors/lease-not-found-error'
+import { LeaseForbiddenError } from '@/domain/lease-management/application/use-cases/errors/lease-forbidden-error'
 import {
 	Controller,
+	ForbiddenException,
 	Get,
 	HttpStatus,
 	NotFoundException,
 	Param,
-	UseGuards,
 } from '@nestjs/common'
 import {
 	ApiBearerAuth,
@@ -15,7 +15,8 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger'
-import { EmployeeOnlyGuard } from '../../guards/employee-only.guard'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { HttpLeasePresenter } from '../../presenters/http-lease-presenter'
 
 @ApiTags('Leases')
@@ -23,25 +24,29 @@ import { HttpLeasePresenter } from '../../presenters/http-lease-presenter'
 export class GetLeaseByIdController {
 	constructor(private getLeaseById: GetLeaseByIdUseCase) {}
 
-	private errorMap: Record<string, any> = {
-		[LeaseNotFoundError.name]: NotFoundException,
-	}
-
 	@Get(':id')
-	@UseGuards(EmployeeOnlyGuard)
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Get lease by ID' })
 	@ApiParam({ name: 'id', description: 'Lease UUID' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Lease details' })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'Lease not found' })
-	async handle(@Param('id') leaseId: string) {
-		const response = await this.getLeaseById.execute({ leaseId })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'Access denied' })
+	async handle(
+		@Param('id') leaseId: string,
+		@CurrentUser() user: HttpUserResponse,
+	) {
+		const response = await this.getLeaseById.execute({
+			leaseId,
+			requestingUserId: user.id,
+			requestingUserType: user.type as 'CLIENT' | 'EMPLOYEE',
+		})
 
 		if (response.isLeft()) {
 			const error = response.value
-			const exception =
-				this.errorMap[error.constructor.name] || NotFoundException
-			throw new exception(error.message)
+			if (error instanceof LeaseForbiddenError) {
+				throw new ForbiddenException(error.message)
+			}
+			throw new NotFoundException(error.message)
 		}
 
 		return {

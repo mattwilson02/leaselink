@@ -1,4 +1,5 @@
 import { GetDashboardSummaryController } from './get-dashboard-summary.controller'
+import type { PrismaService } from '@/infra/database/prisma/prisma.service'
 import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 
 function makeUser(id = 'manager-1'): HttpUserResponse {
@@ -33,9 +34,15 @@ function buildDefaultPrisma() {
 			count: vi.fn().mockResolvedValue(0),
 		},
 		payment: {
-			aggregate: vi
-				.fn()
-				.mockResolvedValue({ _sum: { amount: null }, _count: { _all: 0 } }),
+			aggregate: vi.fn().mockResolvedValue({
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+				_sum: { amount: null },
+				// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+				_count: {
+					// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+					_all: 0,
+				},
+			}),
 			count: vi.fn().mockResolvedValue(0),
 		},
 		notification: {
@@ -47,7 +54,9 @@ function buildDefaultPrisma() {
 describe('GetDashboardSummaryController', () => {
 	it('returns all zeros for a manager with no portfolio data', async () => {
 		const prisma = makePrisma()
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -66,12 +75,28 @@ describe('GetDashboardSummaryController', () => {
 		const prisma = makePrisma({
 			property: {
 				groupBy: vi.fn().mockResolvedValue([
-					{ status: 'VACANT', _count: { _all: 2 } },
-					{ status: 'OCCUPIED', _count: { _all: 1 } },
+					{
+						status: 'VACANT',
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+						_count: {
+							// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+							_all: 2,
+						},
+					},
+					{
+						status: 'OCCUPIED',
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+						_count: {
+							// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+							_all: 1,
+						},
+					},
 				]),
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -91,7 +116,9 @@ describe('GetDashboardSummaryController', () => {
 					.mockResolvedValueOnce(2), // invited
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -112,7 +139,9 @@ describe('GetDashboardSummaryController', () => {
 				findMany: vi.fn().mockResolvedValue([]),
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -126,14 +155,37 @@ describe('GetDashboardSummaryController', () => {
 		const prisma = makePrisma({
 			maintenanceRequest: {
 				groupBy: vi.fn().mockResolvedValue([
-					{ status: 'OPEN', _count: { _all: 3 } },
-					{ status: 'IN_PROGRESS', _count: { _all: 2 } },
-					{ status: 'RESOLVED', _count: { _all: 8 } },
+					{
+						status: 'OPEN',
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+						_count: {
+							// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+							_all: 3,
+						},
+					},
+					{
+						status: 'IN_PROGRESS',
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+						_count: {
+							// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+							_all: 2,
+						},
+					},
+					{
+						status: 'RESOLVED',
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+						_count: {
+							// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+							_all: 8,
+						},
+					},
 				]),
 				count: vi.fn().mockResolvedValue(1), // emergency open
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -149,21 +201,29 @@ describe('GetDashboardSummaryController', () => {
 				aggregate: vi
 					.fn()
 					.mockResolvedValueOnce({
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 						_sum: { amount: 3500 },
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 						_count: { _all: 0 },
 					}) // expected
 					.mockResolvedValueOnce({
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 						_sum: { amount: 2000 },
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 						_count: { _all: 0 },
 					}) // collected
 					.mockResolvedValueOnce({
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 						_sum: { amount: 1500 },
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 						_count: { _all: 2 },
 					}), // overdue
 				count: vi.fn().mockResolvedValue(3), // pending
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -177,13 +237,21 @@ describe('GetDashboardSummaryController', () => {
 	it('returns null payment sums as 0', async () => {
 		const prisma = makePrisma({
 			payment: {
-				aggregate: vi
-					.fn()
-					.mockResolvedValue({ _sum: { amount: null }, _count: { _all: 0 } }),
+				aggregate: vi.fn().mockResolvedValue({
+					// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+					_sum: { amount: null },
+					// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+					_count: {
+						// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
+						_all: 0,
+					},
+				}),
 				count: vi.fn().mockResolvedValue(0),
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -209,7 +277,9 @@ describe('GetDashboardSummaryController', () => {
 				]),
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -258,7 +328,9 @@ describe('GetDashboardSummaryController', () => {
 				]),
 			},
 		})
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		const result = await controller.handle(makeUser())
 
@@ -276,7 +348,9 @@ describe('GetDashboardSummaryController', () => {
 
 	it('queries are scoped to the authenticated manager id', async () => {
 		const prisma = makePrisma()
-		const controller = new GetDashboardSummaryController(prisma as any)
+		const controller = new GetDashboardSummaryController(
+			prisma as unknown as PrismaService,
+		)
 
 		await controller.handle(makeUser('manager-xyz'))
 

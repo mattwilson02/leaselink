@@ -7,6 +7,7 @@ import { MaintenanceRequestsRepository } from '@/domain/maintenance/application/
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ExpensePropertyNotFoundError } from './errors/expense-property-not-found-error'
 import { ExpenseNotFoundError } from './errors/expense-not-found-error'
+import { ExpenseCategory } from '../../enterprise/entities/value-objects/expense-category'
 
 export interface CreateExpenseUseCaseRequest {
 	managerId: string
@@ -64,7 +65,7 @@ export class CreateExpenseUseCase {
 			managerId: new UniqueEntityId(request.managerId),
 			propertyId: new UniqueEntityId(request.propertyId),
 			maintenanceRequestId,
-			category: request.category as any,
+			category: ExpenseCategory.create(request.category),
 			amount: request.amount,
 			description: request.description,
 			expenseDate: request.expenseDate,

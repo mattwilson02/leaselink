@@ -11,6 +11,7 @@ interface PropertyStatusProps {
 }
 
 export class PropertyStatus extends ValueObject<PropertyStatusProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_STATUSES: PropertyStatusType[] = [
 		'VACANT',
 		'LISTED',

@@ -4,6 +4,7 @@ import { Expense } from '../../enterprise/entities/expense'
 import { ExpensesRepository } from '../repositories/expenses-repository'
 import { ExpenseNotFoundError } from './errors/expense-not-found-error'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import type { ExpenseCategoryType } from '../../enterprise/entities/value-objects/expense-category'
 
 export interface UpdateExpenseUseCaseRequest {
 	expenseId: string
@@ -34,7 +35,7 @@ export class UpdateExpenseUseCase {
 		}
 
 		if (request.category !== undefined) {
-			expense.category = request.category as any
+			expense.category = request.category as ExpenseCategoryType
 		}
 
 		if (request.amount !== undefined) {

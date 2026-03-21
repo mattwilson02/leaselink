@@ -42,7 +42,7 @@ export const renewLeaseSchema = z
   });
 
 export const leaseFilterSchema = z.object({
-  status: z.nativeEnum(LeaseStatus).optional(),
+  status: z.enum(['PENDING', 'ACTIVE', 'EXPIRED', 'TERMINATED']).optional(),
   propertyId: z.string().uuid().optional(),
   tenantId: z.string().uuid().optional(),
   page: z.coerce.number().int().positive().default(1),

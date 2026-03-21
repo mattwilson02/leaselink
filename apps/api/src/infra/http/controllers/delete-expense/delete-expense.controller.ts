@@ -55,12 +55,12 @@ export class DeleteExpenseController {
 
 		if (response.isLeft()) {
 			const error = response.value
-			const errorMap: Record<string, any> = {
+			const errorMap = {
 				[ExpenseNotFoundError.name]: NotFoundException,
 			}
-			const ExceptionClass =
+			const exceptionClass =
 				errorMap[error.constructor.name] ?? NotFoundException
-			throw new ExceptionClass(error.message)
+			throw new exceptionClass(error.message)
 		}
 
 		this.createAuditLog

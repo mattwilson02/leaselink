@@ -1,7 +1,11 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Vendor } from '@/domain/expense-management/enterprise/entities/vendor'
 import { MaintenanceCategory } from '@/domain/maintenance/enterprise/entities/value-objects/maintenance-category'
-import { Prisma, Vendor as PrismaVendor } from '@prisma/client'
+import {
+	Prisma,
+	Vendor as PrismaVendor,
+	MAINTENANCE_CATEGORY,
+} from '@prisma/client'
 
 export class PrismaVendorMapper {
 	static toDomain(raw: PrismaVendor): Vendor {
@@ -25,7 +29,7 @@ export class PrismaVendorMapper {
 			id: vendor.id.toString(),
 			managerId: vendor.managerId.toString(),
 			name: vendor.name,
-			specialty: vendor.specialty as any,
+			specialty: vendor.specialty as MAINTENANCE_CATEGORY,
 			phone: vendor.phone,
 			email: vendor.email,
 			notes: vendor.notes,

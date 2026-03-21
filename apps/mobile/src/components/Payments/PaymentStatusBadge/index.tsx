@@ -44,7 +44,11 @@ const PaymentStatusBadge = ({ status }: Props) => {
 
 	return (
 		<View style={[styles.badge, { backgroundColor: colorScheme.background }]}>
-			<Text size='xs' style={[styles.text, { color: colorScheme.text }]} fontWeight='bold'>
+			<Text
+				size='xs'
+				style={[styles.text, { color: colorScheme.text }]}
+				fontWeight='bold'
+			>
 				{label}
 			</Text>
 		</View>

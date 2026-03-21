@@ -43,13 +43,12 @@ const DocumentDetails = () => {
 	const { data: signature, isLoading: isSignatureLoading } =
 		useSignatureQuery(id)
 
-	const formattedSignedAt =
-		signature?.signedAt
-			? (() => {
-					const result = formatDate(signature.signedAt)
-					return result.type === 'alias' ? dateT(result.value) : result.value
-				})()
-			: null
+	const formattedSignedAt = signature?.signedAt
+		? (() => {
+				const result = formatDate(signature.signedAt)
+				return result.type === 'alias' ? dateT(result.value) : result.value
+			})()
+		: null
 
 	return (
 		<View
@@ -110,7 +109,12 @@ const DocumentDetails = () => {
 						/>
 					)}
 					<View
-						style={{ flexDirection: 'row', gap: 8, flexWrap: 'wrap', maxWidth: '100%' }}
+						style={{
+							flexDirection: 'row',
+							gap: 8,
+							flexWrap: 'wrap',
+							maxWidth: '100%',
+						}}
 					>
 						<View
 							testID='download-button-container'

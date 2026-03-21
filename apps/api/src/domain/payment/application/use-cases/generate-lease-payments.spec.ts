@@ -1,4 +1,3 @@
-import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { makeLease } from 'test/factories/make-lease'
 import { makePayment } from 'test/factories/make-payment'
 import { InMemoryLeasesRepository } from 'test/repositories/prisma/in-memory-leases-repository'

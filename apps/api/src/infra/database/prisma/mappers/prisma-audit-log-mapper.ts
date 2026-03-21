@@ -1,6 +1,11 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AuditLog } from '@/domain/audit/enterprise/entities/audit-log'
-import { Prisma, AuditLog as PrismaAuditLog } from '@prisma/client'
+import {
+	Prisma,
+	AuditLog as PrismaAuditLog,
+	AUDIT_ACTION,
+	AUDIT_RESOURCE_TYPE,
+} from '@prisma/client'
 
 export class PrismaAuditLogMapper {
 	static toDomain(raw: PrismaAuditLog): AuditLog {
@@ -23,8 +28,8 @@ export class PrismaAuditLogMapper {
 			id: auditLog.id.toString(),
 			actorId: auditLog.actorId.toString(),
 			actorType: auditLog.actorType,
-			action: auditLog.action as any,
-			resourceType: auditLog.resourceType as any,
+			action: auditLog.action as AUDIT_ACTION,
+			resourceType: auditLog.resourceType as AUDIT_RESOURCE_TYPE,
 			resourceId: auditLog.resourceId.toString(),
 			metadata: (auditLog.metadata ?? Prisma.JsonNull) as Prisma.InputJsonValue,
 			createdAt: auditLog.createdAt,

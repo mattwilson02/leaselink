@@ -33,12 +33,15 @@ const MaintenanceStatusBadge = ({ status }: Props) => {
 		text: colors.neutral['500'],
 	}
 
-	const label =
-		MAINTENANCE_STATUS_LABELS[status as MaintenanceStatus] ?? status
+	const label = MAINTENANCE_STATUS_LABELS[status as MaintenanceStatus] ?? status
 
 	return (
 		<View style={[styles.badge, { backgroundColor: colorScheme.background }]}>
-			<Text size='xs' style={[styles.text, { color: colorScheme.text }]} fontWeight='bold'>
+			<Text
+				size='xs'
+				style={[styles.text, { color: colorScheme.text }]}
+				fontWeight='bold'
+			>
 				{label}
 			</Text>
 		</View>

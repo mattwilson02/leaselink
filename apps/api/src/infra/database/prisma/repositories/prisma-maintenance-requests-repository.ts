@@ -9,7 +9,12 @@ import type {
 	MaintenanceRequestsPaginatedResult,
 } from '@/domain/maintenance/application/repositories/maintenance-requests-repository'
 import type { MaintenanceRequest } from '@/domain/maintenance/enterprise/entities/maintenance-request'
-import { Prisma } from '@prisma/client'
+import {
+	Prisma,
+	MAINTENANCE_STATUS,
+	MAINTENANCE_PRIORITY,
+	MAINTENANCE_CATEGORY,
+} from '@prisma/client'
 
 @Injectable()
 export class PrismaMaintenanceRequestsRepository
@@ -40,15 +45,15 @@ export class PrismaMaintenanceRequestsRepository
 		}
 
 		if (params.status) {
-			where.status = params.status as any
+			where.status = params.status as MAINTENANCE_STATUS
 		}
 
 		if (params.priority) {
-			where.priority = params.priority as any
+			where.priority = params.priority as MAINTENANCE_PRIORITY
 		}
 
 		if (params.category) {
-			where.category = params.category as any
+			where.category = params.category as MAINTENANCE_CATEGORY
 		}
 
 		if (params.propertyId) {
@@ -83,7 +88,7 @@ export class PrismaMaintenanceRequestsRepository
 		}
 
 		if (params.status) {
-			where.status = params.status as any
+			where.status = params.status as MAINTENANCE_STATUS
 		}
 
 		const [requests, totalCount] = await Promise.all([
@@ -110,7 +115,7 @@ export class PrismaMaintenanceRequestsRepository
 		}
 
 		if (params.status) {
-			where.status = params.status as any
+			where.status = params.status as MAINTENANCE_STATUS
 		}
 
 		const [requests, totalCount] = await Promise.all([

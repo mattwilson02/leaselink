@@ -23,10 +23,20 @@ export type { TextProps } from './components/Typography'
 export { CompoundButton } from './components/CompoundButton'
 
 export { TextInputCompound } from './components/TextInputCompound'
-export type { TextInputRootProps, TextInputControlProps } from './components/TextInputCompound'
+export type {
+	TextInputRootProps,
+	TextInputControlProps,
+} from './components/TextInputCompound'
 
 export { SelectCompound } from './components/SelectCompound'
-export type { SelectRootProps, SelectTriggerProps, SelectItemProps, SelectItemTextProps, SelectValueProps, SelectViewportProps } from './components/SelectCompound'
+export type {
+	SelectRootProps,
+	SelectTriggerProps,
+	SelectItemProps,
+	SelectItemTextProps,
+	SelectValueProps,
+	SelectViewportProps,
+} from './components/SelectCompound'
 
 export { TabsCompound } from './components/TabsCompound'
 

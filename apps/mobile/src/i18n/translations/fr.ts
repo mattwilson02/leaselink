@@ -224,13 +224,13 @@ export default {
 	},
 	document_requests: {
 		// biome-ignore lint/style/useNamingConvention: enum
-		PROOF_OF_ADDRESS: "Preuve d’adresse",
+		PROOF_OF_ADDRESS: 'Preuve d’adresse',
 		// biome-ignore lint/style/useNamingConvention: enum
-		PROOF_OF_IDENTITY: "Preuve d’identité",
+		PROOF_OF_IDENTITY: 'Preuve d’identité',
 		// biome-ignore lint/style/useNamingConvention: enum
-		SIGNED_LEASE: "Bail signé",
+		SIGNED_LEASE: 'Bail signé',
 		// biome-ignore lint/style/useNamingConvention: enum
-		MOVE_IN_CHECKLIST: "Liste de contrôle d’emménagement",
+		MOVE_IN_CHECKLIST: 'Liste de contrôle d’emménagement',
 		pending: 'En attente',
 		uploaded: 'Téléchargé',
 		canceled: 'Annulé',
@@ -295,23 +295,27 @@ export default {
 		add_photos: 'Ajouter des Photos',
 		submit: 'Soumettre la Demande',
 		no_requests: 'Aucune demande de maintenance',
-		no_requests_description: 'Soumettez-en une si vous avez un problème avec votre propriété.',
-		no_active_lease: 'Vous devez avoir un bail actif pour soumettre une demande de maintenance.',
+		no_requests_description:
+			'Soumettez-en une si vous avez un problème avec votre propriété.',
+		no_active_lease:
+			'Vous devez avoir un bail actif pour soumettre une demande de maintenance.',
 		request_submitted: 'Demande soumise',
-		request_submitted_description: 'Votre demande de maintenance a été soumise avec succès.',
+		request_submitted_description:
+			'Votre demande de maintenance a été soumise avec succès.',
 		close_request: 'Fermer la Demande',
 		request_closed: 'Demande fermée',
 		request_closed_description: 'Votre demande de maintenance a été fermée.',
 		title_required: 'Le titre est obligatoire',
 		title_max_length: 'Le titre doit comporter au maximum 200 caractères',
 		description_required: 'La description est obligatoire',
-		description_max_length: 'La description doit comporter au maximum 5000 caractères',
+		description_max_length:
+			'La description doit comporter au maximum 5000 caractères',
 		category_required: 'La catégorie est obligatoire',
 		priority_required: 'La priorité est obligatoire',
 		status: 'Statut',
 		created_at: 'Créé le',
 		resolved_at: 'Résolu le',
-		max_photos: 'Vous pouvez ajouter jusqu\'à 10 photos',
+		max_photos: "Vous pouvez ajouter jusqu'à 10 photos",
 		remove_photo: 'Supprimer la photo',
 		// biome-ignore lint/style/useNamingConvention: enum
 		OPEN: 'Ouvert',
@@ -479,7 +483,8 @@ export default {
 		two_factor_authentication: 'Authentification à deux facteurs',
 		two_factor_enabled: '2FA est activé',
 		two_factor_disabled: '2FA est désactivé',
-		two_factor_description: 'Ajoutez une couche de sécurité supplémentaire à votre compte',
+		two_factor_description:
+			'Ajoutez une couche de sécurité supplémentaire à votre compte',
 		enter_password_title: 'Entrez votre mot de passe',
 		enter_password_description:
 			'Entrez votre mot de passe actuel pour activer la connexion biométrique sur cet appareil.',
@@ -492,7 +497,8 @@ export default {
 		current_session: 'Actuelle',
 		revoke: 'Révoquer',
 		revoke_confirm_title: 'Révoquer la session',
-		revoke_confirm_message: 'Êtes-vous sûr de vouloir déconnecter cet appareil ?',
+		revoke_confirm_message:
+			'Êtes-vous sûr de vouloir déconnecter cet appareil ?',
 		revoke_cancel: 'Annuler',
 		revoke_confirm: 'Révoquer',
 		unknown_device: 'Appareil inconnu',
@@ -511,7 +517,7 @@ export default {
 			"Entrez le code à 6 chiffres de votre application d'authentification pour terminer la configuration.",
 		backup_codes_title: 'Enregistrez vos codes de secours',
 		backup_codes_description:
-			'Conservez ces codes dans un endroit sûr. Chaque code ne peut être utilisé qu\'une seule fois.',
+			"Conservez ces codes dans un endroit sûr. Chaque code ne peut être utilisé qu'une seule fois.",
 		backup_codes_warning:
 			'Vous ne pourrez plus voir ces codes. Enregistrez-les maintenant.',
 		done: 'Terminé',
