@@ -10,7 +10,7 @@ import Animated, {
 import { SplashScreen } from 'expo-router'
 import WhiteLogo from '@/assets/images/white-logo.svg'
 import Svg, { Circle, Defs, Mask, Rect } from 'react-native-svg'
-import greenBackground from '@/assets/images/green-background.png'
+// Green background removed — using solid dark theme color
 import { useInitialRoute } from '@/hooks/useInitialRoute'
 
 const { width, height } = Dimensions.get('window')
@@ -51,10 +51,9 @@ const CustomSplashScreen = () => {
 	return (
 		<View style={styles.container} testID='splash-container'>
 			<View style={styles.imageContainer}>
-				<Animated.Image
-					testID='splash-background-image'
-					style={{ width: '100%', height: '100%' }}
-					source={greenBackground}
+				<View
+					testID='splash-background'
+					style={{ width: '100%', height: '100%', backgroundColor: '#18181b' }}
 				/>
 			</View>
 			<WhiteLogo testID='white-logo' width={250} height={200} />
