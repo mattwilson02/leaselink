@@ -24,7 +24,7 @@ const DocumentPreview = () => {
 	const { id } = useLocalSearchParams<{ id: string }>()
 
 	const { data, isFetching } = useGetDocumentByIdControllerFindById<
-		{ document: DocumentDTO },
+		{ data: DocumentDTO },
 		{ id: string }
 	>(id)
 	const { mutateAsync } = useDownloadDocumentControllerGenerateDownloadUrl()
@@ -63,17 +63,17 @@ const DocumentPreview = () => {
 	)
 
 	const fileExtension =
-		data?.document?.name?.split('.').pop()?.toLowerCase() || ''
+		data?.data?.name?.split('.').pop()?.toLowerCase() || ''
 	const mimeType = getMimeType(fileExtension)
 
 	const isPDF = mimeType === 'application/pdf'
 	const isImage = mimeType.startsWith('image/')
 
 	useEffect(() => {
-		if (data?.document && !isLoading && !uri && !error) {
+		if (data?.data && !isLoading && !uri && !error) {
 			retrieveUri(id)
 		}
-	}, [id, isLoading, data?.document, retrieveUri, uri, error])
+	}, [id, isLoading, data?.data, retrieveUri, uri, error])
 
 	if (isLoading || isFetching) {
 		return (
@@ -206,7 +206,7 @@ const DocumentPreview = () => {
 									fontWeight='bold'
 									style={{ color: colors.neutral['700'] }}
 								>
-									{data?.document?.name ?? t('document_preview')}
+									{data?.data?.name ?? t('document_preview')}
 								</Text>
 								<X
 									size={24}
@@ -267,7 +267,7 @@ const DocumentPreview = () => {
 			</Icon.Root>
 			<View>
 				<Text style={{ color: colors.neutral['700'] }}>
-					{data?.document?.name}
+					{data?.data?.name}
 				</Text>
 				<Text style={{ color: colors.neutral['500'] }}>
 					{t('download_to_view_file')}

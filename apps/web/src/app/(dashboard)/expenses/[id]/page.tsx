@@ -59,7 +59,7 @@ export default function ExpenseDetailPage() {
   const id = params.id as string;
 
   const { data, isLoading } = useExpense(id);
-  const expense = data?.expense;
+  const expense = data?.data;
   const deleteMutation = useDeleteExpense();
   const [showDelete, setShowDelete] = useState(false);
 
@@ -106,6 +106,7 @@ export default function ExpenseDetailPage() {
     );
   }
 
+  const receiptUrl = (expense as Record<string, unknown>).receiptUrl as string | undefined;
   const isImage =
     expense.receiptBlobKey &&
     /\.(jpg|jpeg|png|gif|webp)$/i.test(expense.receiptBlobKey);
@@ -233,10 +234,10 @@ export default function ExpenseDetailPage() {
             <CardContent>
               {expense.receiptBlobKey ? (
                 <div className="space-y-3">
-                  {isImage ? (
+                  {isImage && receiptUrl ? (
                     <div className="overflow-hidden rounded-md border">
                       <img
-                        src={expense.receiptBlobKey}
+                        src={receiptUrl}
                         alt="Receipt"
                         className="w-full object-contain"
                       />
@@ -249,17 +250,19 @@ export default function ExpenseDetailPage() {
                       </span>
                     </div>
                   )}
-                  <a
-                    href={expense.receiptBlobKey}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                  >
-                    <Button variant="outline" size="sm" className="w-full">
-                      <Download className="mr-2 h-4 w-4" />
-                      Download Receipt
-                    </Button>
-                  </a>
+                  {receiptUrl && (
+                    <a
+                      href={receiptUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Receipt
+                      </Button>
+                    </a>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">

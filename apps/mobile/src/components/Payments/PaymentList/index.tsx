@@ -24,7 +24,7 @@ const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
 	})
 
 	const payments = useMemo(
-		() => data?.pages.flatMap((page) => page.payments || []) || [],
+		() => data?.pages.flatMap((page) => page.data || []) || [],
 		[data?.pages],
 	)
 

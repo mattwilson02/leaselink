@@ -6,7 +6,7 @@ import type { Expense } from "@leaselink/shared";
 
 // Controller returns:
 // GET /expenses -> { data: ExpenseHttpResponse[], meta: { page, pageSize, totalCount, totalPages } }
-// GET /expenses/:id -> { expense: ExpenseHttpResponse }
+// GET /expenses/:id -> { data: ExpenseHttpResponse }
 // GET /expenses/summary -> { summary: ExpenseSummaryResult[] }
 // POST /expenses -> { expense: ExpenseHttpResponse }
 // PUT /expenses/:id -> { expense: ExpenseHttpResponse }
@@ -63,7 +63,7 @@ export function useExpenses(filters: ExpenseFilters = {}) {
 export function useExpense(id: string) {
   return useQuery({
     queryKey: ["expenses", id],
-    queryFn: () => apiClient.get<{ expense: Expense }>(`/expenses/${id}`),
+    queryFn: () => apiClient.get<{ data: Expense }>(`/expenses/${id}`),
     enabled: !!id,
   });
 }

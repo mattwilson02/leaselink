@@ -18,13 +18,17 @@ import {
 } from '@nestjs/swagger'
 import { EmployeeOnlyGuard } from '../../guards/employee-only.guard'
 import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
-import { HttpUserResponse } from '../../presenters/http-user-presenter'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { HttpExpensePresenter } from '../../presenters/http-expense-presenter'
+import { StorageRepository } from '@/domain/document/application/repositories/storage-repository'
 
 @ApiTags('Expenses')
 @Controller('/expenses')
 export class GetExpenseByIdController {
-	constructor(private getExpenseById: GetExpenseByIdUseCase) {}
+	constructor(
+		private getExpenseById: GetExpenseByIdUseCase,
+		private storageRepository: StorageRepository,
+	) {}
 
 	@Get(':id')
 	@HttpCode(HttpStatus.OK)
@@ -56,6 +60,19 @@ export class GetExpenseByIdController {
 			throw new exceptionClass(error.message)
 		}
 
-		return { data: HttpExpensePresenter.toHTTP(response.value.expense) }
+		const expenseData = HttpExpensePresenter.toHTTP(response.value.expense)
+
+		if (expenseData.receiptBlobKey) {
+			const urlResult = await this.storageRepository.generateDownloadUrl({
+				blobName: expenseData.receiptBlobKey,
+			})
+			if (urlResult.isRight()) {
+				return {
+					data: { ...expenseData, receiptUrl: urlResult.value.downloadUrl },
+				}
+			}
+		}
+
+		return { data: expenseData }
 	}
 }

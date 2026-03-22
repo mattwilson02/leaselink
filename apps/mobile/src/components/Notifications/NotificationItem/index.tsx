@@ -207,17 +207,14 @@ const NotificationItem = ({ notification }: Props) => {
 		} else if (notification.linkedTransactionId) {
 			router.push(`/maintenance/${notification.linkedTransactionId}`)
 		} else if (notification.linkedDocumentId) {
-			if (
-				notification.actionType === 'UPLOAD_DOCUMENT' ||
-				notification.actionType === 'SIGN_DOCUMENT'
-			) {
+			if (notification.actionType === 'UPLOAD_DOCUMENT') {
 				router.push(
 					`/upload-document?requestId=${notification.linkedDocumentId}`,
 				)
 			} else {
 				router.push(`/documents/${notification.linkedDocumentId}`)
 			}
-		} else if (
+	} else if (
 			notification.actionType === 'LEASE_EXPIRY' ||
 			notification.actionType === 'SIGN_LEASE' ||
 			notification.actionType === 'LEASE_RENEWAL'

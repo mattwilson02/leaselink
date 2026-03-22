@@ -28,14 +28,12 @@ const NotificationsList = ({ tab }: Props) => {
 		isLoading,
 	} = useInfiniteQuery({
 		queryKey: ['notifications', tab],
-		initialPageParam: 0,
-		queryFn: async ({ pageParam = 0 }) => {
-			const offset = pageParam * limit
-
+		initialPageParam: 1,
+		queryFn: async ({ pageParam = 1 }) => {
 			const response = await api.get('/notifications', {
 				params: {
-					limit,
-					offset,
+					page: pageParam,
+					pageSize: limit,
 					notificationType: tab !== 'ARCHIVED' ? tab : undefined,
 					isArchived: tab === 'ARCHIVED',
 				},
@@ -43,16 +41,16 @@ const NotificationsList = ({ tab }: Props) => {
 
 			return response.data
 		},
-		getNextPageParam: (lastPage, allPages) => {
-			if (!lastPage?.notifications) return undefined
-			if (lastPage?.notifications?.length < limit) return undefined
-			return allPages.length
+		getNextPageParam: (lastPage) => {
+			if (!lastPage?.meta) return undefined
+			if (lastPage.meta.page >= lastPage.meta.totalPages) return undefined
+			return lastPage.meta.page + 1
 		},
 	})
 
 	const notifications = useMemo(
 		() =>
-			notificationsData?.pages.flatMap((page) => page.notifications || []) ||
+			notificationsData?.pages.flatMap((page) => page.data || []) ||
 			[],
 		[notificationsData?.pages],
 	)

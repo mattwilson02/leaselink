@@ -31,11 +31,11 @@ const DocumentDetails = () => {
 	const { downloadDocument } = useDownloadDocument()
 
 	const { data, isFetching } = useGetDocumentByIdControllerFindById<
-		{ document: DocumentDTO },
+		{ data: DocumentDTO },
 		{ id: string }
 	>(id)
 
-	const folder = data?.document?.folder ?? ''
+	const folder = data?.data?.folder ?? ''
 	const isSignable = SIGNABLE_FOLDERS.includes(
 		folder as (typeof SIGNABLE_FOLDERS)[number],
 	)
@@ -94,18 +94,18 @@ const DocumentDetails = () => {
 						<DocumentDetailsCardSkeleton />
 					) : (
 						<DocumentDetailsCard
-							name={data?.document?.name || ''}
+							name={data?.data?.name || ''}
 							folder={
 								(Object.keys(folderItemDTOFolderNameEnum).find(
 									(key) =>
 										folderItemDTOFolderNameEnum[
 											key as keyof typeof folderItemDTOFolderNameEnum
-										] === data?.document?.folder,
+										] === data?.data?.folder,
 								) as FolderItemDTOFolderNameEnum) ||
 								folderItemDTOFolderNameEnum.OTHER
 							}
-							createdAt={data?.document?.createdAt || ''}
-							fileSize={data?.document?.fileSize || 0}
+							createdAt={data?.data?.createdAt || ''}
+							fileSize={data?.data?.fileSize || 0}
 						/>
 					)}
 					<View
@@ -116,31 +116,27 @@ const DocumentDetails = () => {
 							maxWidth: '100%',
 						}}
 					>
-						<View
-							testID='download-button-container'
-							style={{ flexDirection: 'row', maxWidth: '45%' }}
+						<Button.Root
+							testID='download-button'
+							disabled={isFetching}
+							style={{ gap: 8 }}
+							onPress={() =>
+								downloadDocument({
+									id: data?.data.id || '',
+									name: data?.data.name || '',
+								})
+							}
 						>
-							<Button.Root
-								disabled={isFetching}
-								style={{ gap: 4, flex: 1 }}
-								onPress={() =>
-									downloadDocument({
-										id: data?.document.id || '',
-										name: data?.document.name || '',
-									})
-								}
-							>
-								<Button.Prefix>
-									<Icon.Icon
-										name='download-01'
-										size={20}
-										stroke='white'
-										fill='transparent'
-									/>
-								</Button.Prefix>
-								<Button.Text style={{ flex: 1 }}>{t('download')}</Button.Text>
-							</Button.Root>
-						</View>
+							<Button.Prefix>
+								<Icon.Icon
+									name='download-01'
+									size={20}
+									stroke='white'
+									fill='transparent'
+								/>
+							</Button.Prefix>
+							<Button.Text>{t('download')}</Button.Text>
+						</Button.Root>
 
 						{/* Signature section — only for signable folders */}
 						{isSignable && !isFetching ? (

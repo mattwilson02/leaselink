@@ -20,8 +20,8 @@ import type { Property, Tenant } from "@leaselink/shared";
 // Client-side schema that accepts YYYY-MM-DD from date inputs
 const leaseFormSchema = z
   .object({
-    propertyId: z.string().uuid("Invalid property ID"),
-    tenantId: z.string().uuid("Invalid tenant ID"),
+    propertyId: z.string().min(1, "Please select a property").uuid("Invalid property ID"),
+    tenantId: z.string().min(1, "Please select a tenant").uuid("Invalid tenant ID"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
     monthlyRent: z.number().positive("Monthly rent must be greater than 0"),
@@ -73,6 +73,7 @@ export function LeaseForm({
     formState: { errors },
   } = useForm<LeaseFormValues>({
     resolver: zodResolver(leaseFormSchema),
+    mode: "onBlur",
     defaultValues: {
       propertyId: defaultPropertyId ?? "",
       tenantId: "",

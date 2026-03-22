@@ -28,7 +28,7 @@ const MaintenanceRequestList = ({
 		})
 
 	const requests = useMemo(
-		() => data?.pages.flatMap((page) => page.maintenanceRequests || []) || [],
+		() => data?.pages.flatMap((page) => page.data || []) || [],
 		[data?.pages],
 	)
 

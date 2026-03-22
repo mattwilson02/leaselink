@@ -33,7 +33,7 @@ const SignDocumentScreen = () => {
 	const [capturedBase64, setCapturedBase64] = useState<string | null>(null)
 
 	const { data, isFetching } = useGetDocumentByIdControllerFindById<
-		{ document: DocumentDTO },
+		{ data: DocumentDTO },
 		{ id: string }
 	>(id)
 
@@ -64,23 +64,21 @@ const SignDocumentScreen = () => {
 			// Step 1: Get a pre-signed upload URL and blob name
 			const { uploadUrl, blobName } = await generateUploadUrl()
 
-			// Step 2: Convert base64 PNG to binary and upload via PUT
+			// Step 2: Upload base64 PNG via PUT
 			const mobileAccessibleUploadUrl = uploadUrl.replace(
 				'backend-blob-storage',
 				'localhost',
 			)
-			const byteCharacters = atob(capturedBase64)
-			const byteNumbers = new Array(byteCharacters.length)
-			for (let i = 0; i < byteCharacters.length; i++) {
-				byteNumbers[i] = byteCharacters.charCodeAt(i)
-			}
-			const byteArray = new Uint8Array(byteNumbers)
-			const blob = new Blob([byteArray], { type: 'image/png' })
 
 			const uploadResponse = await fetch(mobileAccessibleUploadUrl, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'image/png' },
-				body: blob,
+				headers: {
+					'Content-Type': 'image/png',
+					'x-ms-blob-type': 'BlockBlob',
+				},
+				body: await fetch(`data:image/png;base64,${capturedBase64}`).then(
+					(r) => r.blob(),
+				),
 			})
 
 			if (!uploadResponse.ok) {
@@ -93,10 +91,13 @@ const SignDocumentScreen = () => {
 			await signDocument({ signatureImageKey: blobName })
 
 			setIsSuccess(true)
-		} catch (_error) {
+		} catch (error) {
+			console.error('Signing error:', error)
+			const message =
+				error instanceof Error ? error.message : 'Unknown error'
 			Alert.alert(
 				'Signing failed',
-				'There was a problem signing the document. Please try again.',
+				`There was a problem signing the document: ${message}`,
 			)
 		} finally {
 			setIsSigning(false)
@@ -137,9 +138,9 @@ const SignDocumentScreen = () => {
 					<Heading size='h5' fontWeight='bold' style={styles.headerTitle}>
 						Sign Document
 					</Heading>
-					{!isFetching && data?.document?.name ? (
+					{!isFetching && data?.data?.name ? (
 						<Text size='sm' style={styles.documentName} numberOfLines={1}>
-							{data.document.name}
+							{data.data.name}
 						</Text>
 					) : null}
 				</View>

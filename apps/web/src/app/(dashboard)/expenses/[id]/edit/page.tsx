@@ -22,7 +22,7 @@ export default function EditExpensePage() {
   const id = params.id as string;
 
   const { data, isLoading } = useExpense(id);
-  const expense = data?.expense;
+  const expense = data?.data;
   const updateMutation = useUpdateExpense(id);
 
   function handleSubmit(data: ExpenseFormValues) {
