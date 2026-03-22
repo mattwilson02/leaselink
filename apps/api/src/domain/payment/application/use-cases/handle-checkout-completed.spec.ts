@@ -125,9 +125,13 @@ describe('HandleCheckoutCompleted', () => {
 			stripePaymentIntentId: 'pi_test_xyz',
 		})
 
-		expect(mockCreateNotification.calls).toHaveLength(1)
+		expect(mockCreateNotification.calls).toHaveLength(2)
 		expect(mockCreateNotification.calls[0].personId).toBe('manager-1')
 		expect(mockCreateNotification.calls[0].actionType).toBe('PAYMENT_RECEIVED')
+		expect(mockCreateNotification.calls[1].personId).toBe(
+			lease.tenantId.toString(),
+		)
+		expect(mockCreateNotification.calls[1].actionType).toBe('PAYMENT_RECEIVED')
 	})
 
 	it('should return error for unknown session ID', async () => {
