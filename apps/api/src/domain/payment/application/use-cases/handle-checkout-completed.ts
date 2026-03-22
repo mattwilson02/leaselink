@@ -51,7 +51,7 @@ export class HandleCheckoutCompletedUseCase {
 
 		await this.paymentsRepository.update(payment)
 
-		// Notify manager
+		// Notify manager and tenant
 		const lease = await this.leasesRepository.findById(
 			payment.leaseId.toString(),
 		)
@@ -61,9 +61,20 @@ export class HandleCheckoutCompletedUseCase {
 			)
 			if (property) {
 				const amountFormatted = `$${payment.amount.toFixed(2)}`
+
+				// Notify manager
 				await this.createNotificationUseCase.execute({
 					personId: property.managerId.toString(),
 					text: `Payment of ${amountFormatted} received for ${property.address}`,
+					notificationType: NotificationType.INFO,
+					actionType: ActionType.PAYMENT_RECEIVED,
+					linkedPaymentId: payment.id.toString(),
+				})
+
+				// Notify tenant
+				await this.createNotificationUseCase.execute({
+					personId: lease.tenantId.toString(),
+					text: `Your payment of ${amountFormatted} has been received. Thank you!`,
 					notificationType: NotificationType.INFO,
 					actionType: ActionType.PAYMENT_RECEIVED,
 					linkedPaymentId: payment.id.toString(),

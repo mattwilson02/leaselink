@@ -2,6 +2,7 @@ import { GetClientProfilePhotoUseCase } from '@/domain/financial-management/appl
 import { ClientNotFoundError } from '@/domain/financial-management/application/use-cases/errors/client-not-found-error'
 import {
 	Controller,
+	ForbiddenException,
 	Get,
 	HttpCode,
 	HttpStatus,
@@ -15,6 +16,8 @@ import {
 	ApiResponse,
 	ApiTags,
 } from '@nestjs/swagger'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
 
 @ApiTags('Clients')
 @Controller('/clients/:clientId/profile-photo')
@@ -53,7 +56,14 @@ export class GetClientProfilePhotoController {
 		status: HttpStatus.NOT_FOUND,
 		description: 'Client not found',
 	})
-	async handle(@Param('clientId') clientId: string) {
+	async handle(
+		@CurrentUser() user: HttpUserResponse,
+		@Param('clientId') clientId: string,
+	) {
+		if (user.type === 'CLIENT' && user.id !== clientId) {
+			throw new ForbiddenException('You can only access your own profile photo')
+		}
+
 		const response = await this.getClientProfilePhoto.execute({
 			clientId,
 		})

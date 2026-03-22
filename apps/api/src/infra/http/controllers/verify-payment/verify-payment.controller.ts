@@ -39,10 +39,7 @@ export class VerifyPaymentController {
 	@ApiParam({ name: 'id', type: String })
 	@ApiResponse({ status: 200, description: 'Payment verification result' })
 	@ApiResponse({ status: 404, description: 'Payment not found' })
-	async handle(
-		@CurrentUser() user: HttpUserResponse,
-		@Param('id') id: string,
-	) {
+	async handle(@CurrentUser() user: HttpUserResponse, @Param('id') id: string) {
 		if (user.type !== 'CLIENT') {
 			throw new UnauthorizedException('Only tenants can verify payments')
 		}

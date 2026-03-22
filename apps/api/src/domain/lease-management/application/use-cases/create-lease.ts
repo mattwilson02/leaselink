@@ -24,6 +24,7 @@ export interface CreateLeaseUseCaseRequest {
 	endDate: string
 	monthlyRent: number
 	securityDeposit: number
+	earlyTerminationFee?: number | null
 }
 
 type CreateLeaseUseCaseResponse = Either<
@@ -86,11 +87,13 @@ export class CreateLeaseUseCase {
 			endDate: new Date(request.endDate),
 			monthlyRent: request.monthlyRent,
 			securityDeposit: request.securityDeposit,
+			earlyTerminationFee: request.earlyTerminationFee ?? null,
 		})
 
 		const startDate = new Date(request.startDate)
 		const today = new Date()
-		today.setHours(0, 0, 0, 0)
+		today.setUTCHours(0, 0, 0, 0)
+		startDate.setUTCHours(0, 0, 0, 0)
 		const shouldAutoActivate = startDate <= today
 
 		if (shouldAutoActivate) {
@@ -100,10 +103,8 @@ export class CreateLeaseUseCase {
 		await this.leasesRepository.create(lease)
 
 		if (shouldAutoActivate) {
-			if (property.status !== 'OCCUPIED') {
-				property.status = 'OCCUPIED'
-				await this.propertiesRepository.update(property)
-			}
+			property.status = 'OCCUPIED'
+			await this.propertiesRepository.update(property)
 
 			if (this.generateLeasePaymentsUseCase) {
 				await this.generateLeasePaymentsUseCase.execute({

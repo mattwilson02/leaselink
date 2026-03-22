@@ -18,6 +18,7 @@ type GetManyDocumentsByClientIdUseCaseResponse = Either<
 	null,
 	{
 		documents: Document[]
+		totalCount: number
 	}
 >
 
@@ -34,24 +35,35 @@ export class GetManyDocumentsByClientIdUseCase {
 		createdAtTo,
 		folders,
 	}: GetManyDocumentsByClientIdUseCaseRequest): Promise<GetManyDocumentsByClientIdUseCaseResponse> {
-		const documents = await this.documentRepository.getManyByClientId(
-			clientId,
-			offset,
-			limit,
-			search,
-			createdAtFrom,
-			createdAtTo,
-			folders,
-		)
+		const [documents, totalCount] = await Promise.all([
+			this.documentRepository.getManyByClientId(
+				clientId,
+				offset,
+				limit,
+				search,
+				createdAtFrom,
+				createdAtTo,
+				folders,
+			),
+			this.documentRepository.countByClientId(
+				clientId,
+				search,
+				createdAtFrom,
+				createdAtTo,
+				folders,
+			),
+		])
 
 		if (!documents || documents.length === 0) {
 			return right({
 				documents: [],
+				totalCount: 0,
 			})
 		}
 
 		return right({
 			documents,
+			totalCount,
 		})
 	}
 }

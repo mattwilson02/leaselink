@@ -8,7 +8,7 @@ import {
 	PaymentsByTenantParams,
 	PaymentsPaginatedResult,
 } from '@/domain/payment/application/repositories/payments-repository'
-import { Prisma } from '@prisma/client'
+import { Prisma, PAYMENT_STATUS } from '@prisma/client'
 
 @Injectable()
 export class PrismaPaymentsRepository implements PaymentsRepository {
@@ -36,7 +36,7 @@ export class PrismaPaymentsRepository implements PaymentsRepository {
 	): Promise<PaymentsPaginatedResult> {
 		const where: Prisma.PaymentWhereInput = {}
 
-		if (params.status) where.status = params.status as any
+		if (params.status) where.status = params.status as PAYMENT_STATUS
 		if (params.leaseId) where.leaseId = params.leaseId
 		if (params.tenantId) where.tenantId = params.tenantId
 		if (params.propertyId) where.lease = { propertyId: params.propertyId }
@@ -68,7 +68,7 @@ export class PrismaPaymentsRepository implements PaymentsRepository {
 	): Promise<PaymentsPaginatedResult> {
 		const where: Prisma.PaymentWhereInput = { tenantId: params.tenantId }
 
-		if (params.status) where.status = params.status as any
+		if (params.status) where.status = params.status as PAYMENT_STATUS
 
 		const [payments, totalCount] = await Promise.all([
 			this.prisma.payment.findMany({

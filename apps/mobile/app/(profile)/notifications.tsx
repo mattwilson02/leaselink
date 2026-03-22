@@ -2,13 +2,13 @@ import {
 	useAuthControllerHandle,
 	useSetNotificationPreferencesControllerHandle,
 } from '@/gen/index'
-import { Heading, Switch, Text, Tooltip } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { ChevronLeft, HelpCircleIcon } from 'lucide-react-native'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native'
 import { queryClient } from '../_layout'
 
 type NotificationSwitchProps = {
@@ -32,10 +32,8 @@ const NotificationSwitch = ({
 }: NotificationSwitchProps) => (
 	<View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
 		<Switch
-			defaultValue={defaultValue}
-			value={disabled ? true : undefined}
+			value={disabled ? true : defaultValue}
 			onValueChange={onChange}
-			size='sm'
 			testID={testID}
 			disabled={disabled}
 		/>
@@ -61,16 +59,7 @@ const NotificationSwitch = ({
 				{label}
 			</Text>
 		)}
-		{tooltip && (
-			<Tooltip.Root>
-				<Tooltip.Trigger>
-					<HelpCircleIcon size={16} color={colors.neutral['500']} />
-				</Tooltip.Trigger>
-				<Tooltip.Content side='top' theme='light'>
-					<Tooltip.Text>{tooltip}</Tooltip.Text>
-				</Tooltip.Content>
-			</Tooltip.Root>
-		)}
+		{tooltip && <HelpCircleIcon size={16} color={colors.neutral['500']} />}
 	</View>
 )
 

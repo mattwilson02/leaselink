@@ -5,3 +5,7 @@ export * from "./payment.dto";
 export * from "./tenant.dto";
 export * from "./document.dto";
 export * from "./notification.dto";
+export * from "./expense.dto";
+export * from "./vendor.dto";
+export * from "./audit-log.dto";
+export * from "./signature.dto";

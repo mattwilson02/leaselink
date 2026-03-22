@@ -36,6 +36,7 @@ export class GetMaintenanceRequestsController {
 	@ApiQuery({ name: 'priority', required: false })
 	@ApiQuery({ name: 'category', required: false })
 	@ApiQuery({ name: 'propertyId', required: false })
+	@ApiQuery({ name: 'tenantId', required: false })
 	@ApiQuery({ name: 'page', required: false, type: Number })
 	@ApiQuery({ name: 'pageSize', required: false, type: Number })
 	@ApiResponse({ status: 200, description: 'Paginated list of requests' })
@@ -49,15 +50,21 @@ export class GetMaintenanceRequestsController {
 			priority: query.priority,
 			category: query.category,
 			propertyId: query.propertyId,
+			tenantId: query.tenantId,
 			page: query.page ?? 1,
 			pageSize: query.pageSize ?? 20,
 		})
 
 		return {
-			maintenanceRequests: HttpMaintenanceRequestPresenter.toHTTPList(
-				response.value.requests,
-			),
-			totalCount: response.value.totalCount,
+			data: HttpMaintenanceRequestPresenter.toHTTPList(response.value.requests),
+			meta: {
+				page: query.page ?? 1,
+				pageSize: query.pageSize ?? 20,
+				totalCount: response.value.totalCount,
+				totalPages: Math.ceil(
+					response.value.totalCount / (query.pageSize ?? 20),
+				),
+			},
 		}
 	}
 }

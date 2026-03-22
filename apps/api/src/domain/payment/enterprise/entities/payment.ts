@@ -5,6 +5,21 @@ import {
 	PaymentStatus,
 	PaymentStatusType,
 } from './value-objects/payment-status'
+import { InvalidPaymentStatusTransitionError } from '@/domain/payment/application/use-cases/errors/invalid-payment-status-transition-error'
+
+const VALID_PAYMENT_TRANSITIONS: Record<
+	PaymentStatusType,
+	PaymentStatusType[]
+> = {
+	// biome-ignore lint/style/useNamingConvention: keys must match PaymentStatusType enum values
+	UPCOMING: ['PENDING'],
+	// biome-ignore lint/style/useNamingConvention: keys must match PaymentStatusType enum values
+	PENDING: ['PAID', 'OVERDUE'],
+	// biome-ignore lint/style/useNamingConvention: keys must match PaymentStatusType enum values
+	OVERDUE: ['PAID'],
+	// biome-ignore lint/style/useNamingConvention: keys must match PaymentStatusType enum values
+	PAID: [],
+}
 
 export interface PaymentProps {
 	leaseId: UniqueEntityId
@@ -46,6 +61,13 @@ export class Payment extends Entity<PaymentProps> {
 	}
 
 	set status(value: PaymentStatusType) {
+		const current = this.props.status?.value
+		if (current !== undefined) {
+			const allowed = VALID_PAYMENT_TRANSITIONS[current]
+			if (!allowed.includes(value)) {
+				throw new InvalidPaymentStatusTransitionError()
+			}
+		}
 		this.props.status = PaymentStatus.create(value)
 		this.touch()
 	}

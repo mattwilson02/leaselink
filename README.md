@@ -88,7 +88,11 @@ GitHub Actions (`.github/workflows/api-ci.yaml`):
 
 Branch strategy: `dev` for sprint work, `main` for reviewed merges.
 
-## Architecture
+## Documentation
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full architecture overview.
-See [apps/api/CLAUDE.md](apps/api/CLAUDE.md) for API-specific patterns and conventions.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — Full architecture overview (DDD, bounded contexts, data flow)
+- [docs/AUDIT_ISSUES.md](docs/AUDIT_ISSUES.md) — Security & business logic audit with status tracking
+- [docs/FUTURE_IMPROVEMENTS.md](docs/FUTURE_IMPROVEMENTS.md) — Parking list of future improvements & nice-to-haves
+- [apps/api/CLAUDE.md](apps/api/CLAUDE.md) — API-specific patterns and conventions
+- [apps/mobile/CLAUDE.md](apps/mobile/CLAUDE.md) — Mobile app development guide
+- [PRODUCT_SPEC.md](PRODUCT_SPEC.md) — Complete product specification

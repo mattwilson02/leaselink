@@ -5,6 +5,7 @@ import { Payment } from '../../enterprise/entities/payment'
 import { PaymentsRepository } from '../repositories/payments-repository'
 import { PaymentNoActiveLeaseError } from './errors/payment-no-active-lease-error'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
+import { PaymentStatus } from '../../enterprise/entities/value-objects/payment-status'
 
 export interface GenerateLeasePaymentsUseCaseRequest {
 	leaseId: string
@@ -51,7 +52,7 @@ export class GenerateLeasePaymentsUseCase {
 				tenantId: lease.tenantId,
 				amount: lease.monthlyRent,
 				dueDate,
-				status: status as any,
+				status: PaymentStatus.create(status),
 			})
 
 			await this.paymentsRepository.create(payment)

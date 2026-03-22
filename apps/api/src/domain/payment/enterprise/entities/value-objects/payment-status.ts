@@ -3,6 +3,7 @@ import { ValueObject } from '@/core/entities/value-object'
 export type PaymentStatusType = 'UPCOMING' | 'PENDING' | 'PAID' | 'OVERDUE'
 
 export class PaymentStatus extends ValueObject<{ value: PaymentStatusType }> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_STATUSES: PaymentStatusType[] = [
 		'UPCOMING',
 		'PENDING',

@@ -49,8 +49,15 @@ export class GetPaymentsByTenantController {
 		})
 
 		return {
-			payments: HttpPaymentPresenter.toHTTPList(response.value.payments),
-			totalCount: response.value.totalCount,
+			data: HttpPaymentPresenter.toHTTPList(response.value.payments),
+			meta: {
+				page: query.page ?? 1,
+				pageSize: query.pageSize ?? 20,
+				totalCount: response.value.totalCount,
+				totalPages: Math.ceil(
+					response.value.totalCount / (query.pageSize ?? 20),
+				),
+			},
 		}
 	}
 }

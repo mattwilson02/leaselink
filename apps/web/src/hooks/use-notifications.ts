@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import type { PaginatedResponse } from "@leaselink/shared";
 
 export interface Notification {
   id: string;
@@ -20,21 +21,17 @@ export interface Notification {
   archivedAt: string | null;
 }
 
-interface NotificationsResponse {
-  notifications: Notification[];
-}
-
 interface NotificationParams {
-  offset?: number;
-  limit?: number;
+  page?: number;
+  pageSize?: number;
   notificationType?: string;
   isArchived?: boolean;
 }
 
 function buildQueryString(params: NotificationParams): string {
   const qs = new URLSearchParams();
-  if (params.offset !== undefined) qs.set("offset", String(params.offset));
-  if (params.limit !== undefined) qs.set("limit", String(params.limit));
+  if (params.page !== undefined) qs.set("page", String(params.page));
+  if (params.pageSize !== undefined) qs.set("pageSize", String(params.pageSize));
   if (params.notificationType) qs.set("notificationType", params.notificationType);
   if (params.isArchived !== undefined) qs.set("isArchived", String(params.isArchived));
   const str = qs.toString();
@@ -46,12 +43,12 @@ export function useNotifications(params: NotificationParams = {}) {
     queryKey: ["notifications", params],
     queryFn: async () => {
       try {
-        const data = await apiClient.get<NotificationsResponse>(
+        const data = await apiClient.get<PaginatedResponse<Notification>>(
           `/notifications${buildQueryString(params)}`
         );
-        return data ?? { notifications: [] };
+        return data ?? { data: [], meta: { page: 1, pageSize: 10, totalCount: 0, totalPages: 0 } };
       } catch {
-        return { notifications: [] };
+        return { data: [], meta: { page: 1, pageSize: 10, totalCount: 0, totalPages: 0 } } as PaginatedResponse<Notification>;
       }
     },
   });

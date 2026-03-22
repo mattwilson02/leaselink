@@ -23,7 +23,7 @@ import { HttpClientPresenter } from '../../presenters/http-client-presenter'
 export class GetClientByIdController {
 	constructor(private getClientById: GetClientByIdUseCase) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[ClientNotFoundError.name]: NotFoundException,
 	}
 

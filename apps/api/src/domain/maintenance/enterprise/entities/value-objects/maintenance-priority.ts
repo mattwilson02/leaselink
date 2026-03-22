@@ -7,6 +7,7 @@ interface MaintenancePriorityProps {
 }
 
 export class MaintenancePriority extends ValueObject<MaintenancePriorityProps> {
+	// biome-ignore lint/style/useNamingConvention: CONSTANT_CASE for static readonly collection
 	private static ALLOWED_PRIORITIES: MaintenancePriorityType[] = [
 		'LOW',
 		'MEDIUM',

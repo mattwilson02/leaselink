@@ -25,8 +25,8 @@ import { ClientNotFoundError } from '@/domain/financial-management/application/u
 import { DocumentFolder } from '@/domain/document/enterprise/entities/value-objects/document-folders'
 
 const getDocumentsQuerySchema = z.object({
-	offset: z.string().optional(),
-	limit: z.string().optional(),
+	page: z.coerce.number().int().positive().default(1),
+	pageSize: z.coerce.number().int().positive().max(200).default(10),
 	search: z.string().optional(),
 	createdAtFrom: z.string().datetime().optional(),
 	createdAtTo: z.string().datetime().optional(),
@@ -77,16 +77,16 @@ export class GetDocumentsByClientIdController {
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Get all documents for current user' })
 	@ApiQuery({
-		name: 'offset',
+		name: 'page',
 		required: false,
-		example: 0,
-		description: 'Pagination offset',
+		example: 1,
+		description: 'Page number',
 	})
 	@ApiQuery({
-		name: 'limit',
+		name: 'pageSize',
 		required: false,
 		example: 10,
-		description: 'Pagination limit',
+		description: 'Number of items per page',
 	})
 	@ApiQuery({
 		name: 'search',
@@ -118,12 +118,8 @@ export class GetDocumentsByClientIdController {
 
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: 'List of documents by clientId',
+		description: 'Paginated list of documents by clientId',
 		type: GetDocumentsByClientIdResponseDTO,
-	})
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-		description: 'No documents found for the given clientId',
 	})
 	@ApiResponse({
 		status: HttpStatus.NOT_FOUND,
@@ -135,8 +131,8 @@ export class GetDocumentsByClientIdController {
 		@Res()
 		res: Response,
 	) {
-		const offset = Number(query.offset) || 0
-		const limit = Number(query.limit) || 10
+		const offset = (query.page - 1) * query.pageSize
+		const limit = query.pageSize
 		const { search, createdAtFrom, createdAtTo, folders } = query
 
 		const clientId = user.id
@@ -155,16 +151,17 @@ export class GetDocumentsByClientIdController {
 			folders,
 		})
 
-		if (
-			!result.value ||
-			!result.value.documents ||
-			result.value.documents.length === 0
-		) {
-			return res.status(HttpStatus.NO_CONTENT).send()
-		}
+		const documents = result.value?.documents ?? []
+		const totalCount = result.value?.totalCount ?? 0
 
 		return res.status(HttpStatus.OK).json({
-			documents: HttpDocumentsPresenter.toHTTP(result.value.documents),
+			data: HttpDocumentsPresenter.toHTTP(documents),
+			meta: {
+				page: query.page,
+				pageSize: query.pageSize,
+				totalCount,
+				totalPages: Math.ceil(totalCount / query.pageSize),
+			},
 		})
 	}
 }

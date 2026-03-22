@@ -12,6 +12,7 @@ import {
 	BlobSASPermissions,
 } from '@azure/storage-blob'
 import { BlobDoesNotExistError } from '@/domain/document/application/use-cases/errors/blob-does-not-exist-error'
+import { FileUploadFailedError } from '@/domain/document/application/use-cases/errors/file-upload-failed-error'
 
 export interface UploadUrlResult {
 	success: boolean
@@ -40,7 +41,7 @@ export class BlobStorageRepository implements StorageRepository {
 			})
 			return right(result.uploadUrl)
 		} catch (error) {
-			return left(new Error(`Failed to generate upload URL: ${error.message}`))
+			return left(new FileUploadFailedError(fileName, error.message))
 		}
 	}
 

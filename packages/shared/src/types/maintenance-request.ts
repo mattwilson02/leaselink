@@ -8,6 +8,7 @@ export interface MaintenanceRequest {
   id: string;
   propertyId: string;
   tenantId: string;
+  vendorId: string | null;
   title: string;
   description: string;
   priority: MaintenancePriority;

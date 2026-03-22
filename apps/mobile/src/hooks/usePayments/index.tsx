@@ -1,6 +1,11 @@
 import api from '@/services/api'
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { PaymentStatus } from '@leaselink/shared'
+import {
+	useInfiniteQuery,
+	useMutation,
+	useQuery,
+	useQueryClient,
+} from '@tanstack/react-query'
+import { PaymentStatus, type PaginationMeta } from '@leaselink/shared'
 
 export interface PaymentDTO {
 	id: string
@@ -15,8 +20,8 @@ export interface PaymentDTO {
 }
 
 interface PaymentsResponse {
-	payments: PaymentDTO[]
-	total: number
+	data: PaymentDTO[]
+	meta: PaginationMeta
 }
 
 interface CheckoutSessionResponse {
@@ -39,10 +44,10 @@ export const useMyPayments = (filters?: { status?: string }) => {
 			})
 			return response.data
 		},
-		getNextPageParam: (lastPage, allPages) => {
-			if (!lastPage?.payments) return undefined
-			if (lastPage.payments.length < PAGE_SIZE) return undefined
-			return allPages.length + 1
+		getNextPageParam: (lastPage) => {
+			if (!lastPage?.meta) return undefined
+			if (lastPage.meta.page >= lastPage.meta.totalPages) return undefined
+			return lastPage.meta.page + 1
 		},
 	})
 }
@@ -51,8 +56,8 @@ export const usePayment = (id: string) => {
 	return useQuery({
 		queryKey: ['payments', id],
 		queryFn: async () => {
-			const response = await api.get<{ payment: PaymentDTO }>(`/payments/${id}`)
-			return response.data.payment
+			const response = await api.get<{ data: PaymentDTO }>(`/payments/${id}`)
+			return response.data.data
 		},
 		enabled: !!id,
 	})
@@ -88,8 +93,7 @@ export const useVerifyPayment = () => {
 export const useNextPaymentDue = () => {
 	const { data, isLoading } = useMyPayments()
 
-	const allPayments =
-		data?.pages.flatMap((page) => page.payments || []) || []
+	const allPayments = data?.pages.flatMap((page) => page.data || []) || []
 
 	const nextPayment = allPayments.find(
 		(p) =>

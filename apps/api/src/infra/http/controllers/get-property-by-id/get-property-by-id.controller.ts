@@ -35,7 +35,7 @@ export class GetPropertyByIdController {
 		this.blobBaseUrl = `${endpoint}/${container}`
 	}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 	}
 
@@ -69,7 +69,10 @@ export class GetPropertyByIdController {
 		}
 
 		return {
-			property: HttpPropertyPresenter.toHTTP(response.value.property, this.blobBaseUrl),
+			data: HttpPropertyPresenter.toHTTP(
+				response.value.property,
+				this.blobBaseUrl,
+			),
 		}
 	}
 }

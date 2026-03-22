@@ -1,13 +1,13 @@
 import {
-	Select as DesignSystemSelect,
+	SelectCompound,
 	type SelectTriggerProps,
-} from '@sf-digital-ui/react-native'
-import { StyleSheet } from 'react-native'
+} from '@/design-system/components/SelectCompound'
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
 
 export const Trigger = ({ style, ...props }: SelectTriggerProps) => {
 	return (
-		<DesignSystemSelect.Trigger
-			style={[styles.triggerStyle, typeof style === 'object' ? style : {}]}
+		<SelectCompound.Trigger
+			style={[styles.triggerStyle, style as StyleProp<ViewStyle>]}
 			{...props}
 		/>
 	)

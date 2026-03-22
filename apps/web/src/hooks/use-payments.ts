@@ -29,7 +29,7 @@ export function usePayments(filters: PaymentFilters = {}) {
   return useQuery({
     queryKey: ["payments", filters],
     queryFn: () =>
-      apiClient.get<{ payments: Payment[]; totalCount: number }>(
+      apiClient.get<PaginatedResponse<Payment>>(
         `/payments${buildQueryString(filters)}`
       ),
   });
@@ -38,7 +38,7 @@ export function usePayments(filters: PaymentFilters = {}) {
 export function usePayment(id: string) {
   return useQuery({
     queryKey: ["payments", id],
-    queryFn: () => apiClient.get<{ payment: Payment }>(`/payments/${id}`),
+    queryFn: () => apiClient.get<{ data: Payment }>(`/payments/${id}`),
     enabled: !!id,
   });
 }

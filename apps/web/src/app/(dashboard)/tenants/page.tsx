@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Plus, Search, Trash2, Eye } from "lucide-react";
+import { Plus, Search, Trash2, Eye, Download } from "lucide-react";
+import Cookies from "js-cookie";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -47,12 +48,38 @@ export default function TenantsPage() {
     pageSize,
   };
 
+  const [isExporting, setIsExporting] = useState(false);
   const { data, isLoading } = useTenants(filters);
   const deleteMutation = useDeleteTenant();
 
   const tenants = data?.data ?? [];
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 1;
+
+  async function handleExportCsv() {
+    setIsExporting(true);
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter !== ALL_STATUSES) params.set("status", statusFilter);
+      if (search) params.set("search", search);
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
+      const url = `${baseUrl}/tenants/export${params.toString() ? `?${params.toString()}` : ""}`;
+      const token = Cookies.get("auth_token");
+      const headers: HeadersInit = {};
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const response = await fetch(url, { headers });
+      if (!response.ok) throw new Error("Export failed");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = `tenants-export.csv`;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    } finally {
+      setIsExporting(false);
+    }
+  }
 
   function handleDelete(tenant: Tenant) {
     if (!confirm(`Delete tenant "${tenant.name}"? This cannot be undone.`)) return;
@@ -67,12 +94,22 @@ export default function TenantsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">Tenants</h1>
-        <Link href="/tenants/invite">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Invite Tenant
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={handleExportCsv}
+            disabled={isExporting}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            {isExporting ? "Exporting..." : "Download CSV"}
           </Button>
-        </Link>
+          <Link href="/tenants/invite">
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Invite Tenant
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row">

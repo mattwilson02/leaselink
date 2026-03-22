@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { View, StyleSheet } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { MaintenanceStatus, MAINTENANCE_STATUS_LABELS } from '@leaselink/shared'
 
 type Props = {
@@ -10,16 +10,16 @@ type Props = {
 
 const statusColors: Record<string, { background: string; text: string }> = {
 	[MaintenanceStatus.OPEN]: {
-		background: colors['primary-green']['100'],
-		text: colors['primary-green']['700'],
+		background: colors.info[100],
+		text: colors.info[700],
 	},
 	[MaintenanceStatus.IN_PROGRESS]: {
-		background: colors.warning['100'],
-		text: colors.warning['700'],
+		background: colors.warning[100],
+		text: colors.warning[700],
 	},
 	[MaintenanceStatus.RESOLVED]: {
-		background: colors.success['100'],
-		text: colors.success['700'],
+		background: colors.success[100],
+		text: colors.success[700],
 	},
 	[MaintenanceStatus.CLOSED]: {
 		background: colors.neutral['100'],
@@ -33,12 +33,15 @@ const MaintenanceStatusBadge = ({ status }: Props) => {
 		text: colors.neutral['500'],
 	}
 
-	const label =
-		MAINTENANCE_STATUS_LABELS[status as MaintenanceStatus] ?? status
+	const label = MAINTENANCE_STATUS_LABELS[status as MaintenanceStatus] ?? status
 
 	return (
 		<View style={[styles.badge, { backgroundColor: colorScheme.background }]}>
-			<Text size='xs' style={[styles.text, { color: colorScheme.text }]} fontWeight='bold'>
+			<Text
+				size='xs'
+				style={[styles.text, { color: colorScheme.text }]}
+				fontWeight='bold'
+			>
 				{label}
 			</Text>
 		</View>

@@ -36,7 +36,7 @@ export default function PaymentDetailPage() {
   const id = params.id as string;
 
   const { data: paymentData, isLoading } = usePayment(id);
-  const payment = paymentData?.payment;
+  const payment = paymentData?.data;
 
   if (isLoading) {
     return (
@@ -135,17 +135,6 @@ export default function PaymentDetailPage() {
                 </div>
               </div>
 
-              {payment.stripeCheckoutSessionId && (
-                <>
-                  <Separator />
-                  <div>
-                    <p className="text-sm font-medium">Stripe Checkout Session</p>
-                    <p className="text-sm text-muted-foreground font-mono break-all">
-                      {payment.stripeCheckoutSessionId}
-                    </p>
-                  </div>
-                </>
-              )}
             </CardContent>
           </Card>
         </div>

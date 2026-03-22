@@ -7,8 +7,12 @@ import {
   CreditCard,
   FileText,
   FolderOpen,
+  HardHat,
   LayoutDashboard,
+  Receipt,
+  ScrollText,
   Settings,
+  Shield,
   Users,
   Wrench,
 } from "lucide-react";
@@ -32,11 +36,15 @@ const mainNavItems = [
   { title: "Leases", href: "/leases", icon: FileText },
   { title: "Maintenance", href: "/maintenance", icon: Wrench },
   { title: "Payments", href: "/payments", icon: CreditCard },
+  { title: "Expenses", href: "/expenses", icon: Receipt },
   { title: "Documents", href: "/documents", icon: FolderOpen },
+  { title: "Vendors", href: "/vendors", icon: HardHat },
 ];
 
 const bottomNavItems = [
   { title: "Settings", href: "/settings/profile", icon: Settings },
+  { title: "Security", href: "/settings/security", icon: Shield },
+  { title: "Audit Log", href: "/settings/audit-log", icon: ScrollText },
 ];
 
 export function AppSidebar() {

@@ -26,6 +26,11 @@ export abstract class NotificationRepository {
 		notificationType?: NotificationType,
 		isArchived?: boolean,
 	): Promise<Notification[]>
+	abstract countByPersonId(
+		personId: string,
+		notificationType?: NotificationType,
+		isArchived?: boolean,
+	): Promise<number>
 	abstract findById(notificationId: string): Promise<Notification | null>
 	abstract save(notification: Notification): Promise<void>
 	abstract hasUnreadNotifications(personId: string): Promise<boolean>

@@ -5,10 +5,10 @@ import {
 } from '@/gen/index'
 import { useTranslation } from 'react-i18next'
 import { useMemo } from 'react'
-import { View } from 'react-native'
+import { Pressable, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { colors } from '@sf-digital-ui/tokens'
-import { Button, Text } from '@sf-digital-ui/react-native'
+import { colors } from '@/design-system/theme'
+import { Text } from '@/design-system/components/Typography'
 import DocumentRequestItem from '../DocumentRequestItem'
 import DocumentRequestsListSkeleton from '../DocumentRequestsListSkeleton'
 import { useRouter } from 'expo-router'
@@ -19,6 +19,7 @@ type Props = {
 
 const DocumentRequestsList = ({ showPreview = false }: Props) => {
 	const { t } = useTranslation('documents')
+	const router = useRouter()
 
 	const { data, isLoading } = useGetDocumentRequestsByClientIdControllerFindAll(
 		{},
@@ -48,8 +49,6 @@ const DocumentRequestsList = ({ showPreview = false }: Props) => {
 	)
 
 	const renderHeaderComponent = () => {
-		const router = useRouter()
-
 		if (!showPreview || listData.length === 0) {
 			return null
 		}
@@ -63,20 +62,22 @@ const DocumentRequestsList = ({ showPreview = false }: Props) => {
 					marginBottom: 12,
 				}}
 			>
-				<Text fontWeight='bold' style={{ color: colors.neutral['700'] }}>
+				<Text fontWeight='bold' style={{ color: colors.neutral[700] }}>
 					{t('required_documents')}
 				</Text>
 
-				<Button.Root
+				<Pressable
 					onPress={() => router.push('/document-requests')}
-					variant='link'
-					color='neutral'
-					size='sm'
+					style={{ padding: 4 }}
 				>
-					<Button.Text style={{ fontWeight: 'bold', padding: 4 }}>
+					<Text
+						size='sm'
+						fontWeight='bold'
+						style={{ color: colors.mutedForeground }}
+					>
 						{t('see_more')}
-					</Button.Text>
-				</Button.Root>
+					</Text>
+				</Pressable>
 			</View>
 		)
 	}

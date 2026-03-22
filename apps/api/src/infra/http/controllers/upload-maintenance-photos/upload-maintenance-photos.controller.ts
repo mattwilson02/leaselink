@@ -5,6 +5,8 @@ import {
 	BadRequestException,
 	Body,
 	Controller,
+	HttpCode,
+	HttpStatus,
 	NotFoundException,
 	Param,
 	Post,
@@ -46,6 +48,7 @@ export class UploadMaintenancePhotosController {
 	) {}
 
 	@Post(':id/photos')
+	@HttpCode(HttpStatus.OK)
 	@ApiBearerAuth()
 	@ApiOperation({
 		summary:

@@ -14,7 +14,8 @@
 			"@/services/*": ["./src/services/*"],
 			"@/gen/*": ["./src/gen/*"],
 			"@/context/*": ["./src/context/*"],
-			"@/atoms/*": ["./src/atoms/*"]
+			"@/atoms/*": ["./src/atoms/*"],
+			"@/design-system/*": ["./src/design-system/*"]
 		}
 	},
 	"include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]

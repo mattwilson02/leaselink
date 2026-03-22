@@ -1,8 +1,18 @@
-import { TextInput, type TextInputRootProps } from '@sf-digital-ui/react-native'
-import { StyleSheet } from 'react-native'
+import { TextInputCompound } from '@/design-system/components/TextInputCompound'
+import { StyleSheet, type StyleProp, type ViewStyle } from 'react-native'
 
-export const Root = ({ style, ...props }: TextInputRootProps) => {
-	return <TextInput.Root style={[styles.rootStyle, style]} {...props} />
+interface RootProps {
+	style?: StyleProp<ViewStyle>
+	children?: React.ReactNode
+	testID?: string
+}
+
+export const Root = ({ style, children, testID }: RootProps) => {
+	return (
+		<TextInputCompound.Root style={[styles.rootStyle, style]} testID={testID}>
+			{children}
+		</TextInputCompound.Root>
+	)
 }
 
 const styles = StyleSheet.create({

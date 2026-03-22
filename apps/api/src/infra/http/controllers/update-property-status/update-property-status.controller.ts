@@ -2,6 +2,7 @@ import { UpdatePropertyStatusUseCase } from '@/domain/property-management/applic
 import { PropertyNotFoundError } from '@/domain/property-management/application/use-cases/errors/property-not-found-error'
 import { InvalidPropertyStatusTransitionError } from '@/domain/property-management/application/use-cases/errors/invalid-property-status-transition-error'
 import { PropertyHasActiveLeaseError } from '@/domain/property-management/application/use-cases/errors/property-has-active-lease-error'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import {
 	BadRequestException,
 	Body,
@@ -9,6 +10,7 @@ import {
 	Controller,
 	HttpStatus,
 	NotFoundException,
+	Optional,
 	Param,
 	Patch,
 	UseGuards,
@@ -39,9 +41,12 @@ const bodyValidationPipe = new ZodValidationPipe(updateStatusSchema)
 @ApiTags('Properties')
 @Controller('/properties')
 export class UpdatePropertyStatusController {
-	constructor(private updatePropertyStatus: UpdatePropertyStatusUseCase) {}
+	constructor(
+		private updatePropertyStatus: UpdatePropertyStatusUseCase,
+		@Optional() private createAuditLog?: CreateAuditLogUseCase,
+	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 		[InvalidPropertyStatusTransitionError.name]: BadRequestException,
 		[PropertyHasActiveLeaseError.name]: ConflictException,
@@ -86,8 +91,21 @@ export class UpdatePropertyStatusController {
 			throw new exception(error.message)
 		}
 
-		return {
+		const result = {
 			property: HttpPropertyPresenter.toHTTP(response.value.property),
 		}
+
+		this.createAuditLog
+			?.execute({
+				actorId: user.id,
+				actorType: 'EMPLOYEE',
+				action: 'STATUS_CHANGE',
+				resourceType: 'PROPERTY',
+				resourceId: propertyId,
+				metadata: { to: body.status },
+			})
+			.catch((err) => console.error('Audit log failed:', err))
+
+		return result
 	}
 }

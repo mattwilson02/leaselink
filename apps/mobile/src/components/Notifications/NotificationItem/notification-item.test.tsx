@@ -336,7 +336,7 @@ describe('NotificationItem', () => {
 			expect(iconContainer.props.style).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({
-						backgroundColor: expect.stringContaining('#fef4e6'),
+						backgroundColor: expect.stringContaining('#fffbeb'),
 					}),
 				]),
 			)
@@ -357,7 +357,7 @@ describe('NotificationItem', () => {
 			expect(iconContainer.props.style).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({
-						backgroundColor: expect.stringContaining('#e7f8f0'),
+						backgroundColor: expect.stringContaining('#f0fdf4'),
 					}),
 				]),
 			)
@@ -377,7 +377,7 @@ describe('NotificationItem', () => {
 			expect(iconContainer.props.style).toEqual(
 				expect.arrayContaining([
 					expect.objectContaining({
-						backgroundColor: expect.stringContaining('#f6f6f6'),
+						backgroundColor: expect.stringContaining('#f4f4f5'),
 					}),
 				]),
 			)

@@ -1,8 +1,8 @@
 import {
-	TextInput,
+	TextInputCompound,
 	type TextInputControlProps,
-} from '@sf-digital-ui/react-native'
+} from '@/design-system/components/TextInputCompound'
 
 export const TextControl = (props: TextInputControlProps) => {
-	return <TextInput.Control {...props} />
+	return <TextInputCompound.Control {...props} />
 }

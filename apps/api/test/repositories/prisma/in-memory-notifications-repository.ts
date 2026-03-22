@@ -50,6 +50,38 @@ export class InMemoryNotificationsRepository implements NotificationRepository {
 		return notifications.slice(offset, offset + limit)
 	}
 
+	async countByPersonId(
+		personId: string,
+		notificationType?: NotificationType,
+		isArchived?: boolean,
+	): Promise<number> {
+		let notifications = this.items.filter(
+			(notification) => notification.personId.toString() === personId,
+		)
+
+		if (notificationType) {
+			notifications = notifications.filter(
+				(notification) => notification.notificationType === notificationType,
+			)
+		}
+
+		if (isArchived === true) {
+			notifications = notifications.filter(
+				(notification) =>
+					notification.archivedAt !== null &&
+					notification.archivedAt !== undefined,
+			)
+		} else if (isArchived === false) {
+			notifications = notifications.filter(
+				(notification) =>
+					notification.archivedAt === null ||
+					notification.archivedAt === undefined,
+			)
+		}
+
+		return Promise.resolve(notifications.length)
+	}
+
 	async findById(notificationId: string): Promise<Notification | null> {
 		const notification = this.items.find(
 			(notification) => notification.id.toString() === notificationId,

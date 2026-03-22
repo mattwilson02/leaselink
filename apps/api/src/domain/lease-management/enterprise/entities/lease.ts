@@ -10,6 +10,7 @@ export interface LeaseProps {
 	endDate: Date
 	monthlyRent: number
 	securityDeposit: number
+	earlyTerminationFee?: number | null
 	status: LeaseStatus
 	renewedFromLeaseId?: UniqueEntityId | null
 	createdAt: Date
@@ -61,6 +62,15 @@ export class Lease extends Entity<LeaseProps> {
 		this.touch()
 	}
 
+	get earlyTerminationFee(): number | null {
+		return this.props.earlyTerminationFee ?? null
+	}
+
+	set earlyTerminationFee(value: number | null) {
+		this.props.earlyTerminationFee = value
+		this.touch()
+	}
+
 	get status(): LeaseStatusType {
 		return this.props.status.value
 	}
@@ -87,7 +97,10 @@ export class Lease extends Entity<LeaseProps> {
 	}
 
 	static create(
-		props: Optional<LeaseProps, 'createdAt' | 'status' | 'renewedFromLeaseId'>,
+		props: Optional<
+			LeaseProps,
+			'createdAt' | 'status' | 'renewedFromLeaseId' | 'earlyTerminationFee'
+		>,
 		id?: UniqueEntityId,
 	) {
 		const lease = new Lease(
@@ -100,6 +113,7 @@ export class Lease extends Entity<LeaseProps> {
 								(props?.status as unknown as string) ?? 'PENDING',
 							),
 				renewedFromLeaseId: props?.renewedFromLeaseId ?? null,
+				earlyTerminationFee: props?.earlyTerminationFee ?? null,
 				createdAt: props?.createdAt ?? new Date(),
 			},
 			id,

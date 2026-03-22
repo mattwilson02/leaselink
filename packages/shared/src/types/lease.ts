@@ -8,6 +8,7 @@ export interface Lease {
   endDate: string;
   monthlyRent: number;
   securityDeposit: number;
+  earlyTerminationFee: number | null;
   status: LeaseStatus;
   renewedFromLeaseId: string | null;
   createdAt: string;

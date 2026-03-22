@@ -8,6 +8,7 @@ export interface LeaseHttpResponse {
 	endDate: string
 	monthlyRent: number
 	securityDeposit: number
+	earlyTerminationFee: number | null
 	status: string
 	renewedFromLeaseId: string | null
 	createdAt: string
@@ -24,6 +25,7 @@ export class HttpLeasePresenter {
 			endDate: lease.endDate.toISOString(),
 			monthlyRent: lease.monthlyRent,
 			securityDeposit: lease.securityDeposit,
+			earlyTerminationFee: lease.earlyTerminationFee,
 			status: lease.status,
 			renewedFromLeaseId: lease.renewedFromLeaseId?.toString() ?? null,
 			createdAt: lease.createdAt.toISOString(),

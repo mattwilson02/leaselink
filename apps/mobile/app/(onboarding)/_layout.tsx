@@ -1,5 +1,5 @@
 import { Layout } from '@/components/Layout'
-import { ProgressBar } from '@sf-digital-ui/react-native'
+import { ProgressBar } from '@/design-system/components/ProgressBar'
 import { Stack, usePathname } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 import { View } from 'react-native'

@@ -1,23 +1,21 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { makeLease } from 'test/factories/make-lease'
 import { makePayment } from 'test/factories/make-payment'
-import { makeProperty } from 'test/factories/make-property'
 import { InMemoryLeasesRepository } from 'test/repositories/prisma/in-memory-leases-repository'
 import { InMemoryPaymentsRepository } from 'test/repositories/prisma/in-memory-payments-repository'
 import { InMemoryPropertiesRepository } from 'test/repositories/prisma/in-memory-properties-repository'
-import { LeaseStatus } from '@/domain/lease-management/enterprise/entities/value-objects/lease-status'
 import { PaymentStatus } from '../../enterprise/entities/value-objects/payment-status'
 import { CreateCheckoutSessionUseCase } from './create-checkout-session'
 import { PaymentAlreadyPaidError } from './errors/payment-already-paid-error'
 import { PaymentNotFoundError } from './errors/payment-not-found-error'
 import { PaymentNotPayableError } from './errors/payment-not-payable-error'
 import type { StripeService } from '../stripe/stripe-service'
-import { right } from '@/core/either'
 
 class MockStripeService implements StripeService {
-	calls: any[] = []
+	calls: unknown[] = []
 
-	async createCheckoutSession(params: any) {
+	async createCheckoutSession(
+		params: Parameters<StripeService['createCheckoutSession']>[0],
+	) {
 		this.calls.push(params)
 		return {
 			sessionId: 'cs_test_session_123',

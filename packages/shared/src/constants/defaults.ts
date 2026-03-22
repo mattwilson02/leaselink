@@ -36,3 +36,9 @@ export const MAX_MAINTENANCE_PHOTOS = 10;
  */
 export const MAX_MAINTENANCE_TITLE_LENGTH = 200;
 export const MAX_MAINTENANCE_DESCRIPTION_LENGTH = 5000;
+
+/**
+ * Maximum receipt upload size (in bytes).
+ * Section 9.2: "Receipt uploads max 10 MB"
+ */
+export const MAX_RECEIPT_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB

@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { View, ScrollView, StyleSheet, Pressable } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useTranslation } from 'react-i18next'
 import { MaintenanceStatus, MAINTENANCE_STATUS_LABELS } from '@leaselink/shared'
 
@@ -68,18 +68,18 @@ const styles = StyleSheet.create({
 		paddingVertical: 8,
 		borderRadius: 20,
 		borderWidth: 1,
-		borderColor: colors.neutral['30'],
-		backgroundColor: 'white',
+		borderColor: colors.border,
+		backgroundColor: colors.card,
 	},
 	chipSelected: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	chipText: {
-		color: colors.neutral['600'],
+		color: colors.mutedForeground,
 	},
 	chipTextSelected: {
-		color: 'white',
+		color: colors.primaryForeground,
 	},
 })
 

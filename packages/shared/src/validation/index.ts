@@ -5,3 +5,6 @@ export * from "./payment.schema";
 export * from "./tenant.schema";
 export * from "./document.schema";
 export * from "./notification.schema";
+export * from "./expense.schema";
+export * from "./vendor.schema";
+export * from "./audit-log.schema";

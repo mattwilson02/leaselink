@@ -81,9 +81,13 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Only one `ACTIVE` lease per property at a time
 - Only one `ACTIVE` lease per tenant at a time
 - A lease cannot be activated if the property is not in `OCCUPIED` or `LISTED` status
+- A lease cannot be manually activated if its start date is in the future
+- `PENDING` leases are auto-activated by a nightly scheduler when their start date arrives
+- When a lease is created with a start date on or before today, it is auto-activated immediately
 - When a lease becomes `ACTIVE`, the property status should be set to `OCCUPIED`
 - Lease expiry notifications are sent 60 days, 30 days, and 7 days before end date
 - A `TERMINATED` lease cannot be reactivated
+- All date comparisons use UTC to avoid timezone-related off-by-one errors
 
 ### 3.4 Maintenance Requests
 > New feature — core tenant interaction
@@ -123,6 +127,8 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Payment amount comes from the lease's `monthlyRent` field
 - Due date is the 1st of each month (or lease start date for the first month)
 - Payment status flow: `UPCOMING` → `PENDING` (on due date) → `PAID` or `OVERDUE`
+- `UPCOMING` payments transition to `PENDING` automatically via nightly scheduler when their due date arrives
+- Rent due reminders are sent automatically 3 days before due date via daily scheduler
 - `OVERDUE` payments can still be paid (moves to `PAID`)
 - Grace period: 5 days after due date before marking `OVERDUE`
 - Stripe runs in **test mode only** — no real money ever processed
@@ -147,6 +153,7 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Rent amount can change on renewal
 - When the new lease is activated, the original lease is automatically `EXPIRED`
 - Only one pending renewal can exist per lease at a time
+- A renewal cannot be manually activated if its start date is in the future (same rule as regular leases)
 
 ### 3.7 Document Management
 > Existing feature, updated for property management context
@@ -182,6 +189,7 @@ This is a full-stack application: a NestJS REST API backend with PostgreSQL, a N
 - Only the assigned tenant can upload against a document request
 - Documents are stored in Azure Blob Storage with signed URLs for upload/download
 - Document metadata includes: name, folder, size, content type, upload date
+- Document access is scoped: a tenant can only view/download their own documents; managers can access all
 
 ### 3.8 Notifications
 > Existing feature, extended with new action types
@@ -650,7 +658,172 @@ Notification events relevant to managers:
 
 ---
 
-## 9. Out of Scope (v1)
+## 8.5 Authorization & Data Isolation
+
+**Global Rules (apply to ALL endpoints):**
+- All endpoints require authentication via `EnhancedAuthGuard` (global) unless explicitly `@Public()`
+- Manager-only endpoints use `EmployeeOnlyGuard`
+- **Tenant data isolation**: A tenant (CLIENT) can only access their own data — profile, documents, payments, notifications, maintenance requests. Any endpoint accepting a resource ID must verify the resource belongs to the requesting tenant.
+- **Manager access**: Managers (EMPLOYEE) can access all tenant data for management purposes
+- Endpoints that accept a `clientId` or `tenantId` in the body/URL must verify it matches the authenticated user (for CLIENT type) or allow through (for EMPLOYEE type)
+- Document upload/download, profile photo, and notification endpoints must enforce ownership
+
+---
+
+## 9. Enterprise Features (v1.1)
+
+### 9.1 E-Signatures
+> Digital lease signing via embedded signature pad
+
+1. Manager sends lease document for e-signature
+2. Tenant opens document in-app, signs via touch/draw pad
+3. System embeds signature into document, marks as signed
+4. Both parties receive signed copy
+
+**Business Rules:**
+- E-signature uses an embedded canvas (no third-party service like DocuSign for v1)
+- Signed documents are stored as a new version in blob storage
+- Signature metadata (IP, timestamp, device) is stored for audit trail
+- Only documents with `LEASE_AGREEMENTS` or `SIGNED_DOCUMENTS` folder types can be signed
+- A document can only be signed once — re-signing creates a new document version
+
+**Entity: Signature**
+| Field | Type | Notes |
+|-------|------|-------|
+| id | UUID | Primary key |
+| documentId | UUID | FK → Document |
+| signedBy | UUID | FK → Tenant or Manager |
+| signatureImageKey | String | Blob storage key for signature image |
+| ipAddress | String | Signer's IP address |
+| userAgent | String | Signer's browser/device |
+| signedAt | DateTime | Timestamp |
+
+**Endpoints:**
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/documents/:id/sign` | Submit signature for a document |
+| GET | `/documents/:id/signature` | Get signature details for a document |
+
+### 9.2 Expense Tracking
+> Track property-related expenses beyond rent
+
+1. Manager logs an expense: property, category, amount, date, description, receipt photo
+2. Expenses appear on property detail and in expense reports
+3. Monthly expense summary on dashboard
+
+**Business Rules:**
+- Expense categories: `MAINTENANCE`, `INSURANCE`, `TAX`, `UTILITY`, `MANAGEMENT_FEE`, `REPAIR`, `IMPROVEMENT`, `OTHER`
+- Expenses are linked to a property (required) and optionally to a maintenance request
+- Receipt photos stored in blob storage
+- Expenses are manager-only — tenants cannot see them
+
+**Entity: Expense**
+| Field | Type | Notes |
+|-------|------|-------|
+| id | UUID | Primary key |
+| propertyId | UUID | FK → Property |
+| managerId | UUID | FK → PropertyManager |
+| maintenanceRequestId | UUID? | FK → MaintenanceRequest (optional link) |
+| category | EXPENSE_CATEGORY | Enum |
+| amount | Float | Dollar amount |
+| description | String | What was the expense for |
+| receiptBlobKey | String? | Blob storage key for receipt photo |
+| expenseDate | DateTime | When the expense occurred |
+| createdAt | DateTime | |
+| updatedAt | DateTime? | |
+
+**Endpoints:**
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/expenses` | Create expense (manager only) |
+| GET | `/expenses` | List expenses (filterable by property, category, date range) |
+| GET | `/expenses/:id` | Get expense details |
+| PUT | `/expenses/:id` | Update expense |
+| DELETE | `/expenses/:id` | Delete expense |
+| POST | `/expenses/:id/receipt` | Upload receipt photo |
+| GET | `/expenses/summary` | Monthly expense summary by property |
+
+### 9.3 Vendor Management
+> Track maintenance vendors/contractors
+
+1. Manager adds a vendor: name, trade/specialty, phone, email, notes
+2. When updating a maintenance request, manager can assign a vendor
+3. Vendor contact info visible on maintenance request detail
+
+**Business Rules:**
+- Vendors are managed per-manager (each manager has their own vendor list)
+- Vendor specialties map to maintenance categories (PLUMBING, ELECTRICAL, etc.)
+- A vendor can be assigned to multiple maintenance requests
+- Vendors have no app login — they're a contact reference only
+
+**Entity: Vendor**
+| Field | Type | Notes |
+|-------|------|-------|
+| id | UUID | Primary key |
+| managerId | UUID | FK → PropertyManager |
+| name | String | Company or individual name |
+| specialty | MAINTENANCE_CATEGORY | Primary trade |
+| phone | String? | Contact phone |
+| email | String? | Contact email |
+| notes | String? | Free text notes |
+| createdAt | DateTime | |
+| updatedAt | DateTime? | |
+
+**Endpoints:**
+| Method | Path | Description |
+|--------|------|-------------|
+| POST | `/vendors` | Create vendor (manager only) |
+| GET | `/vendors` | List vendors (filterable by specialty) |
+| GET | `/vendors/:id` | Get vendor details |
+| PUT | `/vendors/:id` | Update vendor |
+| DELETE | `/vendors/:id` | Delete vendor |
+
+**MaintenanceRequest update:** Add optional `vendorId` field (FK → Vendor) to assign a vendor to a request.
+
+### 9.4 Audit Logs
+> Track all significant actions for accountability
+
+1. System automatically logs: who did what, when, to which resource
+2. Manager can view audit log in settings
+3. Log is append-only — cannot be edited or deleted
+
+**Business Rules:**
+- Audit events are immutable — no updates or deletes
+- Events track: actor (user ID + type), action, resource type, resource ID, timestamp, metadata (JSON)
+- Action types: `CREATE`, `UPDATE`, `DELETE`, `STATUS_CHANGE`, `LOGIN`, `UPLOAD`, `DOWNLOAD`, `SIGN`
+- Resource types: `PROPERTY`, `LEASE`, `TENANT`, `PAYMENT`, `MAINTENANCE_REQUEST`, `DOCUMENT`, `EXPENSE`, `VENDOR`
+- Audit logs are manager-only — tenants cannot access the audit trail
+
+**Entity: AuditLog**
+| Field | Type | Notes |
+|-------|------|-------|
+| id | UUID | Primary key |
+| actorId | UUID | Who performed the action |
+| actorType | String | `EMPLOYEE` or `CLIENT` |
+| action | AUDIT_ACTION | Enum |
+| resourceType | AUDIT_RESOURCE_TYPE | Enum |
+| resourceId | UUID | Which resource was affected |
+| metadata | JSON? | Additional context (old/new values, etc.) |
+| createdAt | DateTime | Immutable timestamp |
+
+**Endpoints:**
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/audit-logs` | List audit logs (filterable by resource type, action, actor, date range) |
+| GET | `/audit-logs/:resourceType/:resourceId` | Get audit trail for a specific resource |
+
+### 9.5 Nice-to-Haves (v1.1)
+
+- **CSV Export** — Export payment history, expense reports, tenant lists as CSV from the web dashboard
+- **2FA Settings** — Full TOTP-based two-factor authentication setup in web dashboard settings
+- **Lease Expiry Notifications** — Scheduled notifications at 60, 30, and 7 days before lease end date
+- **Payment Overdue Notifications** — Automatic PAYMENT_OVERDUE notifications when grace period expires
+- **Property Detail Page** — Tabbed view with current tenant, lease history, maintenance history, documents, expenses
+- **Tenant Detail Page** — Tabbed view with current lease, payment history, documents, maintenance requests
+
+---
+
+## 10. Out of Scope (v1)
 
 The following are explicitly excluded from the initial build:
 
@@ -664,7 +837,7 @@ The following are explicitly excluded from the initial build:
 
 ---
 
-## 10. Technical Decisions
+## 11. Technical Decisions
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
@@ -688,7 +861,7 @@ The following are explicitly excluded from the initial build:
 
 ---
 
-## 11. Repository Structure
+## 12. Repository Structure
 
 Turborepo monorepo with npm workspaces.
 
@@ -726,7 +899,7 @@ All apps import from `@leaselink/shared` to ensure type consistency across the s
 
 ---
 
-## 12. Resolved Decisions
+## 13. Resolved Decisions
 
 - [x] **Property photos** — Gallery (multiple images), stored as `String[]` blob storage keys
 - [x] **Maintenance request photos** — Stored as Documents in the document system (reuses existing blob storage + document infrastructure)

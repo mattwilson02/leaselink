@@ -1,10 +1,12 @@
 import { UpdatePropertyUseCase } from '@/domain/property-management/application/use-cases/update-property'
 import { PropertyNotFoundError } from '@/domain/property-management/application/use-cases/errors/property-not-found-error'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 import {
 	Body,
 	Controller,
 	HttpStatus,
 	NotFoundException,
+	Optional,
 	Param,
 	Put,
 	UseGuards,
@@ -33,9 +35,12 @@ const bodyValidationPipe = new ZodValidationPipe(updatePropertySchema)
 @ApiTags('Properties')
 @Controller('/properties')
 export class UpdatePropertyController {
-	constructor(private updateProperty: UpdatePropertyUseCase) {}
+	constructor(
+		private updateProperty: UpdatePropertyUseCase,
+		@Optional() private createAuditLog?: CreateAuditLogUseCase,
+	) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
 	}
 
@@ -71,8 +76,25 @@ export class UpdatePropertyController {
 			throw new exception(error.message)
 		}
 
-		return {
+		const result = {
 			property: HttpPropertyPresenter.toHTTP(response.value.property),
 		}
+
+		this.createAuditLog
+			?.execute({
+				actorId: user.id,
+				actorType: 'EMPLOYEE',
+				action: 'UPDATE',
+				resourceType: 'PROPERTY',
+				resourceId: propertyId,
+				metadata: {
+					updatedFields: Object.keys(body).filter(
+						(k) => (body as Record<string, unknown>)[k] !== undefined,
+					),
+				},
+			})
+			.catch((err) => console.error('Audit log failed:', err))
+
+		return result
 	}
 }

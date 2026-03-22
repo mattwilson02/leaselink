@@ -1,7 +1,7 @@
-import { Heading, Switch, Text } from '@sf-digital-ui/react-native'
+import { Heading, Text } from '@/design-system/components/Typography'
 import { render, screen } from '@testing-library/react-native'
 import { useRouter } from 'expo-router'
-import { ScrollView, View } from 'react-native'
+import { ScrollView, Switch, View } from 'react-native'
 
 // Import the component
 import NotificationsPage from '../../../../app/(profile)/notifications'

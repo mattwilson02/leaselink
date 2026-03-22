@@ -287,7 +287,8 @@ export default {
 	},
 	maintenance: {
 		maintenance: 'Solicitudes de Mantenimiento',
-		maintenance_description: 'Envíe y realice seguimiento de solicitudes de mantenimiento',
+		maintenance_description:
+			'Envíe y realice seguimiento de solicitudes de mantenimiento',
 		new_request: 'Nueva Solicitud',
 		request_details: 'Detalles de la Solicitud',
 		all: 'Todos',
@@ -300,16 +301,20 @@ export default {
 		submit: 'Enviar Solicitud',
 		no_requests: 'Sin solicitudes de mantenimiento',
 		no_requests_description: 'Envíe una si tiene un problema con su propiedad.',
-		no_active_lease: 'Debe tener un contrato activo para enviar una solicitud de mantenimiento.',
+		no_active_lease:
+			'Debe tener un contrato activo para enviar una solicitud de mantenimiento.',
 		request_submitted: 'Solicitud enviada',
-		request_submitted_description: 'Su solicitud de mantenimiento fue enviada con éxito.',
+		request_submitted_description:
+			'Su solicitud de mantenimiento fue enviada con éxito.',
 		close_request: 'Cerrar Solicitud',
 		request_closed: 'Solicitud cerrada',
-		request_closed_description: 'Su solicitud de mantenimiento ha sido cerrada.',
+		request_closed_description:
+			'Su solicitud de mantenimiento ha sido cerrada.',
 		title_required: 'El título es obligatorio',
 		title_max_length: 'El título debe tener como máximo 200 caracteres',
 		description_required: 'La descripción es obligatoria',
-		description_max_length: 'La descripción debe tener como máximo 5000 caracteres',
+		description_max_length:
+			'La descripción debe tener como máximo 5000 caracteres',
 		category_required: 'La categoría es obligatoria',
 		priority_required: 'La prioridad es obligatoria',
 		status: 'Estado',
@@ -479,11 +484,58 @@ export default {
 		additional_security: 'Seguridad adicional',
 		change_password: 'Cambiar contraseña',
 		active_sessions: 'Sesiones activas',
+		two_factor_authentication: 'Autenticación de dos factores',
+		two_factor_enabled: '2FA está habilitado',
+		two_factor_disabled: '2FA está deshabilitado',
+		two_factor_description: 'Añade una capa adicional de seguridad a tu cuenta',
 		enter_password_title: 'Ingrese su contraseña',
 		enter_password_description:
 			'Ingrese su contraseña actual para habilitar el inicio de sesión biométrico en este dispositivo.',
 		cancel: 'Cancelar',
 		confirm: 'Confirmar',
+	},
+	active_sessions: {
+		title: 'Sesiones activas',
+		description: 'Administra los dispositivos que tienen acceso a tu cuenta',
+		current_session: 'Actual',
+		revoke: 'Revocar',
+		revoke_confirm_title: 'Revocar sesión',
+		revoke_confirm_message:
+			'¿Estás seguro de que quieres cerrar sesión en este dispositivo?',
+		revoke_cancel: 'Cancelar',
+		revoke_confirm: 'Revocar',
+		unknown_device: 'Dispositivo desconocido',
+		unknown_ip: 'IP desconocida',
+		signed_in: 'Conectado',
+		loading: 'Cargando sesiones...',
+		error: 'No se pudieron cargar las sesiones',
+	},
+	two_factor: {
+		enable_title: 'Habilitar autenticación de dos factores',
+		enable_description:
+			'Escanea este URI con tu app de autenticación o ingrésalo manualmente.',
+		totp_uri_label: 'URI de TOTP',
+		verify_title: 'Verifica tu autenticador',
+		verify_description:
+			'Ingresa el código de 6 dígitos de tu app de autenticación para completar la configuración.',
+		backup_codes_title: 'Guarda tus códigos de respaldo',
+		backup_codes_description:
+			'Guarda estos códigos en un lugar seguro. Cada código solo se puede usar una vez.',
+		backup_codes_warning:
+			'No podrás ver estos códigos nuevamente. Guárdalos ahora.',
+		done: 'Listo',
+		cancel: 'Cancelar',
+		verify: 'Verificar',
+		copy_uri: 'Copiar URI',
+		copied: '¡Copiado!',
+		disable_title: 'Deshabilitar autenticación de dos factores',
+		disable_message:
+			'Esto eliminará la capa de seguridad adicional de tu cuenta. ¿Estás seguro?',
+		disable_cancel: 'Cancelar',
+		disable_confirm: 'Deshabilitar 2FA',
+		enable_error: 'Error al habilitar 2FA. Inténtalo de nuevo.',
+		disable_error: 'Error al deshabilitar 2FA. Inténtalo de nuevo.',
+		verify_error: 'Código inválido. Inténtalo de nuevo.',
 	},
 	change_password: {
 		title: 'Cambiar contraseña',

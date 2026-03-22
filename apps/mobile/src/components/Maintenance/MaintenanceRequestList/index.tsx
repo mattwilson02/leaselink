@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { ActivityIndicator, View, StyleSheet } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { FlashList } from '@shopify/flash-list'
 import { useTranslation } from 'react-i18next'
 import CloudWithHourGlass from '@/assets/icons/cloud-with-hourglass.svg'
@@ -28,8 +28,7 @@ const MaintenanceRequestList = ({
 		})
 
 	const requests = useMemo(
-		() =>
-			data?.pages.flatMap((page) => page.maintenanceRequests || []) || [],
+		() => data?.pages.flatMap((page) => page.data || []) || [],
 		[data?.pages],
 	)
 
@@ -73,7 +72,10 @@ const MaintenanceRequestList = ({
 				>
 					{t('no_requests')}
 				</Text>
-				<Text style={{ color: colors.neutral['500'] }} testID='no-requests-description'>
+				<Text
+					style={{ color: colors.neutral['500'] }}
+					testID='no-requests-description'
+				>
 					{t('no_requests_description')}
 				</Text>
 			</View>

@@ -26,8 +26,9 @@ import {
 import { useRouter } from 'expo-router'
 import { useSetAtom } from 'jotai'
 import { useTranslation } from 'react-i18next'
-import { Text, Button } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { CompoundButton } from '@/design-system/components/CompoundButton'
+import { colors } from '@/design-system/theme'
 import { notificationSnackbarAtom } from '@/atoms/notification-snackbar-atom'
 import { queryClient } from '@/app/_layout'
 import { Icon } from '@/components/Icon'
@@ -46,26 +47,26 @@ const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
 	switch (notification.actionType) {
 		case 'MAINTENANCE_UPDATE':
 			return {
-				backgroundColor: colors.warning['50'],
-				icon: <Wrench size={24} color={colors.warning['600']} />,
+				backgroundColor: colors.warning[50],
+				icon: <Wrench size={24} color={colors.warning[600]} />,
 			}
 
 		case 'PAYMENT_RECEIVED':
 			return {
-				backgroundColor: colors.success['50'],
-				icon: <CheckCircle size={24} color={colors.success['600']} />,
+				backgroundColor: colors.success[50],
+				icon: <CheckCircle size={24} color={colors.success[600]} />,
 			}
 
 		case 'PAYMENT_OVERDUE':
 			return {
-				backgroundColor: colors.error['50'],
-				icon: <TriangleAlert size={24} color={colors.error['600']} />,
+				backgroundColor: colors.error[50],
+				icon: <TriangleAlert size={24} color={colors.error[600]} />,
 			}
 
 		case 'RENT_REMINDER':
 			return {
-				backgroundColor: colors['secondary-blue']['50'],
-				icon: <Clock size={24} color={colors['secondary-blue']['600']} />,
+				backgroundColor: colors.info[50],
+				icon: <Clock size={24} color={colors.info[600]} />,
 			}
 
 		case 'UPLOAD_DOCUMENT':
@@ -76,29 +77,29 @@ const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
 
 		case 'SIGN_LEASE':
 			return {
-				backgroundColor: colors['secondary-blue']['50'],
-				icon: <FileText size={24} color={colors['secondary-blue']['600']} />,
+				backgroundColor: colors.info[50],
+				icon: <FileText size={24} color={colors.info[600]} />,
 			}
 
 		case 'LEASE_EXPIRY':
 			return {
-				backgroundColor: colors.warning['50'],
-				icon: <Calendar size={24} color={colors.warning['600']} />,
+				backgroundColor: colors.warning[50],
+				icon: <Calendar size={24} color={colors.warning[600]} />,
 			}
 
 		case 'LEASE_RENEWAL':
 			return {
-				backgroundColor: colors['secondary-blue']['50'],
-				icon: <RefreshCw size={24} color={colors['secondary-blue']['600']} />,
+				backgroundColor: colors.info[50],
+				icon: <RefreshCw size={24} color={colors.info[600]} />,
 			}
 
 		case 'SIGN_DOCUMENT':
 			return {
-				backgroundColor: colors.warning['50'],
+				backgroundColor: colors.warning[50],
 				icon: (
 					<Icon.Icon
 						name='edit-04'
-						stroke={colors.warning['600']}
+						stroke={colors.warning[600]}
 						strokeWidth={2}
 						size={24}
 					/>
@@ -107,16 +108,14 @@ const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
 
 		case 'BASIC_COMPLETE':
 			return {
-				backgroundColor: colors.warning['50'],
-				icon: (
-					<Info testID='icon-info' size={24} color={colors.warning['600']} />
-				),
+				backgroundColor: colors.warning[50],
+				icon: <Info testID='icon-info' size={24} color={colors.warning[600]} />,
 			}
 
 		case 'INSPECTION_SCHEDULED':
 			return {
-				backgroundColor: colors['secondary-blue']['50'],
-				icon: <Calendar size={24} color={colors['secondary-blue']['600']} />,
+				backgroundColor: colors.info[50],
+				icon: <Calendar size={24} color={colors.info[600]} />,
 			}
 
 		default:
@@ -126,33 +125,31 @@ const getNotificationIconInfo = (notification: GetNotificationsDTO) => {
 	// Fallback: use linked entity context for INFO notifications without a specific actionType
 	if (notification.linkedPaymentId) {
 		return {
-			backgroundColor: colors.success['50'],
-			icon: (
-				<CreditCard size={24} color={colors.success['600']} />
-			),
+			backgroundColor: colors.success[50],
+			icon: <CreditCard size={24} color={colors.success[600]} />,
 		}
 	}
 	if (notification.linkedTransactionId) {
 		return {
-			backgroundColor: colors.success['50'],
+			backgroundColor: colors.success[50],
 			icon: (
 				<ArrowLeftRight
 					testID='arrow-left-right-icon'
 					size={24}
-					color={colors.success['600']}
+					color={colors.success[600]}
 				/>
 			),
 		}
 	}
 	if (notification.linkedDocumentId) {
 		return {
-			backgroundColor: colors.success['50'],
+			backgroundColor: colors.success[50],
 			icon: (
 				<Icon.Icon
 					name='folder'
 					size={24}
 					strokeWidth={2}
-					stroke={colors.success['600']}
+					stroke={colors.success[600]}
 				/>
 			),
 		}
@@ -210,12 +207,14 @@ const NotificationItem = ({ notification }: Props) => {
 		} else if (notification.linkedTransactionId) {
 			router.push(`/maintenance/${notification.linkedTransactionId}`)
 		} else if (notification.linkedDocumentId) {
-			if (notification.actionType === 'UPLOAD_DOCUMENT' || notification.actionType === 'SIGN_DOCUMENT') {
-				router.push(`/upload-document?requestId=${notification.linkedDocumentId}`)
+			if (notification.actionType === 'UPLOAD_DOCUMENT') {
+				router.push(
+					`/upload-document?requestId=${notification.linkedDocumentId}`,
+				)
 			} else {
 				router.push(`/documents/${notification.linkedDocumentId}`)
 			}
-		} else if (
+	} else if (
 			notification.actionType === 'LEASE_EXPIRY' ||
 			notification.actionType === 'SIGN_LEASE' ||
 			notification.actionType === 'LEASE_RENEWAL'
@@ -277,10 +276,10 @@ const NotificationItem = ({ notification }: Props) => {
 
 		const backgroundColor =
 			notification.notificationType === 'ACTION'
-				? colors.neutral['50']
+				? colors.neutral['30']
 				: isArchived
-					? colors['secondary-blue']['500']
-					: colors.success['500']
+					? colors.info[500]
+					: colors.success[500]
 
 		return (
 			<View
@@ -348,14 +347,19 @@ const NotificationItem = ({ notification }: Props) => {
 			style={[
 				styles.notificationContainer,
 				{
-					backgroundColor: notification.isRead ? 'white' : colors.neutral['10'],
+					backgroundColor: notification.isRead
+						? colors.card
+						: colors.neutral['10'],
 				},
 				notificationAnimatedStyle,
 			]}
 		>
 			<Pressable
 				testID={`notification-${notification.id}`}
-				accessibilityLabel={(notification as unknown as { title: string }).title ?? notification.text}
+				accessibilityLabel={
+					(notification as unknown as { title: string }).title ??
+					notification.text
+				}
 				onPress={onRead}
 				style={{
 					flexDirection: 'row',
@@ -397,13 +401,14 @@ const NotificationItem = ({ notification }: Props) => {
 								flexWrap: 'wrap',
 							}}
 						>
-							{(notification as unknown as { title: string }).title ?? notification.text}
+							{(notification as unknown as { title: string }).title ??
+								notification.text}
 						</Text>
 						{(notification as unknown as { body?: string }).body ? (
 							<Text
 								size='sm'
 								style={{
-									color: colors.neutral['500'],
+									color: colors.mutedForeground,
 								}}
 							>
 								{(notification as unknown as { body: string }).body}
@@ -435,7 +440,7 @@ const NotificationItem = ({ notification }: Props) => {
 							height: 10,
 							borderRadius: 10,
 							backgroundColor: !notification.isRead
-								? colors.success['600']
+								? colors.success[600]
 								: 'transparent',
 						}}
 					/>
@@ -446,14 +451,14 @@ const NotificationItem = ({ notification }: Props) => {
 						notification.actionType === 'LEASE_EXPIRY' ||
 						notification.actionType === 'SIGN_LEASE' ||
 						notification.actionType === 'LEASE_RENEWAL') && (
-						<Button.Root
+						<CompoundButton.Root
 							testID='linked-item-button'
 							size='sm'
 							variant='link'
 							color='neutral'
 						>
-							<Button.Text>{t('go_to_page')}</Button.Text>
-						</Button.Root>
+							<CompoundButton.Text>{t('go_to_page')}</CompoundButton.Text>
+						</CompoundButton.Root>
 					)}
 				</View>
 			</Pressable>

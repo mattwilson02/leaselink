@@ -7,9 +7,11 @@ import { Lease } from '../../enterprise/entities/lease'
 import { LeasesRepository } from '../repositories/leases-repository'
 import { LeaseNotFoundError } from './errors/lease-not-found-error'
 import { InvalidLeaseStatusTransitionError } from './errors/invalid-lease-status-transition-error'
+import { LeaseActivationFutureStartError } from './errors/lease-activation-future-start-error'
 import { LeaseStatusType } from '../../enterprise/entities/value-objects/lease-status'
 import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
 import { PaymentsRepository } from '@/domain/payment/application/repositories/payments-repository'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 
 export interface UpdateLeaseStatusUseCaseRequest {
 	leaseId: string
@@ -17,7 +19,9 @@ export interface UpdateLeaseStatusUseCaseRequest {
 }
 
 type UpdateLeaseStatusUseCaseResponse = Either<
-	LeaseNotFoundError | InvalidLeaseStatusTransitionError,
+	| LeaseNotFoundError
+	| InvalidLeaseStatusTransitionError
+	| LeaseActivationFutureStartError,
 	{ lease: Lease }
 >
 
@@ -29,6 +33,8 @@ export class UpdateLeaseStatusUseCase {
 		private paymentsRepository: PaymentsRepository,
 		@Optional()
 		private generateLeasePaymentsUseCase?: GenerateLeasePaymentsUseCase,
+		@Optional()
+		private createAuditLogUseCase?: CreateAuditLogUseCase,
 	) {}
 
 	async execute({
@@ -42,12 +48,25 @@ export class UpdateLeaseStatusUseCase {
 		}
 
 		const currentStatus = lease.status as SharedLeaseStatus
+		const wasPending = currentStatus === 'PENDING'
 		const newStatus = status as SharedLeaseStatus
 
 		if (
 			!isValidTransition(LEASE_STATUS_TRANSITIONS, currentStatus, newStatus)
 		) {
 			return left(new InvalidLeaseStatusTransitionError())
+		}
+
+		// Prevent manual activation of leases with future start dates
+		if (status === 'ACTIVE') {
+			const today = new Date()
+			today.setUTCHours(0, 0, 0, 0)
+			const leaseStart = new Date(lease.startDate)
+			leaseStart.setUTCHours(0, 0, 0, 0)
+
+			if (leaseStart > today) {
+				return left(new LeaseActivationFutureStartError())
+			}
 		}
 
 		lease.status = status
@@ -82,12 +101,39 @@ export class UpdateLeaseStatusUseCase {
 			}
 
 			await this.paymentsRepository.deleteUnpaidByLeaseId(leaseId)
+
+			// Log early termination fee if the lease is terminated before its end date
+			if (status === 'TERMINATED' && this.createAuditLogUseCase) {
+				const today = new Date()
+				today.setUTCHours(0, 0, 0, 0)
+				const leaseEnd = new Date(lease.endDate)
+				leaseEnd.setUTCHours(0, 0, 0, 0)
+
+				if (leaseEnd > today) {
+					await this.createAuditLogUseCase.execute({
+						actorId: leaseId,
+						actorType: 'SYSTEM',
+						action: 'STATUS_CHANGE',
+						resourceType: 'LEASE',
+						resourceId: leaseId,
+						metadata: {
+							earlyTermination: true,
+							earlyTerminationFee: lease.earlyTerminationFee,
+						},
+					})
+				}
+			}
 		}
 
 		const updatedLease = await this.leasesRepository.update(lease)
 
-		// Side effect: generate payment records when lease becomes ACTIVE
-		if (status === 'ACTIVE' && this.generateLeasePaymentsUseCase) {
+		// Side effect: generate payment records only when transitioning from PENDING to ACTIVE
+		// (prevents double-generation if lease was already auto-activated)
+		if (
+			status === 'ACTIVE' &&
+			wasPending &&
+			this.generateLeasePaymentsUseCase
+		) {
 			await this.generateLeasePaymentsUseCase.execute({ leaseId })
 		}
 

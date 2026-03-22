@@ -94,6 +94,53 @@ export class PrismaDocumentRepository implements DocumentRepository {
 		return documents.map(PrismaDocumentMapper.toDomain)
 	}
 
+	async countByClientId(
+		clientId: string,
+		search?: string,
+		createdAtFrom?: Date,
+		createdAtTo?: Date,
+		folders?: DocumentFolderType[],
+	): Promise<number> {
+		const latestVersions = await this.prisma.document.groupBy({
+			by: ['contentKey'],
+			where: {
+				clientId,
+			},
+			// biome-ignore lint/style/useNamingConvention: <underlined, dev wants it like this>
+			_max: {
+				version: true,
+			},
+		})
+
+		if (latestVersions.length === 0) return 0
+
+		return this.prisma.document.count({
+			where: {
+				clientId,
+				name: {
+					contains: search ? search : undefined,
+					mode: 'insensitive',
+				},
+				createdAt: {
+					gte: createdAtFrom,
+					lte: createdAtTo,
+				},
+				folder: folders
+					? {
+							in: folders,
+						}
+					: undefined,
+				// biome-ignore lint/style/useNamingConvention: <intentional>
+				OR: latestVersions
+					.filter((item) => item._max?.version !== null)
+					.map((item) => ({
+						contentKey: item.contentKey,
+						version: (item._max?.version ?? 0) as number,
+					})),
+			},
+		})
+	}
+
 	async getManyByContentKey(contentKey: string): Promise<Document[] | null> {
 		const documents = await this.prisma.document.findMany({
 			where: {
@@ -148,8 +195,11 @@ export class PrismaDocumentRepository implements DocumentRepository {
 	async getAllGroupedByDocumentType(): Promise<FolderSummary[] | null> {
 		const documentsByFolder = await this.prisma.document.groupBy({
 			by: ['folder'],
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_count: { folder: true },
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_sum: { fileSize: true },
+			// biome-ignore lint/style/useNamingConvention: Prisma aggregation field
 			_max: { updatedAt: true },
 		})
 

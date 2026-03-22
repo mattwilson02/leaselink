@@ -17,6 +17,7 @@ import {
 export interface MaintenanceRequestProps {
 	propertyId: UniqueEntityId
 	tenantId: UniqueEntityId
+	vendorId: UniqueEntityId | null
 	title: string
 	description: string
 	priority: MaintenancePriority
@@ -35,6 +36,14 @@ export class MaintenanceRequest extends Entity<MaintenanceRequestProps> {
 
 	get tenantId() {
 		return this.props.tenantId
+	}
+
+	get vendorId() {
+		return this.props.vendorId
+	}
+	set vendorId(value: UniqueEntityId | null) {
+		this.props.vendorId = value
+		this.touch()
 	}
 
 	get title() {
@@ -108,13 +117,14 @@ export class MaintenanceRequest extends Entity<MaintenanceRequestProps> {
 	static create(
 		props: Optional<
 			MaintenanceRequestProps,
-			'createdAt' | 'status' | 'priority' | 'photos' | 'resolvedAt'
+			'createdAt' | 'status' | 'priority' | 'photos' | 'resolvedAt' | 'vendorId'
 		>,
 		id?: UniqueEntityId,
 	) {
 		const request = new MaintenanceRequest(
 			{
 				...props,
+				vendorId: props?.vendorId ?? null,
 				status:
 					props?.status instanceof MaintenanceStatus
 						? props.status
@@ -130,9 +140,7 @@ export class MaintenanceRequest extends Entity<MaintenanceRequestProps> {
 				category:
 					props?.category instanceof MaintenanceCategory
 						? props.category
-						: MaintenanceCategory.create(
-								props?.category as unknown as string,
-							),
+						: MaintenanceCategory.create(props?.category as unknown as string),
 				photos: props?.photos ?? [],
 				resolvedAt: props?.resolvedAt ?? null,
 				createdAt: props?.createdAt ?? new Date(),

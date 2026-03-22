@@ -1,8 +1,9 @@
 import { Layout } from '@/components/Layout'
 import { View, StyleSheet } from 'react-native'
 import { useRouter } from 'expo-router'
-import { Button, Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import CloudWithHourGlass from '@/assets/icons/cloud-with-hourglass.svg'
 import BackgroundWithSquares from '@/assets/icons/square-background.svg'
 import LeftArrow from '@/assets/icons/arrow-left.svg'
@@ -72,7 +73,7 @@ const styles = StyleSheet.create({
 	svgContainer: { justifyContent: 'center', alignItems: 'center' },
 	cloud: { position: 'absolute' },
 	textContainer: { marginTop: -120, gap: 12 },
-	subTitle: { color: colors['primary-green']['500'], fontWeight: 'bold' },
+	subTitle: { color: colors.primary, fontWeight: 'bold' },
 	title: { color: colors.neutral['600'], fontWeight: 'bold', marginBottom: 4 },
 	description: { color: colors.neutral['600'] },
 	buttonContainer: { gap: 12 },

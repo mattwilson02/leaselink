@@ -3,22 +3,30 @@ import { render } from '@/utils/test-utils'
 import { DatePicker } from '@/components/DatePicker'
 import { Text } from 'react-native'
 
-jest.mock('@sf-digital-ui/tokens', () => ({
-	colors: {
-		neutral: {
-			'40': '#f0f0f0',
-			'400': '#888888',
-			'500': '#666666',
-			'600': '#444444',
-			'700': '#222222',
+jest.mock('@/design-system/theme', () => {
+	const actual = jest.requireActual('@/design-system/theme')
+	return {
+		...actual,
+		colors: {
+			...actual.colors,
+			neutral: {
+				'20': '#f0f0f0',
+				'300': '#cccccc',
+				'400': '#888888',
+				'500': '#666666',
+				'600': '#444444',
+				'700': '#222222',
+			},
+			primary: '#00875a',
+			foreground: '#006644',
+			background: '#ffffff',
+			border: '#e5e7eb',
+			card: '#ffffff',
+			muted: '#f3f4f6',
+			mutedForeground: '#6b7280',
 		},
-		'primary-green': {
-			'50': '#e6f7f0',
-			'600': '#00875a',
-			'700': '#006644',
-		},
-	},
-}))
+	}
+})
 
 describe('DatePicker', () => {
 	beforeEach(() => {

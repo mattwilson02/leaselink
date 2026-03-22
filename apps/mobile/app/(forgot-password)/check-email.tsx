@@ -3,8 +3,9 @@ import { Icon } from '@/components/Icon'
 import { Layout } from '@/components/Layout'
 import { RESET_PASSWORD_DEEP_LINK } from '@/constants/deep-linking'
 import { authClient } from '@/services/auth'
-import { Button, Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -121,7 +122,7 @@ const ForgotPasswordCheckEmail = () => {
 							style={{
 								color: isResendDisabled
 									? colors.neutral['300']
-									: colors['primary-green']['500'],
+									: colors.primary,
 							}}
 							onPress={resendEmail}
 							testID='resend-email-button'

@@ -98,12 +98,17 @@ describe('GetDocumentsByClientIdController (E2E)', () => {
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10 })
+			.query({ page: 1, pageSize: 10 })
 			.expect(200)
 
 		expect(response.body).toBeDefined()
-		expect(response.body.documents).toHaveLength(2)
-		expect(response.body.documents).toEqual(
+		expect(response.body.data).toHaveLength(2)
+		expect(response.body.meta).toBeDefined()
+		expect(response.body.meta.page).toBe(1)
+		expect(response.body.meta.pageSize).toBe(10)
+		expect(typeof response.body.meta.totalCount).toBe('number')
+		expect(typeof response.body.meta.totalPages).toBe('number')
+		expect(response.body.data).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
 					name: 'Document 1',
@@ -128,16 +133,19 @@ describe('GetDocumentsByClientIdController (E2E)', () => {
 		)
 	})
 
-	it('[GET] /documents - should return 204 if no documents are found', async () => {
+	it('[GET] /documents - should return empty data with meta when no documents are found', async () => {
 		const { jwt } = await jwtFactory.makeJwt()
-		await request(app.getHttpServer())
+		const response = await request(app.getHttpServer())
 			.get('/documents')
 			.set({
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10 })
-			.expect(204)
+			.query({ page: 1, pageSize: 10 })
+			.expect(200)
+
+		expect(response.body.data).toEqual([])
+		expect(response.body.meta.totalCount).toBe(0)
 	})
 
 	it('[GET] /documents - should retrieve documents for a client with only certain folder types', async () => {
@@ -208,12 +216,14 @@ describe('GetDocumentsByClientIdController (E2E)', () => {
 				// biome-ignore lint/style/useNamingConvention: <Intentional>
 				Authorization: `Bearer ${jwt}`,
 			})
-			.query({ offset: 0, limit: 10, folders: ['INSPECTION_REPORTS'] })
+			.query({ page: 1, pageSize: 10, folders: ['INSPECTION_REPORTS'] })
 			.expect(200)
 
 		expect(response.body).toBeDefined()
-		expect(response.body.documents).toHaveLength(2)
-		expect(response.body.documents).toEqual(
+		expect(response.body.data).toHaveLength(2)
+		expect(response.body.meta).toBeDefined()
+		expect(typeof response.body.meta.totalCount).toBe('number')
+		expect(response.body.data).toEqual(
 			expect.arrayContaining([
 				expect.objectContaining({
 					name: 'Document 1',

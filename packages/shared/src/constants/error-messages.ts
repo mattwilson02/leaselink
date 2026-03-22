@@ -26,6 +26,8 @@ export const LEASE_RENEWAL_START_DATE_INVALID =
   "Renewal start date must be on or after the original lease end date";
 export const LEASE_RENEWAL_ALREADY_EXISTS =
   "A pending renewal already exists for this lease";
+export const LEASE_ACTIVATION_FUTURE_START =
+  "Cannot activate a lease whose start date is in the future";
 
 // Maintenance errors
 export const MAINTENANCE_NOT_FOUND = "Maintenance request not found";
@@ -43,6 +45,16 @@ export const PAYMENT_INVALID_STATUS_TRANSITION =
 export const PAYMENT_NO_ACTIVE_LEASE =
   "Tenant can only pay rent for an active lease";
 export const PAYMENT_ALREADY_PAID = "This payment has already been paid";
+
+// Expense errors
+export const EXPENSE_NOT_FOUND = "Expense not found";
+export const EXPENSE_PROPERTY_NOT_FOUND =
+  "Property not found or does not belong to this manager";
+
+// Vendor errors
+export const VENDOR_NOT_FOUND = "Vendor not found";
+export const VENDOR_HAS_ASSIGNED_REQUESTS =
+  "Vendor cannot be deleted while assigned to open or in-progress maintenance requests";
 
 // Generic errors
 export const UNAUTHORIZED = "Unauthorized";

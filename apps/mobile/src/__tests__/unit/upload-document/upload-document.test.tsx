@@ -562,7 +562,7 @@ describe('UploadDocument Component', () => {
 						contentKey: undefined,
 						thumbnailBlobName: undefined,
 						fileSize: 1,
-						folder: 'inbox',
+						folder: 'IDENTIFICATION',
 						name: 'test-file.jpg',
 						blobName: 'test-blob-name',
 					},

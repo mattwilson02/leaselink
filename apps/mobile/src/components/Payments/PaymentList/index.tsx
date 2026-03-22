@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { ActivityIndicator, View, StyleSheet } from 'react-native'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { FlashList } from '@shopify/flash-list'
 import { useMyPayments, type PaymentDTO } from '@/hooks/usePayments'
 import PaymentItem from '../PaymentItem'
@@ -12,13 +12,19 @@ type Props = {
 }
 
 const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } =
-		useMyPayments({
-			status: statusFilter === 'ALL' ? undefined : statusFilter,
-		})
+	const {
+		data,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		isLoading,
+		refetch,
+	} = useMyPayments({
+		status: statusFilter === 'ALL' ? undefined : statusFilter,
+	})
 
 	const payments = useMemo(
-		() => data?.pages.flatMap((page) => page.payments || []) || [],
+		() => data?.pages.flatMap((page) => page.data || []) || [],
 		[data?.pages],
 	)
 
@@ -42,7 +48,10 @@ const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
 		)
 	}, [isFetchingNextPage])
 
-	const renderSeparator = useCallback(() => <View style={styles.separator} />, [])
+	const renderSeparator = useCallback(
+		() => <View style={styles.separator} />,
+		[],
+	)
 
 	const renderEmpty = useCallback(() => {
 		if (isLoading) return null

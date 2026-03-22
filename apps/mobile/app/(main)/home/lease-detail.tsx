@@ -1,5 +1,5 @@
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { ArrowLeft, MapPin, FileText, ChevronRight } from 'lucide-react-native'
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
@@ -86,8 +86,10 @@ const LeaseDetail = () => {
 		)
 	}
 
-	const statusColor = leaseStatusColor[activeLease.status] ?? colors.neutral['500']
-	const statusBg = leaseStatusBackground[activeLease.status] ?? colors.neutral['30']
+	const statusColor =
+		leaseStatusColor[activeLease.status] ?? colors.neutral['500']
+	const statusBg =
+		leaseStatusBackground[activeLease.status] ?? colors.neutral['30']
 	const statusLabel =
 		LEASE_STATUS_LABELS[activeLease.status as LeaseStatus] ?? activeLease.status
 
@@ -95,7 +97,9 @@ const LeaseDetail = () => {
 		? PROPERTY_TYPE_LABELS[activeLease.property.propertyType]
 		: null
 
-	const leaseAgreementsFolder = encodeURIComponent(DocumentFolder.LEASE_AGREEMENTS)
+	const leaseAgreementsFolder = encodeURIComponent(
+		DocumentFolder.LEASE_AGREEMENTS,
+	)
 
 	return (
 		<View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -120,7 +124,12 @@ const LeaseDetail = () => {
 			>
 				{/* Status badge */}
 				<View style={styles.statusRow}>
-					<View style={[styles.statusBadge, { backgroundColor: statusBg, borderColor: statusColor }]}>
+					<View
+						style={[
+							styles.statusBadge,
+							{ backgroundColor: statusBg, borderColor: statusColor },
+						]}
+					>
 						<Text size='sm' fontWeight='bold' style={{ color: statusColor }}>
 							{statusLabel}
 						</Text>
@@ -134,7 +143,7 @@ const LeaseDetail = () => {
 					</Text>
 
 					<View style={styles.addressRow}>
-						<MapPin size={16} color={colors['primary-green']['500']} style={{ marginTop: 2 }} />
+						<MapPin size={16} color={colors.primary} style={{ marginTop: 2 }} />
 						<Text fontWeight='bold' style={styles.addressText}>
 							{activeLease.property?.address ?? 'Address unavailable'}
 						</Text>
@@ -187,7 +196,10 @@ const LeaseDetail = () => {
 
 					<View style={styles.infoRow}>
 						<Text style={styles.infoLabel}>Monthly rent</Text>
-						<Text fontWeight='bold' style={[styles.infoValue, { color: colors.neutral['700'] }]}>
+						<Text
+							fontWeight='bold'
+							style={[styles.infoValue, { color: colors.neutral['700'] }]}
+						>
 							{formatCurrency(activeLease.monthlyRent)}
 						</Text>
 					</View>
@@ -216,7 +228,7 @@ const LeaseDetail = () => {
 						}
 					>
 						<View style={styles.documentsLinkIcon}>
-							<FileText size={20} color={colors['primary-green']['500']} />
+							<FileText size={20} color={colors.primary} />
 						</View>
 						<Text style={styles.documentsLinkText}>View lease documents</Text>
 						<ChevronRight size={16} color={colors.neutral['400']} />
@@ -303,13 +315,13 @@ const styles = StyleSheet.create({
 		color: colors.neutral['600'],
 	},
 	typeBadge: {
-		backgroundColor: colors['primary-green']['50'],
+		backgroundColor: colors.neutral['20'],
 		paddingHorizontal: 8,
 		paddingVertical: 2,
 		borderRadius: 4,
 	},
 	typeBadgeText: {
-		color: colors['primary-green']['700'],
+		color: colors.foreground,
 	},
 	divider: {
 		height: 1,
@@ -325,7 +337,7 @@ const styles = StyleSheet.create({
 		width: 36,
 		height: 36,
 		borderRadius: 8,
-		backgroundColor: colors['primary-green']['50'],
+		backgroundColor: colors.neutral['20'],
 		justifyContent: 'center',
 		alignItems: 'center',
 	},

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
+import type { PaginatedResponse } from "@leaselink/shared";
 
 export interface DocumentDTO {
   id: string;
@@ -27,8 +28,8 @@ export interface FolderSummaryItem {
 }
 
 interface DocumentFilters {
-  offset?: number;
-  limit?: number;
+  page?: number;
+  pageSize?: number;
   search?: string;
   folders?: string[];
   createdAtFrom?: string;
@@ -37,8 +38,8 @@ interface DocumentFilters {
 
 function buildQueryString(filters: DocumentFilters): string {
   const params = new URLSearchParams();
-  if (filters.offset !== undefined) params.set("offset", String(filters.offset));
-  if (filters.limit !== undefined) params.set("limit", String(filters.limit));
+  if (filters.page !== undefined) params.set("page", String(filters.page));
+  if (filters.pageSize !== undefined) params.set("pageSize", String(filters.pageSize));
   if (filters.search) params.set("search", filters.search);
   if (filters.createdAtFrom) params.set("createdAtFrom", filters.createdAtFrom);
   if (filters.createdAtTo) params.set("createdAtTo", filters.createdAtTo);
@@ -53,7 +54,7 @@ export function useDocuments(params: DocumentFilters = {}) {
   return useQuery({
     queryKey: ["documents", params],
     queryFn: () =>
-      apiClient.get<{ documents: DocumentDTO[] }>(
+      apiClient.get<PaginatedResponse<DocumentDTO>>(
         `/documents${buildQueryString(params)}`
       ),
   });
@@ -63,7 +64,7 @@ export function useDocument(id: string) {
   return useQuery({
     queryKey: ["documents", id],
     queryFn: () =>
-      apiClient.get<{ document: DocumentDTO }>(`/documents/${id}`),
+      apiClient.get<{ data: DocumentDTO }>(`/documents/${id}`),
     enabled: !!id,
   });
 }

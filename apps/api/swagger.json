@@ -498,27 +498,27 @@
             }
           },
           {
-            "name": "limit",
+            "name": "pageSize",
             "required": false,
             "in": "query",
-            "description": "Pagination limit",
+            "description": "Number of items per page",
             "schema": {
               "example": 10
             }
           },
           {
-            "name": "offset",
+            "name": "page",
             "required": false,
             "in": "query",
-            "description": "Pagination offset",
+            "description": "Page number",
             "schema": {
-              "example": 0
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of notifications by personId",
+            "description": "Paginated list of notifications for current user",
             "content": {
               "application/json": {
                 "schema": {
@@ -526,9 +526,6 @@
                 }
               }
             }
-          },
-          "204": {
-            "description": "No notifications found for the given personId"
           }
         },
         "security": [
@@ -662,27 +659,27 @@
             }
           },
           {
-            "name": "limit",
+            "name": "pageSize",
             "required": false,
             "in": "query",
-            "description": "Pagination limit",
+            "description": "Number of items per page",
             "schema": {
               "example": 10
             }
           },
           {
-            "name": "offset",
+            "name": "page",
             "required": false,
             "in": "query",
-            "description": "Pagination offset",
+            "description": "Page number",
             "schema": {
-              "example": 0
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of documents by clientId",
+            "description": "Paginated list of documents by clientId",
             "content": {
               "application/json": {
                 "schema": {
@@ -690,9 +687,6 @@
                 }
               }
             }
-          },
-          "204": {
-            "description": "No documents found for the given clientId"
           },
           "404": {
             "description": "Client not found"
@@ -986,6 +980,9 @@
                 }
               }
             }
+          },
+          "502": {
+            "description": "Blob storage failure"
           }
         },
         "security": [
@@ -1957,11 +1954,11 @@
           "200": {
             "description": "Upload URLs generated"
           },
-          "400": {
-            "description": "Invalid request or photo limit exceeded"
-          },
           "404": {
             "description": "Property not found"
+          },
+          "422": {
+            "description": "Photo limit exceeded"
           }
         },
         "security": [
@@ -1975,34 +1972,12 @@
         ]
       }
     },
-    "/tenants": {
+    "/tenants/export": {
       "get": {
-        "operationId": "GetClientsController_handle",
+        "operationId": "ExportTenantsCsvController_handle",
         "parameters": [
           {
-            "name": "pageSize",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "example": 20
-            }
-          },
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "example": 1
-            }
-          },
-          {
             "name": "search",
-            "required": false,
-            "in": "query",
-            "schema": {}
-          },
-          {
-            "name": "onboardingStatus",
             "required": false,
             "in": "query",
             "schema": {}
@@ -2023,7 +1998,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Paginated list of tenants"
+            "description": "CSV file download"
           }
         },
         "security": [
@@ -2031,7 +2006,7 @@
             "bearer": []
           }
         ],
-        "summary": "List all tenants",
+        "summary": "Export tenants as CSV (manager only)",
         "tags": [
           "Tenants"
         ]
@@ -2250,6 +2225,9 @@
           "200": {
             "description": "Lease details"
           },
+          "403": {
+            "description": "Access denied"
+          },
           "404": {
             "description": "Lease not found"
           }
@@ -2462,6 +2440,12 @@
             "schema": {
               "type": "number"
             }
+          },
+          {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {}
           },
           {
             "name": "propertyId",
@@ -2819,6 +2803,68 @@
         ]
       }
     },
+    "/tenants": {
+      "get": {
+        "operationId": "GetClientsController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 20
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 1
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "onboardingStatus",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "INVITED",
+                "ACTIVE",
+                "INACTIVE"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of tenants"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List all tenants",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
     "/payments/generate": {
       "post": {
         "operationId": "GeneratePaymentsController_handle",
@@ -2919,6 +2965,45 @@
           }
         ],
         "summary": "Get tenant's own payments",
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/export": {
+      "get": {
+        "operationId": "ExportPaymentsCsvController_handle",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file download"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export payments as CSV (manager only)",
         "tags": [
           "Payments"
         ]
@@ -3075,6 +3160,1060 @@
         "summary": "Verify payment status by checking Stripe session (for mobile clients)",
         "tags": [
           "Payments"
+        ]
+      }
+    },
+    "/expenses": {
+      "post": {
+        "operationId": "CreateExpenseController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "propertyId",
+                  "category",
+                  "amount",
+                  "description",
+                  "expenseDate"
+                ],
+                "properties": {
+                  "propertyId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "expenseDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "maintenanceRequestId": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Expense created"
+          },
+          "404": {
+            "description": "Property not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new expense",
+        "tags": [
+          "Expenses"
+        ]
+      },
+      "get": {
+        "operationId": "GetExpensesController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expenses list"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get expenses with filters",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/expenses/summary": {
+      "get": {
+        "operationId": "GetExpenseSummaryController_handle",
+        "parameters": [
+          {
+            "name": "endDate",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "startDate",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expense summary"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get expense summary by property",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/expenses/export": {
+      "get": {
+        "operationId": "ExportExpensesCsvController_handle",
+        "parameters": [
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "propertyId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "CSV file download"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Export expenses as CSV (manager only)",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/expenses/{id}": {
+      "get": {
+        "operationId": "GetExpenseByIdController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expense UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Expense found"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get expense by ID",
+        "tags": [
+          "Expenses"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateExpenseController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expense UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "category": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "number"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "expenseDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "maintenanceRequestId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Expense updated"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update an expense",
+        "tags": [
+          "Expenses"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteExpenseController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expense UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Expense deleted"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete an expense",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/expenses/{id}/receipt": {
+      "post": {
+        "operationId": "UploadExpenseReceiptController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expense UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fileName",
+                  "contentType"
+                ],
+                "properties": {
+                  "fileName": {
+                    "type": "string"
+                  },
+                  "contentType": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload URL generated"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate upload URL for expense receipt",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/expenses/{id}/receipt/confirm": {
+      "post": {
+        "operationId": "ConfirmExpenseReceiptController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Expense UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "blobKey"
+                ],
+                "properties": {
+                  "blobKey": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Receipt confirmed"
+          },
+          "404": {
+            "description": "Expense not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Confirm expense receipt upload",
+        "tags": [
+          "Expenses"
+        ]
+      }
+    },
+    "/vendors": {
+      "post": {
+        "operationId": "CreateVendorController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "specialty"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "specialty": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vendor created"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new vendor",
+        "tags": [
+          "Vendors"
+        ]
+      },
+      "get": {
+        "operationId": "GetVendorsController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "specialty",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vendors list"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vendors",
+        "tags": [
+          "Vendors"
+        ]
+      }
+    },
+    "/vendors/{id}": {
+      "get": {
+        "operationId": "GetVendorByIdController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Vendor UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Vendor found"
+          },
+          "404": {
+            "description": "Vendor not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get vendor by ID",
+        "tags": [
+          "Vendors"
+        ]
+      },
+      "put": {
+        "operationId": "UpdateVendorController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Vendor UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "specialty": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "email": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "notes": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vendor updated"
+          },
+          "404": {
+            "description": "Vendor not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update a vendor",
+        "tags": [
+          "Vendors"
+        ]
+      },
+      "delete": {
+        "operationId": "DeleteVendorController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Vendor UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vendor deleted"
+          },
+          "404": {
+            "description": "Vendor not found"
+          },
+          "409": {
+            "description": "Vendor has open maintenance requests"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete a vendor",
+        "tags": [
+          "Vendors"
+        ]
+      }
+    },
+    "/audit-logs": {
+      "get": {
+        "operationId": "GetAuditLogsController_handle",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateTo",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "dateFrom",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "actorId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "action",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "resourceId",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "resourceType",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit logs list"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get audit logs with filters",
+        "tags": [
+          "Audit Logs"
+        ]
+      }
+    },
+    "/audit-logs/{resourceType}/{resourceId}": {
+      "get": {
+        "operationId": "GetAuditLogsByResourceController_handle",
+        "parameters": [
+          {
+            "name": "resourceType",
+            "required": true,
+            "in": "path",
+            "description": "Resource type (e.g. PROPERTY, LEASE)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resourceId",
+            "required": true,
+            "in": "path",
+            "description": "Resource UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {}
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Audit logs for resource"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get audit logs for a specific resource",
+        "tags": [
+          "Audit Logs"
+        ]
+      }
+    },
+    "/documents/{id}/sign/upload": {
+      "post": {
+        "operationId": "SignDocumentController_generateSignatureUploadUrl",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Document ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Upload URL generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadUrl": {
+                      "type": "string"
+                    },
+                    "blobName": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate an upload URL for a signature image",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}/sign": {
+      "post": {
+        "operationId": "SignDocumentController_sign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Document ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "signatureImageKey": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Document signed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "signature": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Sign a document",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}/signature": {
+      "get": {
+        "operationId": "GetSignatureController_getSignature",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Document ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Signature found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "signature": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Signature not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the signature for a document",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/documents/{id}/signature/image": {
+      "get": {
+        "operationId": "GetSignatureController_getSignatureImage",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Document ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Download URL generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "downloadUrl": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Signature not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Generate a download URL for the signature image",
+        "tags": [
+          "Documents"
+        ]
+      }
+    },
+    "/sessions": {
+      "get": {
+        "description": "Returns all active sessions for the authenticated user",
+        "operationId": "GetSessionsController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns active sessions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sessions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "ipAddress": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "userAgent": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "isCurrent": {
+                            "type": "boolean"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List active sessions",
+        "tags": [
+          "Sessions"
+        ]
+      }
+    },
+    "/sessions/{id}": {
+      "delete": {
+        "description": "Revokes a specific active session for the authenticated user",
+        "operationId": "RevokeSessionController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Session ID to revoke",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Session revoked successfully"
+          },
+          "400": {
+            "description": "Cannot revoke current session"
+          },
+          "404": {
+            "description": "Session not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Revoke a session",
+        "tags": [
+          "Sessions"
         ]
       }
     }
@@ -3640,10 +4779,17 @@
             "nullable": true,
             "format": "uuid"
           },
-          "linkedTransactionId": {
+          "linkedMaintenanceRequestId": {
             "type": "string",
             "example": "123e4567-e89b-12d3-a456-426614174003",
-            "description": "Unique identifier of the linked transaction (if any)",
+            "description": "Unique identifier of the linked maintenance request (if any)",
+            "nullable": true,
+            "format": "uuid"
+          },
+          "linkedPaymentId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174004",
+            "description": "Unique identifier of the linked payment (if any)",
             "nullable": true,
             "format": "uuid"
           },
@@ -3686,7 +4832,8 @@
           "notificationType",
           "actionType",
           "linkedDocumentId",
-          "linkedTransactionId",
+          "linkedMaintenanceRequestId",
+          "linkedPaymentId",
           "isRead",
           "isActionComplete",
           "createdAt",

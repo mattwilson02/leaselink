@@ -7,8 +7,6 @@ export interface Payment {
   amount: number;
   dueDate: string;
   status: PaymentStatus;
-  stripeCheckoutSessionId: string | null;
-  stripePaymentIntentId: string | null;
   paidAt: string | null;
   createdAt: string;
   updatedAt: string | null;

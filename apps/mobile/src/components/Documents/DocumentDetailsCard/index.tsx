@@ -2,8 +2,9 @@ import { Icon } from '@/components/Icon'
 import type { GetDocumentsByClientIdControllerFindAllQueryParamsFoldersEnum } from '@/gen/index'
 import { formatDate } from '@/utils/format-date'
 import { getMimeType } from '@/utils/get-mime-type'
-import { Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { Heading } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useTranslation } from 'react-i18next'
 import { View } from 'react-native'
 
@@ -22,7 +23,7 @@ const DocumentDetailsCard = ({ name, folder, createdAt, fileSize }: Props) => {
 			style={{
 				padding: 16,
 				borderWidth: 1,
-				borderColor: colors.neutral['30'],
+				borderColor: colors.border,
 				borderRadius: 8,
 				gap: 24,
 			}}

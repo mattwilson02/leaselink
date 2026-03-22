@@ -12,11 +12,12 @@ import type { CreateNotificationUseCase } from '@/domain/notification/applicatio
 import { right } from '@/core/either'
 
 class MockCreateNotificationUseCase {
+	// biome-ignore lint/suspicious/noExplicitAny: test mock needs property access
 	calls: any[] = []
 
-	async execute(input: any) {
+	async execute(input: unknown) {
 		this.calls.push(input)
-		return right({ notification: {} as any })
+		return right({ notification: {} as unknown })
 	}
 }
 
@@ -194,6 +195,44 @@ describe('Update maintenance request status', () => {
 
 		expect(result.isLeft()).toBeTruthy()
 		expect(result.value).toBeInstanceOf(MaintenanceRequestNotFoundError)
+	})
+
+	it('should assign vendor to request', async () => {
+		const request = makeMaintenanceRequest()
+		await inMemoryMaintenanceRequestsRepository.create(request)
+
+		const vendorId = 'vendor-uuid-1234'
+		const result = await sut.execute({
+			requestId: request.id.toString(),
+			userId: 'manager-1',
+			userRole: 'manager',
+			status: 'IN_PROGRESS',
+			vendorId,
+		})
+
+		expect(result.isRight()).toBeTruthy()
+		if (result.isRight()) {
+			expect(result.value.request.vendorId?.toString()).toBe(vendorId)
+		}
+	})
+
+	it('should unassign vendor when vendorId is null', async () => {
+		const request = makeMaintenanceRequest()
+		request.vendorId = new UniqueEntityId('vendor-uuid-1234')
+		await inMemoryMaintenanceRequestsRepository.create(request)
+
+		const result = await sut.execute({
+			requestId: request.id.toString(),
+			userId: 'manager-1',
+			userRole: 'manager',
+			status: 'IN_PROGRESS',
+			vendorId: null,
+		})
+
+		expect(result.isRight()).toBeTruthy()
+		if (result.isRight()) {
+			expect(result.value.request.vendorId).toBeNull()
+		}
 	})
 
 	it('should send notification to tenant when manager updates', async () => {

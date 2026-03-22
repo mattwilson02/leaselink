@@ -1,8 +1,8 @@
 import { memo } from 'react'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { View, Pressable } from 'react-native'
-import { Icon } from '@/components/Icon'
+import { FolderClosed } from 'lucide-react-native'
 import { useRouter } from 'expo-router'
 import { useTranslation } from 'react-i18next'
 
@@ -31,43 +31,45 @@ const FolderItem = ({
 
 	return (
 		<Pressable onPress={handlePress} testID='folder-item-container'>
-			<Icon.Root>
-				<Icon.IconContainer
+			<View
+				style={{
+					borderColor: colors.border,
+					borderWidth: 1,
+					borderRadius: 8,
+					padding: 16,
+					backgroundColor: colors.card,
+					gap: 10,
+				}}
+			>
+				<View
 					style={{
-						borderColor: colors.neutral['30'],
-						borderWidth: 1,
-						height: 'auto',
-						width: 'auto',
-						backgroundColor: 'white',
+						backgroundColor: colors.secondary,
+						borderRadius: 12,
+						padding: 12,
+						alignSelf: 'flex-start',
 					}}
 				>
-					<View style={{ gap: 10 }}>
-						<Icon.Icon
-							name='folder-icon'
-							size={54}
-							stroke={colors['primary-green']['500']}
-						/>
-						<Text
-							style={{
-								color: colors.neutral['500'],
-								fontWeight: 'bold',
-							}}
-						>
-							{tDetails(`${folderName}`)}
-						</Text>
-						<Text
-							style={{
-								color: colors.neutral['500'],
-							}}
-						>
-							{fileCount} {fileCount !== 1 ? t('files') : t('file')} -{' '}
-							{size < 1024
-								? `${size.toFixed(1)} KB`
-								: `${(size / 1024).toFixed(1)} MB`}
-						</Text>
-					</View>
-				</Icon.IconContainer>
-			</Icon.Root>
+					<FolderClosed size={24} color={colors.mutedForeground} />
+				</View>
+				<Text
+					style={{
+						color: colors.neutral['500'],
+						fontWeight: 'bold',
+					}}
+				>
+					{tDetails(`${folderName}`)}
+				</Text>
+				<Text
+					style={{
+						color: colors.neutral['500'],
+					}}
+				>
+					{fileCount} {fileCount !== 1 ? t('files') : t('file')} -{' '}
+					{size < 1024
+						? `${size.toFixed(1)} KB`
+						: `${(size / 1024).toFixed(1)} MB`}
+				</Text>
+			</View>
 		</Pressable>
 	)
 }

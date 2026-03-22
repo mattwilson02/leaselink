@@ -59,7 +59,7 @@
 				"noVar": "error",
 				"useNamingConvention": {
 					"level": "error",
-					"fix": "safe",
+					"fix": "none",
 					"options": {
 						"strictCase": false,
 						"conventions": [
@@ -97,7 +97,7 @@
 									"kind": "functionParameter",
 									"scope": "any"
 								},
-								"formats": ["camelCase"]
+								"match": "(_|_[a-z][a-zA-Z0-9]*|[a-z][a-zA-Z0-9]*)"
 							},
 							{
 								"selector": {

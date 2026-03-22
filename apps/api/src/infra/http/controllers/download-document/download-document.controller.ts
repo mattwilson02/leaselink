@@ -1,5 +1,6 @@
 import {
 	Controller,
+	ForbiddenException,
 	Post,
 	Body,
 	NotFoundException,
@@ -18,14 +19,18 @@ import { HttpDownloadUrlPresenter } from '../../presenters/http-download-url-pre
 import { DownloadDocumentRequestDTO } from '../../DTOs/document/download-document-request-dto'
 import { DownloadDocumentBadRequestDTO } from '../../DTOs/document/download-document-bad-request-dto'
 import { DownloadDocumentInternalServerErrorDTO } from '../../DTOs/document/download-document-internal-server-error-dto'
-import { DownloadDocumentNotFoundDTO } from '../../DTOs/document/download-document-not-found-dto copy'
+import { DownloadDocumentNotFoundDTO } from '../../DTOs/document/download-document-not-found-dto'
 import { DownloadDocumentUseCase } from '@/domain/document/application/use-cases/download-document'
+import { CurrentUser } from '@/infra/auth/better-auth/current-user.decorator'
+import type { HttpUserResponse } from '../../presenters/http-user-presenter'
+import { GetDocumentByIdUseCase } from '@/domain/document/application/use-cases/get-document-by-id'
 
 @ApiTags('Documents')
 @Controller('/documents')
 export class DownloadDocumentController {
 	constructor(
 		private readonly downloadDocumentUseCase: DownloadDocumentUseCase,
+		private readonly getDocumentByIdUseCase: GetDocumentByIdUseCase,
 	) {}
 	private errorMap = {
 		[DocumentNotFoundError.name]: NotFoundException,
@@ -65,7 +70,25 @@ export class DownloadDocumentController {
 		description: 'Internal server error',
 		type: DownloadDocumentInternalServerErrorDTO,
 	})
-	async generateDownloadUrl(@Body() body: DownloadDocumentRequestDTO) {
+	async generateDownloadUrl(
+		@CurrentUser() user: HttpUserResponse,
+		@Body() body: DownloadDocumentRequestDTO,
+	) {
+		// Ownership check: clients can only download their own documents
+		if (user.type === 'CLIENT') {
+			const docResult = await this.getDocumentByIdUseCase.execute({
+				documentId: body.documentId,
+			})
+			if (docResult.isRight()) {
+				const doc = docResult.value.document
+				if (doc.clientId.toString() !== user.id) {
+					throw new ForbiddenException(
+						'You do not have access to this document',
+					)
+				}
+			}
+		}
+
 		const result = await this.downloadDocumentUseCase.execute({
 			documentId: body.documentId,
 		})

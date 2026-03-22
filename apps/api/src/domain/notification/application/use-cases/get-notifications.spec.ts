@@ -40,12 +40,15 @@ describe('Get Notifications', () => {
 		const result = await sut.execute({ personId: personId.toString() })
 
 		expect(result.isRight()).toBeTruthy()
-		expect(result.value).toEqual({
-			notifications: expect.arrayContaining([
-				expect.objectContaining({ text: 'Notification 1', personId }),
-				expect.objectContaining({ text: 'Notification 2', personId }),
-			]),
-		})
+		if (result.isRight()) {
+			expect(result.value.notifications).toEqual(
+				expect.arrayContaining([
+					expect.objectContaining({ text: 'Notification 1', personId }),
+					expect.objectContaining({ text: 'Notification 2', personId }),
+				]),
+			)
+			expect(result.value.totalCount).toBe(2)
+		}
 	})
 
 	it('should return an empty array if no notifications are found for the person ID', async () => {
@@ -56,6 +59,7 @@ describe('Get Notifications', () => {
 		expect(result.isRight()).toBeTruthy()
 		expect(result.value).toEqual({
 			notifications: [],
+			totalCount: 0,
 		})
 	})
 

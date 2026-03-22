@@ -36,7 +36,10 @@ describe('GetLeasesByTenantController', () => {
 		leasesRepository = new InMemoryLeasesRepository()
 		propertiesRepository = new InMemoryPropertiesRepository()
 		getLeasesUseCase = new GetLeasesUseCase(leasesRepository)
-		sut = new GetLeasesByTenantController(getLeasesUseCase, propertiesRepository)
+		sut = new GetLeasesByTenantController(
+			getLeasesUseCase,
+			propertiesRepository,
+		)
 	})
 
 	it('returns tenant leases with pagination meta', async () => {
@@ -92,7 +95,7 @@ describe('GetLeasesByTenantController', () => {
 		)
 
 		const result = await sut.handle(makeTenantUser('tenant-filter'), {
-			status: 'ACTIVE' as any,
+			status: 'ACTIVE',
 			propertyId: undefined,
 			tenantId: undefined,
 			page: 1,

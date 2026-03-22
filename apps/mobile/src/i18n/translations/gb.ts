@@ -279,7 +279,8 @@ export default {
 	},
 	maintenance: {
 		maintenance: 'Maintenance Requests',
-		maintenance_description: 'Submit and track maintenance requests for your property',
+		maintenance_description:
+			'Submit and track maintenance requests for your property',
 		new_request: 'New Request',
 		request_details: 'Request Details',
 		all: 'All',
@@ -291,10 +292,13 @@ export default {
 		add_photos: 'Add Photos',
 		submit: 'Submit Request',
 		no_requests: 'No maintenance requests',
-		no_requests_description: 'Submit one if you have an issue with your property.',
-		no_active_lease: 'You must have an active lease to submit a maintenance request.',
+		no_requests_description:
+			'Submit one if you have an issue with your property.',
+		no_active_lease:
+			'You must have an active lease to submit a maintenance request.',
 		request_submitted: 'Request submitted',
-		request_submitted_description: 'Your maintenance request has been submitted successfully.',
+		request_submitted_description:
+			'Your maintenance request has been submitted successfully.',
 		close_request: 'Close Request',
 		request_closed: 'Request closed',
 		request_closed_description: 'Your maintenance request has been closed.',
@@ -469,6 +473,10 @@ export default {
 		additional_security: 'Additional Security',
 		change_password: 'Change Password',
 		active_sessions: 'Active Sessions',
+		two_factor_authentication: 'Two-Factor Authentication',
+		two_factor_enabled: '2FA is enabled',
+		two_factor_disabled: '2FA is disabled',
+		two_factor_description: 'Add an extra layer of security to your account',
 		enter_password_title: 'Enter your password',
 		enter_password_description:
 			'Enter your current password to enable biometric login on this device.',
@@ -491,6 +499,48 @@ export default {
 		cancel: 'Cancel',
 		save: 'Save',
 		biometric_prompt: 'Authenticate to change your password',
+	},
+	active_sessions: {
+		title: 'Active Sessions',
+		description: 'Manage devices that are signed in to your account',
+		current_session: 'Current',
+		revoke: 'Revoke',
+		revoke_confirm_title: 'Revoke Session',
+		revoke_confirm_message: 'Are you sure you want to sign out this device?',
+		revoke_cancel: 'Cancel',
+		revoke_confirm: 'Revoke',
+		unknown_device: 'Unknown Device',
+		unknown_ip: 'Unknown IP',
+		signed_in: 'Signed in',
+		loading: 'Loading sessions...',
+		error: 'Failed to load sessions',
+	},
+	two_factor: {
+		enable_title: 'Enable Two-Factor Authentication',
+		enable_description:
+			'Scan this URI with your authenticator app (e.g. Google Authenticator, Authy) or enter it manually.',
+		totp_uri_label: 'TOTP URI',
+		verify_title: 'Verify Your Authenticator',
+		verify_description:
+			'Enter the 6-digit code from your authenticator app to complete setup.',
+		backup_codes_title: 'Save Your Backup Codes',
+		backup_codes_description:
+			'Store these codes somewhere safe. Each code can only be used once.',
+		backup_codes_warning:
+			'You will not be able to see these codes again. Save them now.',
+		done: 'Done',
+		cancel: 'Cancel',
+		verify: 'Verify',
+		copy_uri: 'Copy URI',
+		copied: 'Copied!',
+		disable_title: 'Disable Two-Factor Authentication',
+		disable_message:
+			'This will remove the extra security layer from your account. Are you sure?',
+		disable_cancel: 'Cancel',
+		disable_confirm: 'Disable 2FA',
+		enable_error: 'Failed to enable 2FA. Please try again.',
+		disable_error: 'Failed to disable 2FA. Please try again.',
+		verify_error: 'Invalid code. Please try again.',
 	},
 	alerts: {
 		permission_required: 'Permission required',

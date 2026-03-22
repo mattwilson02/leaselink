@@ -5,8 +5,9 @@ import {
 	TouchableOpacity,
 	StyleSheet,
 } from 'react-native'
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import dayjs from 'dayjs'
 import { useTranslation } from 'react-i18next'
 import { useDateRangePickerContext } from '../../context'
@@ -55,9 +56,7 @@ const Modal = ({
 						<TouchableOpacity onPress={confirm} disabled={!canConfirm}>
 							<Text
 								style={{
-									color: canConfirm
-										? colors['primary-green']['600']
-										: colors.neutral['300'],
+									color: canConfirm ? colors.primary : colors.neutral['300'],
 									fontWeight: '600',
 								}}
 							>
@@ -130,8 +129,8 @@ const styles = StyleSheet.create({
 		gap: 12,
 	},
 	activeDateButton: {
-		shadowColor: colors['primary-green']['200'],
-		borderColor: colors['primary-green']['300'],
+		shadowColor: colors.neutral['200'],
+		borderColor: colors.neutral['300'],
 		shadowOffset: { width: 0, height: 0 },
 		shadowOpacity: 1,
 		shadowRadius: 4,

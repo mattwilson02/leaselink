@@ -14,6 +14,9 @@ import {
   NotificationType,
   ActionType,
   DocumentRequestStatus,
+  ExpenseCategory,
+  AuditAction,
+  AuditResourceType,
 } from "../enums";
 
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
@@ -139,4 +142,37 @@ export const ACTION_TYPE_LABELS: Record<ActionType, string> = {
   [ActionType.PAYMENT_OVERDUE]: "Payment Overdue",
   [ActionType.INSPECTION_SCHEDULED]: "Inspection Scheduled",
   [ActionType.LEASE_RENEWAL]: "Lease Renewal",
+};
+
+export const EXPENSE_CATEGORY_LABELS: Record<ExpenseCategory, string> = {
+  [ExpenseCategory.MAINTENANCE]: "Maintenance",
+  [ExpenseCategory.INSURANCE]: "Insurance",
+  [ExpenseCategory.TAX]: "Tax",
+  [ExpenseCategory.UTILITY]: "Utility",
+  [ExpenseCategory.MANAGEMENT_FEE]: "Management Fee",
+  [ExpenseCategory.REPAIR]: "Repair",
+  [ExpenseCategory.IMPROVEMENT]: "Improvement",
+  [ExpenseCategory.OTHER]: "Other",
+};
+
+export const AUDIT_ACTION_LABELS: Record<AuditAction, string> = {
+  [AuditAction.CREATE]: "Created",
+  [AuditAction.UPDATE]: "Updated",
+  [AuditAction.DELETE]: "Deleted",
+  [AuditAction.STATUS_CHANGE]: "Status Changed",
+  [AuditAction.LOGIN]: "Login",
+  [AuditAction.UPLOAD]: "Uploaded",
+  [AuditAction.DOWNLOAD]: "Downloaded",
+  [AuditAction.SIGN]: "Signed",
+};
+
+export const AUDIT_RESOURCE_TYPE_LABELS: Record<AuditResourceType, string> = {
+  [AuditResourceType.PROPERTY]: "Property",
+  [AuditResourceType.LEASE]: "Lease",
+  [AuditResourceType.TENANT]: "Tenant",
+  [AuditResourceType.PAYMENT]: "Payment",
+  [AuditResourceType.MAINTENANCE_REQUEST]: "Maintenance Request",
+  [AuditResourceType.DOCUMENT]: "Document",
+  [AuditResourceType.EXPENSE]: "Expense",
+  [AuditResourceType.VENDOR]: "Vendor",
 };

@@ -64,6 +64,48 @@ export class InMemoryDocumentRepository implements DocumentRepository {
 		return Promise.resolve(latestDocuments.slice(offset, offset + limit))
 	}
 
+	async countByClientId(
+		clientId: string,
+		search?: string,
+		createdAtFrom?: Date,
+		createdAtTo?: Date,
+		folders?: DocumentFolderType[],
+	): Promise<number> {
+		let documents = this.items.filter(
+			(document) => document.clientId.toString() === clientId,
+		)
+
+		if (search) {
+			const searchLower = search.toLowerCase()
+			documents = documents.filter((doc) =>
+				doc.name.toLowerCase().includes(searchLower),
+			)
+		}
+
+		if (createdAtFrom) {
+			documents = documents.filter((doc) => doc.createdAt >= createdAtFrom)
+		}
+		if (createdAtTo) {
+			documents = documents.filter((doc) => doc.createdAt <= createdAtTo)
+		}
+
+		if (folders) {
+			documents = documents.filter((doc) => folders.includes(doc.folder.value))
+		}
+
+		const latestDocumentsMap = new Map<string, Document>()
+		for (const document of documents) {
+			const existingDocument = latestDocumentsMap.get(
+				document.contentKey.toString(),
+			)
+			if (!existingDocument || document.version > existingDocument.version) {
+				latestDocumentsMap.set(document.contentKey.toString(), document)
+			}
+		}
+
+		return Promise.resolve(latestDocumentsMap.size)
+	}
+
 	async create(document: Document): Promise<Either<Error, Document>> {
 		this.items.push(document)
 		return Promise.resolve(right(document))
@@ -133,7 +175,11 @@ export class InMemoryDocumentRepository implements DocumentRepository {
 
 		const folderMap = new Map<
 			string,
-			{ fileCount: number; totalFileSizeSum: number; mostRecentUpdatedDate: Date | null }
+			{
+				fileCount: number
+				totalFileSizeSum: number
+				mostRecentUpdatedDate: Date | null
+			}
 		>()
 
 		for (const doc of this.items) {
@@ -142,11 +188,18 @@ export class InMemoryDocumentRepository implements DocumentRepository {
 			const updatedAt = doc.updatedAt ?? doc.createdAt
 			const entry = folderMap.get(folder)
 			if (!entry) {
-				folderMap.set(folder, { fileCount: 1, totalFileSizeSum: fileSize, mostRecentUpdatedDate: updatedAt })
+				folderMap.set(folder, {
+					fileCount: 1,
+					totalFileSizeSum: fileSize,
+					mostRecentUpdatedDate: updatedAt,
+				})
 			} else {
 				entry.fileCount += 1
 				entry.totalFileSizeSum += fileSize
-				if (!entry.mostRecentUpdatedDate || updatedAt > entry.mostRecentUpdatedDate) {
+				if (
+					!entry.mostRecentUpdatedDate ||
+					updatedAt > entry.mostRecentUpdatedDate
+				) {
 					entry.mostRecentUpdatedDate = updatedAt
 				}
 			}

@@ -1,5 +1,8 @@
-import { Select, type SelectValueProps } from '@sf-digital-ui/react-native'
+import {
+	SelectCompound,
+	type SelectValueProps,
+} from '@/design-system/components/SelectCompound'
 
 export const SelectedValue = (props: SelectValueProps) => {
-	return <Select.Value {...props} />
+	return <SelectCompound.Value {...props} />
 }

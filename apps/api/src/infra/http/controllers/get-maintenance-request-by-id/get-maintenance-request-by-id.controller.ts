@@ -50,14 +50,15 @@ export class GetMaintenanceRequestByIdController {
 		// Generate signed URLs for photos
 		const photoUrls = await Promise.all(
 			result.photos.map(async (blobName) => {
-				const urlResult =
-					await this.storageRepository.generateDownloadUrl({ blobName })
+				const urlResult = await this.storageRepository.generateDownloadUrl({
+					blobName,
+				})
 				return urlResult.isRight() ? urlResult.value.downloadUrl : blobName
 			}),
 		)
 
 		return {
-			maintenanceRequest: {
+			data: {
 				...result,
 				photos: photoUrls,
 			},

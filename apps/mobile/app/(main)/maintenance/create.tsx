@@ -1,5 +1,6 @@
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { CheckCircle, Plus, Trash, X } from 'lucide-react-native'
 import { useState } from 'react'
@@ -99,7 +100,10 @@ const CreateMaintenanceRequest = () => {
 	const requestPermissions = async () => {
 		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
 		if (status !== 'granted') {
-			Alert.alert(alertsT('permission_required'), alertsT('permission_camera_roll'))
+			Alert.alert(
+				alertsT('permission_required'),
+				alertsT('permission_camera_roll'),
+			)
 			return false
 		}
 		return true
@@ -173,7 +177,7 @@ const CreateMaintenanceRequest = () => {
 	}
 
 	const removePhoto = (index: number) => {
-		setPhotos((prev) => prev.filter((_, i) => i !== index))
+		setPhotos((prev) => prev.filter((_item, i) => i !== index))
 	}
 
 	const handleSubmit = async () => {
@@ -222,7 +226,10 @@ const CreateMaintenanceRequest = () => {
 					</Pressable>
 				</View>
 				<View style={styles.noLeaseContainer}>
-					<Text size='lg' style={{ color: colors.neutral['500'], textAlign: 'center' }}>
+					<Text
+						size='lg'
+						style={{ color: colors.neutral['500'], textAlign: 'center' }}
+					>
 						{t('no_active_lease')}
 					</Text>
 				</View>
@@ -263,7 +270,10 @@ const CreateMaintenanceRequest = () => {
 						</Text>
 						<TextInput
 							testID='title-input'
-							style={[styles.input, errors.title ? styles.inputError : undefined]}
+							style={[
+								styles.input,
+								errors.title ? styles.inputError : undefined,
+							]}
 							value={title}
 							onChangeText={(text) => {
 								setTitle(text)
@@ -453,9 +463,7 @@ const CreateMaintenanceRequest = () => {
 							disabled={isPending || leaseLoading || !activeLease}
 							style={{ flex: 1 }}
 						>
-							<Button.Text>
-								{isPending ? '...' : t('submit')}
-							</Button.Text>
+							<Button.Text>{isPending ? '...' : t('submit')}</Button.Text>
 						</Button.Root>
 					</View>
 				</View>
@@ -485,9 +493,7 @@ const CreateMaintenanceRequest = () => {
 						>
 							{t('request_submitted')}
 						</Text>
-						<Text
-							style={{ color: colors.neutral['500'], textAlign: 'center' }}
-						>
+						<Text style={{ color: colors.neutral['500'], textAlign: 'center' }}>
 							{t('request_submitted_description')}
 						</Text>
 						<Button.Root
@@ -557,8 +563,8 @@ const styles = StyleSheet.create({
 		backgroundColor: 'white',
 	},
 	optionChipSelected: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	optionChipText: {
 		color: colors.neutral['600'],

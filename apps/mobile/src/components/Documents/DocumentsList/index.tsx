@@ -9,10 +9,10 @@ import { useTranslation } from 'react-i18next'
 import DocumentItem from '../DocumentItem'
 import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { FlashList } from '@shopify/flash-list'
-import { colors } from '@sf-digital-ui/tokens'
+import { colors } from '@/design-system/theme'
 import DocumentsListSkeleton from '../DocumentsListSkeleton'
 import CloudWithHourGlass from '@/assets/icons/cloud-with-hourglass.svg'
-import { Text } from '@sf-digital-ui/react-native'
+import { Text } from '@/design-system/components/Typography'
 import { useLocalSearchParams } from 'expo-router'
 
 const limit = 10
@@ -60,14 +60,12 @@ const DocumentsList = ({ withSearch = false, scrollEnabled = true }: Props) => {
 		isLoading,
 	} = useInfiniteQuery({
 		queryKey: ['documents', search, startDate, endDate, folders],
-		initialPageParam: 0,
-		queryFn: async ({ pageParam = 0 }) => {
-			const offset = pageParam * limit
-
+		initialPageParam: 1,
+		queryFn: async ({ pageParam = 1 }) => {
 			const response = await api.get('/documents', {
 				params: {
-					limit,
-					offset,
+					page: pageParam,
+					pageSize: limit,
 					search,
 					createdAtFrom: startDate,
 					createdAtTo: endDate,
@@ -82,15 +80,15 @@ const DocumentsList = ({ withSearch = false, scrollEnabled = true }: Props) => {
 
 			return response.data
 		},
-		getNextPageParam: (lastPage, allPages) => {
-			if (!lastPage?.documents) return undefined
-			if (lastPage?.documents?.length < limit) return undefined
-			return allPages.length
+		getNextPageParam: (lastPage) => {
+			if (!lastPage?.meta) return undefined
+			if (lastPage.meta.page >= lastPage.meta.totalPages) return undefined
+			return lastPage.meta.page + 1
 		},
 	})
 
 	const documents = useMemo(
-		() => documentsData?.pages.flatMap((page) => page.documents || []) || [],
+		() => documentsData?.pages.flatMap((page) => page.data || []) || [],
 		[documentsData?.pages],
 	)
 

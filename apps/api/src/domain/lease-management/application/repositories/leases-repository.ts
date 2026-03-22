@@ -26,4 +26,5 @@ export abstract class LeasesRepository {
 		endDate: Date,
 	): Promise<Lease[]>
 	abstract findAllActive(): Promise<Lease[]>
+	abstract findPendingByStartDateBefore(date: Date): Promise<Lease[]>
 }

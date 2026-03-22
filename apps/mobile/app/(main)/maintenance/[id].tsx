@@ -1,5 +1,6 @@
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { X, CheckCircle } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +17,7 @@ import dayjs from 'dayjs'
 import {
 	MAINTENANCE_CATEGORY_LABELS,
 	MAINTENANCE_STATUS_LABELS,
-	MaintenanceCategory,
+	type MaintenanceCategory,
 	MaintenancePriority,
 	MaintenanceStatus,
 } from '@leaselink/shared'
@@ -59,7 +60,8 @@ const MaintenanceDetail = () => {
 			setShowSuccessModal(true)
 		} catch (error) {
 			setShowCloseConfirm(false)
-			const msg = error instanceof Error ? error.message : 'Failed to close request'
+			const msg =
+				error instanceof Error ? error.message : 'Failed to close request'
 			setErrorMessage(msg)
 			setShowErrorModal(true)
 		}
@@ -188,7 +190,8 @@ const MaintenanceDetail = () => {
 												<View
 													style={[
 														styles.timelineLine,
-														index < currentStepIndex && styles.timelineLineCompleted,
+														index < currentStepIndex &&
+															styles.timelineLineCompleted,
 													]}
 												/>
 											)}
@@ -272,8 +275,15 @@ const MaintenanceDetail = () => {
 					{request.status !== MaintenanceStatus.RESOLVED &&
 						request.status !== MaintenanceStatus.CLOSED && (
 							<View style={styles.statusInfo}>
-								<Text size='sm' style={{ color: colors.neutral['500'], textAlign: 'center' }}>
-									{MAINTENANCE_STATUS_LABELS[request.status as MaintenanceStatus]}
+								<Text
+									size='sm'
+									style={{ color: colors.neutral['500'], textAlign: 'center' }}
+								>
+									{
+										MAINTENANCE_STATUS_LABELS[
+											request.status as MaintenanceStatus
+										]
+									}
 								</Text>
 							</View>
 						)}
@@ -428,12 +438,12 @@ const styles = StyleSheet.create({
 		marginTop: 4,
 	},
 	timelineDotCompleted: {
-		backgroundColor: colors['primary-green']['500'],
-		borderColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
+		borderColor: colors.primary,
 	},
 	timelineDotActive: {
 		backgroundColor: 'white',
-		borderColor: colors['primary-green']['500'],
+		borderColor: colors.primary,
 		borderWidth: 3,
 	},
 	timelineLine: {
@@ -444,7 +454,7 @@ const styles = StyleSheet.create({
 		minHeight: 24,
 	},
 	timelineLineCompleted: {
-		backgroundColor: colors['primary-green']['500'],
+		backgroundColor: colors.primary,
 	},
 	timelineLabel: {
 		color: colors.neutral['400'],

@@ -1,6 +1,6 @@
 import { Icon } from '@/components/Icon'
-import { Heading, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Heading, Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useRouter } from 'expo-router'
 import { ChevronLeft, Phone } from 'lucide-react-native'
 import { useCallback } from 'react'
@@ -55,7 +55,7 @@ const ContactUs = () => {
 									width: 48,
 									height: 48,
 									borderRadius: 10,
-									backgroundColor: colors['primary-green'][500],
+									backgroundColor: colors.primary,
 									borderWidth: 0,
 									justifyContent: 'center',
 									alignItems: 'center',
@@ -85,10 +85,7 @@ const ContactUs = () => {
 									{t('we_are_here_to_help')}
 								</Text>
 							</View>
-							<Text
-								fontWeight='bold'
-								style={{ color: colors['primary-green']['500'] }}
-							>
+							<Text fontWeight='bold' style={{ color: colors.primary }}>
 								{t('support_email')}
 							</Text>
 						</View>
@@ -110,7 +107,7 @@ const ContactUs = () => {
 									width: 48,
 									height: 48,
 									borderRadius: 10,
-									backgroundColor: colors['primary-green'][500],
+									backgroundColor: colors.primary,
 									borderWidth: 0,
 									justifyContent: 'center',
 									alignItems: 'center',
@@ -133,10 +130,7 @@ const ContactUs = () => {
 									{t('hours')}
 								</Text>
 							</View>
-							<Text
-								fontWeight='bold'
-								style={{ color: colors['primary-green']['500'] }}
-							>
+							<Text fontWeight='bold' style={{ color: colors.primary }}>
 								{t('phone_number')}
 							</Text>
 						</View>

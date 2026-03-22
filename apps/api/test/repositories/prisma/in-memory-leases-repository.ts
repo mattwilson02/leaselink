@@ -91,4 +91,10 @@ export class InMemoryLeasesRepository implements LeasesRepository {
 	async findAllActive(): Promise<Lease[]> {
 		return this.items.filter((l) => l.status === 'ACTIVE')
 	}
+
+	async findPendingByStartDateBefore(date: Date): Promise<Lease[]> {
+		return this.items.filter(
+			(l) => l.status === 'PENDING' && l.startDate <= date,
+		)
+	}
 }

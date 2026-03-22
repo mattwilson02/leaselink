@@ -4,10 +4,11 @@ import {
 	type FolderItemDTOFolderNameEnum,
 	useGetDocumentByIdControllerFindById,
 } from '@/gen/index'
-import { Button, Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { CompoundButton as Button } from '@/design-system/components/CompoundButton'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { X } from 'lucide-react-native'
+import { X, CheckCircle2, PenLine } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { useDownloadDocument } from '@/hooks/useDownloadDocument'
@@ -15,18 +16,39 @@ import DocumentPreview from '@/components/Documents/DocumentPreview'
 import DocumentDetailsCardSkeleton from '@/components/Documents/DocumentDetailsCardSkeleton'
 import DocumentDetailsCard, {} from '@/components/Documents/DocumentDetailsCard'
 import { folderItemDTOFolderNameEnum } from '@/gen/index'
+import { useSignatureQuery } from '@/hooks/use-sign-document'
+import { formatDate } from '@/utils/format-date'
+
+// Folders that support e-signatures (backend: SIGNABLE_FOLDERS)
+const SIGNABLE_FOLDERS = ['LEASE_AGREEMENTS', 'SIGNED_DOCUMENTS'] as const
 
 const DocumentDetails = () => {
 	const { id } = useLocalSearchParams<{ id: string }>()
 	const router = useRouter()
 	const { t } = useTranslation('document_details')
+	const { t: dateT } = useTranslation('format_date')
 
 	const { downloadDocument } = useDownloadDocument()
 
 	const { data, isFetching } = useGetDocumentByIdControllerFindById<
-		{ document: DocumentDTO },
+		{ data: DocumentDTO },
 		{ id: string }
 	>(id)
+
+	const folder = data?.data?.folder ?? ''
+	const isSignable = SIGNABLE_FOLDERS.includes(
+		folder as (typeof SIGNABLE_FOLDERS)[number],
+	)
+
+	const { data: signature, isLoading: isSignatureLoading } =
+		useSignatureQuery(id)
+
+	const formattedSignedAt = signature?.signedAt
+		? (() => {
+				const result = formatDate(signature.signedAt)
+				return result.type === 'alias' ? dateT(result.value) : result.value
+			})()
+		: null
 
 	return (
 		<View
@@ -52,10 +74,10 @@ const DocumentDetails = () => {
 						}}
 					>
 						<Icon.Root>
-							<Icon.IconContainer color={colors['primary-green']['100']}>
+							<Icon.IconContainer color={colors.neutral['20']}>
 								<Icon.Icon
 									name='coins-hand'
-									stroke={colors['primary-green']['500']}
+									stroke={colors.primary}
 									strokeWidth={2}
 								/>
 							</Icon.IconContainer>
@@ -72,31 +94,36 @@ const DocumentDetails = () => {
 						<DocumentDetailsCardSkeleton />
 					) : (
 						<DocumentDetailsCard
-							name={data?.document?.name || ''}
+							name={data?.data?.name || ''}
 							folder={
 								(Object.keys(folderItemDTOFolderNameEnum).find(
 									(key) =>
 										folderItemDTOFolderNameEnum[
 											key as keyof typeof folderItemDTOFolderNameEnum
-										] === data?.document?.folder,
+										] === data?.data?.folder,
 								) as FolderItemDTOFolderNameEnum) ||
 								folderItemDTOFolderNameEnum.OTHER
 							}
-							createdAt={data?.document?.createdAt || ''}
-							fileSize={data?.document?.fileSize || 0}
+							createdAt={data?.data?.createdAt || ''}
+							fileSize={data?.data?.fileSize || 0}
 						/>
 					)}
 					<View
-						testID='download-button-container'
-						style={{ flexDirection: 'row', gap: 8, maxWidth: '45%' }}
+						style={{
+							flexDirection: 'row',
+							gap: 8,
+							flexWrap: 'wrap',
+							maxWidth: '100%',
+						}}
 					>
 						<Button.Root
+							testID='download-button'
 							disabled={isFetching}
-							style={{ gap: 4, flex: 1 }}
+							style={{ gap: 8 }}
 							onPress={() =>
 								downloadDocument({
-									id: data?.document.id || '',
-									name: data?.document.name || '',
+									id: data?.data.id || '',
+									name: data?.data.name || '',
 								})
 							}
 						>
@@ -108,8 +135,34 @@ const DocumentDetails = () => {
 									fill='transparent'
 								/>
 							</Button.Prefix>
-							<Button.Text style={{ flex: 1 }}>{t('download')}</Button.Text>
+							<Button.Text>{t('download')}</Button.Text>
 						</Button.Root>
+
+						{/* Signature section — only for signable folders */}
+						{isSignable && !isFetching ? (
+							isSignatureLoading ? null : signature ? (
+								// Already signed — show badge
+								<View style={styles.signedBadge} testID='signed-badge'>
+									<CheckCircle2 size={14} color={colors.success[600]} />
+									<Text size='xs' style={styles.signedBadgeText}>
+										Signed{formattedSignedAt ? ` on ${formattedSignedAt}` : ''}
+									</Text>
+								</View>
+							) : (
+								// Not yet signed — show Sign button
+								<Button.Root
+									variant='outline'
+									style={styles.signButton}
+									onPress={() => router.push(`/documents/sign/${id}`)}
+									testID='sign-document-button'
+								>
+									<Button.Prefix>
+										<PenLine size={16} color={colors.foreground} />
+									</Button.Prefix>
+									<Button.Text>Sign Document</Button.Text>
+								</Button.Root>
+							)
+						) : null}
 					</View>
 				</View>
 			</View>
@@ -142,5 +195,23 @@ const styles = StyleSheet.create({
 		borderRadius: 12,
 		backgroundColor: 'white',
 		overflow: 'hidden',
+	},
+	signButton: {
+		gap: 4,
+	},
+	signedBadge: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		gap: 6,
+		paddingHorizontal: 12,
+		paddingVertical: 8,
+		backgroundColor: colors.success[50],
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: colors.success[100],
+	},
+	signedBadgeText: {
+		color: colors.success[700],
+		fontWeight: '500',
 	},
 })

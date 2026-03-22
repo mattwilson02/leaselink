@@ -118,6 +118,10 @@ export class Notification extends AggregateRoot<NotificationProps> {
 		this.touch()
 	}
 
+	get linkedMaintenanceRequestId(): UniqueEntityId | undefined {
+		return this.props.linkedTransactionId
+	}
+
 	get linkedPaymentId(): UniqueEntityId | undefined {
 		return this.props.linkedPaymentId
 	}

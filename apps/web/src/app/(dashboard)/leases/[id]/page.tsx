@@ -70,9 +70,9 @@ export default function LeaseDetailPage() {
   const { data: tenantData } = useTenant(lease?.tenantId ?? "");
   const { data: paymentsData } = usePayments({ leaseId: id, pageSize: 50 });
 
-  const property = propertyData?.property;
+  const property = propertyData?.data;
   const tenant = tenantData?.data;
-  const payments = paymentsData?.payments ?? [];
+  const payments = paymentsData?.data ?? [];
 
   const statusMutation = useUpdateLeaseStatus(id);
 
@@ -187,6 +187,15 @@ export default function LeaseDetailPage() {
             </Link>
           )}
         </div>
+      </div>
+
+      <div className="flex items-center justify-end">
+        <Link
+          href={`/settings/audit-log?resourceType=LEASE&resourceId=${id}`}
+          className="text-xs text-muted-foreground hover:underline"
+        >
+          View Audit Trail
+        </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

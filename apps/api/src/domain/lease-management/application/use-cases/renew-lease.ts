@@ -83,9 +83,9 @@ export class RenewLeaseUseCase {
 
 		// Auto-activate if start date is today or in the past
 		const today = new Date()
-		today.setHours(0, 0, 0, 0)
+		today.setUTCHours(0, 0, 0, 0)
 		const leaseStart = new Date(newStartDate)
-		leaseStart.setHours(0, 0, 0, 0)
+		leaseStart.setUTCHours(0, 0, 0, 0)
 
 		if (leaseStart <= today) {
 			renewalLease.status = 'ACTIVE'

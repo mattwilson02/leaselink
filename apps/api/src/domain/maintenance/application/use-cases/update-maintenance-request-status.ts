@@ -15,13 +15,16 @@ import {
 	MAINTENANCE_STATUS_TRANSITIONS,
 	isValidTransition,
 	MaintenanceStatus,
+	MAINTENANCE_STATUS_LABELS,
 } from '@leaselink/shared'
+import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 
 export interface UpdateMaintenanceRequestStatusUseCaseRequest {
 	requestId: string
 	userId: string
 	userRole: 'manager' | 'tenant'
 	status: string
+	vendorId?: string | null
 }
 
 type UpdateMaintenanceRequestStatusUseCaseResponse = Either<
@@ -52,46 +55,56 @@ export class UpdateMaintenanceRequestStatusUseCase {
 
 		const currentStatus = request.status as MaintenanceStatus
 		const newStatus = input.status as MaintenanceStatus
+		const isStatusChange = currentStatus !== newStatus
 
-		if (
-			!isValidTransition(
-				MAINTENANCE_STATUS_TRANSITIONS,
-				currentStatus,
-				newStatus,
-			)
-		) {
-			return left(
-				new InvalidMaintenanceStatusTransitionError(currentStatus, newStatus),
-			)
+		if (isStatusChange) {
+			if (
+				!isValidTransition(
+					MAINTENANCE_STATUS_TRANSITIONS,
+					currentStatus,
+					newStatus,
+				)
+			) {
+				return left(
+					new InvalidMaintenanceStatusTransitionError(currentStatus, newStatus),
+				)
+			}
+
+			// Role-based checks: only manager can move to IN_PROGRESS or RESOLVED
+			if (
+				(newStatus === MaintenanceStatus.IN_PROGRESS ||
+					newStatus === MaintenanceStatus.RESOLVED) &&
+				input.userRole !== 'manager'
+			) {
+				return left(new MaintenanceOnlyManagerCanUpdateStatusError())
+			}
+
+			request.status = newStatus
 		}
-
-		// Role-based checks: only manager can move to IN_PROGRESS or RESOLVED
-		if (
-			(newStatus === MaintenanceStatus.IN_PROGRESS ||
-				newStatus === MaintenanceStatus.RESOLVED) &&
-			input.userRole !== 'manager'
-		) {
-			return left(new MaintenanceOnlyManagerCanUpdateStatusError())
-		}
-
-		request.status = newStatus
 
 		if (newStatus === MaintenanceStatus.RESOLVED) {
 			request.resolvedAt = new Date()
+		}
+
+		// Handle vendor assignment
+		if (input.vendorId !== undefined) {
+			request.vendorId =
+				input.vendorId !== null ? new UniqueEntityId(input.vendorId) : null
 		}
 
 		const updatedRequest =
 			await this.maintenanceRequestsRepository.update(request)
 
 		// Send notification to the other party
-		const notificationText = `Maintenance request '${request.title}' status changed to ${newStatus}`
+		const statusLabel = MAINTENANCE_STATUS_LABELS[newStatus] ?? newStatus
+		const notificationText = `Maintenance request '${request.title}' status changed to ${statusLabel}`
 
 		if (input.userRole === 'manager') {
 			// Notify the tenant
 			await this.createNotificationUseCase.execute({
 				personId: request.tenantId.toString(),
 				text: notificationText,
-				notificationType: NotificationType.ACTION,
+				notificationType: NotificationType.INFO,
 				actionType: ActionType.MAINTENANCE_UPDATE,
 				linkedTransactionId: request.id.toString(),
 			})
@@ -104,7 +117,7 @@ export class UpdateMaintenanceRequestStatusUseCase {
 				await this.createNotificationUseCase.execute({
 					personId: property.managerId.toString(),
 					text: notificationText,
-					notificationType: NotificationType.ACTION,
+					notificationType: NotificationType.INFO,
 					actionType: ActionType.MAINTENANCE_UPDATE,
 					linkedTransactionId: request.id.toString(),
 				})

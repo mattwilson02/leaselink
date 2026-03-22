@@ -25,8 +25,8 @@ import { HttpUserResponse } from '../../presenters/http-user-presenter'
 import { ClientNotFoundError } from '@/domain/financial-management/application/use-cases/errors/client-not-found-error'
 
 const getNotificationsQuerySchema = z.object({
-	offset: z.string().optional(),
-	limit: z.string().optional(),
+	page: z.coerce.number().int().positive().default(1),
+	pageSize: z.coerce.number().int().positive().max(200).default(10),
 	notificationType: z.nativeEnum(NotificationType).optional(),
 	isArchived: z
 		.enum(['true', 'false'])
@@ -53,16 +53,16 @@ export class GetNotificationsController {
 	@ApiBearerAuth()
 	@ApiOperation({ summary: 'Retrieve all notifications for current user' })
 	@ApiQuery({
-		name: 'offset',
+		name: 'page',
 		required: false,
-		example: 0,
-		description: 'Pagination offset',
+		example: 1,
+		description: 'Page number',
 	})
 	@ApiQuery({
-		name: 'limit',
+		name: 'pageSize',
 		required: false,
 		example: 10,
-		description: 'Pagination limit',
+		description: 'Number of items per page',
 	})
 	@ApiQuery({
 		name: 'notificationType',
@@ -79,20 +79,16 @@ export class GetNotificationsController {
 	})
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: 'List of notifications by personId',
+		description: 'Paginated list of notifications for current user',
 		type: GetNotificationsResponseDTO,
-	})
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-		description: 'No notifications found for the given personId',
 	})
 	async findAll(
 		@CurrentUser() user: HttpUserResponse,
 		@Query(queryValidationPipe) query: GetNotificationsQuerySchema,
 		@Res() res: Response,
 	) {
-		const offset = Number(query.offset) || 0
-		const limit = Number(query.limit) || 10
+		const offset = (query.page - 1) * query.pageSize
+		const limit = query.pageSize
 
 		const { notificationType, isArchived } = query
 
@@ -110,18 +106,17 @@ export class GetNotificationsController {
 			isArchived,
 		})
 
-		if (
-			!result.value ||
-			!result.value.notifications ||
-			result.value.notifications.length === 0
-		) {
-			return res.status(HttpStatus.NO_CONTENT).send()
-		}
-
-		const notifications = result.value.notifications
+		const notifications = result.value?.notifications ?? []
+		const totalCount = result.value?.totalCount ?? 0
 
 		return res.status(HttpStatus.OK).json({
-			notifications: HttpNotificationsPresenter.toHTTP(notifications),
+			data: HttpNotificationsPresenter.toHTTP(notifications),
+			meta: {
+				page: query.page,
+				pageSize: query.pageSize,
+				totalCount,
+				totalPages: Math.ceil(totalCount / query.pageSize),
+			},
 		})
 	}
 }

@@ -1,7 +1,7 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Lease } from '@/domain/lease-management/enterprise/entities/lease'
 import { LeaseStatus } from '@/domain/lease-management/enterprise/entities/value-objects/lease-status'
-import { Prisma, Lease as PrismaLease } from '@prisma/client'
+import { Prisma, Lease as PrismaLease, LEASE_STATUS } from '@prisma/client'
 
 export class PrismaLeaseMapper {
 	static toDomain(raw: PrismaLease): Lease {
@@ -13,6 +13,7 @@ export class PrismaLeaseMapper {
 				endDate: raw.endDate,
 				monthlyRent: raw.monthlyRent,
 				securityDeposit: raw.securityDeposit,
+				earlyTerminationFee: raw.earlyTerminationFee ?? null,
 				status: LeaseStatus.create(raw.status),
 				renewedFromLeaseId: raw.renewedFromLeaseId
 					? new UniqueEntityId(raw.renewedFromLeaseId)
@@ -33,7 +34,8 @@ export class PrismaLeaseMapper {
 			endDate: lease.endDate,
 			monthlyRent: lease.monthlyRent,
 			securityDeposit: lease.securityDeposit,
-			status: lease.status as any,
+			earlyTerminationFee: lease.earlyTerminationFee ?? null,
+			status: lease.status as LEASE_STATUS,
 			renewedFromLeaseId: lease.renewedFromLeaseId?.toString() ?? null,
 			createdAt: lease.createdAt,
 			updatedAt: lease.updatedAt ?? undefined,

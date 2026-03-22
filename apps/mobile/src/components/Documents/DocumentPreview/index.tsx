@@ -1,6 +1,6 @@
 import { Icon } from '@/components/Icon'
-import { Text } from '@sf-digital-ui/react-native'
-import { colors } from '@sf-digital-ui/tokens'
+import { Text } from '@/design-system/components/Typography'
+import { colors } from '@/design-system/theme'
 import { FileText, Image as ImageIcon, X } from 'lucide-react-native'
 import { useState, useEffect, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +24,7 @@ const DocumentPreview = () => {
 	const { id } = useLocalSearchParams<{ id: string }>()
 
 	const { data, isFetching } = useGetDocumentByIdControllerFindById<
-		{ document: DocumentDTO },
+		{ data: DocumentDTO },
 		{ id: string }
 	>(id)
 	const { mutateAsync } = useDownloadDocumentControllerGenerateDownloadUrl()
@@ -63,17 +63,17 @@ const DocumentPreview = () => {
 	)
 
 	const fileExtension =
-		data?.document?.name?.split('.').pop()?.toLowerCase() || ''
+		data?.data?.name?.split('.').pop()?.toLowerCase() || ''
 	const mimeType = getMimeType(fileExtension)
 
 	const isPDF = mimeType === 'application/pdf'
 	const isImage = mimeType.startsWith('image/')
 
 	useEffect(() => {
-		if (data?.document && !isLoading && !uri && !error) {
+		if (data?.data && !isLoading && !uri && !error) {
 			retrieveUri(id)
 		}
-	}, [id, isLoading, data?.document, retrieveUri, uri, error])
+	}, [id, isLoading, data?.data, retrieveUri, uri, error])
 
 	if (isLoading || isFetching) {
 		return (
@@ -86,10 +86,7 @@ const DocumentPreview = () => {
 					gap: 16,
 				}}
 			>
-				<ActivityIndicator
-					size='large'
-					color={colors['primary-green']['500']}
-				/>
+				<ActivityIndicator size='large' color={colors.primary} />
 				<Text
 					style={{
 						color: colors.neutral['500'],
@@ -114,12 +111,12 @@ const DocumentPreview = () => {
 				}}
 			>
 				{isPDF ? (
-					<FileText size={48} color={colors.error['500']} />
+					<FileText size={48} color={colors.error[500]} />
 				) : (
-					<ImageIcon size={48} color={colors.error['500']} />
+					<ImageIcon size={48} color={colors.error[500]} />
 				)}
 
-				<Text style={{ color: colors.error['500'] }} fontWeight='bold'>
+				<Text style={{ color: colors.error[500] }} fontWeight='bold'>
 					{error}
 				</Text>
 			</View>
@@ -209,7 +206,7 @@ const DocumentPreview = () => {
 									fontWeight='bold'
 									style={{ color: colors.neutral['700'] }}
 								>
-									{data?.document?.name ?? t('document_preview')}
+									{data?.data?.name ?? t('document_preview')}
 								</Text>
 								<X
 									size={24}
@@ -270,7 +267,7 @@ const DocumentPreview = () => {
 			</Icon.Root>
 			<View>
 				<Text style={{ color: colors.neutral['700'] }}>
-					{data?.document?.name}
+					{data?.data?.name}
 				</Text>
 				<Text style={{ color: colors.neutral['500'] }}>
 					{t('download_to_view_file')}

@@ -1,5 +1,4 @@
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
-import { makeMaintenanceRequest } from 'test/factories/make-maintenance-request'
 import { makeProperty } from 'test/factories/make-property'
 import { makeLease } from 'test/factories/make-lease'
 import { InMemoryMaintenanceRequestsRepository } from 'test/repositories/prisma/in-memory-maintenance-requests-repository'
@@ -12,11 +11,12 @@ import type { CreateNotificationUseCase } from '@/domain/notification/applicatio
 import { right } from '@/core/either'
 
 class MockCreateNotificationUseCase {
+	// biome-ignore lint/suspicious/noExplicitAny: test mock needs property access
 	calls: any[] = []
 
-	async execute(input: any) {
+	async execute(input: unknown) {
 		this.calls.push(input)
-		return right({ notification: {} as any })
+		return right({ notification: {} as unknown })
 	}
 }
 

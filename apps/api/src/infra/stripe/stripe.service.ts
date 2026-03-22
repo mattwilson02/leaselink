@@ -1,29 +1,29 @@
-import { Injectable } from "@nestjs/common";
-import Stripe from "stripe";
-import { EnvService } from "../env/env.service";
-import { StripeService as AbstractStripeService } from "@/domain/payment/application/stripe/stripe-service";
+import { Injectable } from '@nestjs/common'
+import Stripe from 'stripe'
+import { EnvService } from '../env/env.service'
+import { StripeService as AbstractStripeService } from '@/domain/payment/application/stripe/stripe-service'
 
 @Injectable()
 export class StripeServiceImpl extends AbstractStripeService {
-	private stripe: Stripe;
+	private stripe: Stripe
 
 	constructor(private envService: EnvService) {
-		super();
-		this.stripe = new Stripe(this.envService.get("STRIPE_SECRET_KEY"), {
-			apiVersion: "2026-02-25.clover",
-		});
+		super()
+		this.stripe = new Stripe(this.envService.get('STRIPE_SECRET_KEY'), {
+			apiVersion: '2026-02-25.clover',
+		})
 	}
 
 	async createCheckoutSession(params: {
-		amount: number;
-		currency: string;
-		description: string;
-		metadata: Record<string, string>;
-		successUrl: string;
-		cancelUrl: string;
+		amount: number
+		currency: string
+		description: string
+		metadata: Record<string, string>
+		successUrl: string
+		cancelUrl: string
 	}): Promise<{ sessionId: string; url: string }> {
 		const session = await this.stripe.checkout.sessions.create({
-			mode: "payment",
+			mode: 'payment',
 			line_items: [
 				{
 					price_data: {
@@ -39,27 +39,32 @@ export class StripeServiceImpl extends AbstractStripeService {
 			metadata: params.metadata,
 			success_url: params.successUrl,
 			cancel_url: params.cancelUrl,
-		});
+		})
 
 		return {
 			sessionId: session.id,
-			url: session.url!,
-		};
+			url: session.url ?? '',
+		}
 	}
 
-	async retrieveSession(sessionId: string): Promise<{ paymentStatus: string; paymentIntentId: string | null }> {
-		const session = await this.stripe.checkout.sessions.retrieve(sessionId);
+	async retrieveSession(
+		sessionId: string,
+	): Promise<{ paymentStatus: string; paymentIntentId: string | null }> {
+		const session = await this.stripe.checkout.sessions.retrieve(sessionId)
 		return {
 			paymentStatus: session.payment_status,
-			paymentIntentId: typeof session.payment_intent === 'string' ? session.payment_intent : null,
-		};
+			paymentIntentId:
+				typeof session.payment_intent === 'string'
+					? session.payment_intent
+					: null,
+		}
 	}
 
 	constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
 		return this.stripe.webhooks.constructEvent(
 			payload,
 			signature,
-			this.envService.get("STRIPE_WEBHOOK_SECRET"),
-		);
+			this.envService.get('STRIPE_WEBHOOK_SECRET'),
+		)
 	}
 }

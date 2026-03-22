@@ -1,5 +1,6 @@
 import { UploadPropertyPhotosUseCase } from '@/domain/property-management/application/use-cases/upload-property-photos'
 import { PropertyNotFoundError } from '@/domain/property-management/application/use-cases/errors/property-not-found-error'
+import { PhotoLimitExceededError } from '@/domain/property-management/application/use-cases/errors/photo-limit-exceeded-error'
 import {
 	BadRequestException,
 	Body,
@@ -8,6 +9,7 @@ import {
 	NotFoundException,
 	Param,
 	Post,
+	UnprocessableEntityException,
 	UseGuards,
 } from '@nestjs/common'
 import {
@@ -39,8 +41,9 @@ const bodyValidationPipe = new ZodValidationPipe(uploadPhotosSchema)
 export class UploadPropertyPhotosController {
 	constructor(private uploadPropertyPhotos: UploadPropertyPhotosUseCase) {}
 
-	private errorMap: Record<string, any> = {
+	private errorMap = {
 		[PropertyNotFoundError.name]: NotFoundException,
+		[PhotoLimitExceededError.name]: UnprocessableEntityException,
 	}
 
 	@Post(':id/photos')
@@ -73,8 +76,8 @@ export class UploadPropertyPhotosController {
 		description: 'Property not found',
 	})
 	@ApiResponse({
-		status: HttpStatus.BAD_REQUEST,
-		description: 'Invalid request or photo limit exceeded',
+		status: HttpStatus.UNPROCESSABLE_ENTITY,
+		description: 'Photo limit exceeded',
 	})
 	async handle(
 		@CurrentUser() user: HttpUserResponse,
