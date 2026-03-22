@@ -72,7 +72,7 @@ const PaymentList = ({ statusFilter, scrollEnabled = true }: Props) => {
 	if (isLoading) {
 		return (
 			<View style={styles.loadingContainer}>
-				{Array.from({ length: 4 }).map((, i) => (
+				{Array.from({ length: 4 }).map((_, i) => (
 					<View key={i} style={styles.skeleton} />
 				))}
 			</View>

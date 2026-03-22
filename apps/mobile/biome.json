@@ -59,7 +59,7 @@
 				"noVar": "error",
 				"useNamingConvention": {
 					"level": "error",
-					"fix": "safe",
+					"fix": "none",
 					"options": {
 						"strictCase": false,
 						"conventions": [
