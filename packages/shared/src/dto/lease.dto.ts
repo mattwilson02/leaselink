@@ -7,6 +7,7 @@ export interface CreateLeaseDto {
   endDate: string;
   monthlyRent: number;
   securityDeposit: number;
+  earlyTerminationFee?: number | null;
 }
 
 export interface UpdateLeaseStatusDto {

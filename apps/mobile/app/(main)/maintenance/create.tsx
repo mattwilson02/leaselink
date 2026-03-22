@@ -177,7 +177,7 @@ const CreateMaintenanceRequest = () => {
 	}
 
 	const removePhoto = (index: number) => {
-		setPhotos((prev) => prev.filter((, i) => i !== index))
+		setPhotos((prev) => prev.filter((_item, i) => i !== index))
 	}
 
 	const handleSubmit = async () => {

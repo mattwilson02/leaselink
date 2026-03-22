@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createLeaseSchema, PROPERTY_STATUS_LABELS, type PropertyStatus } from "@leaselink/shared";
+import { createLeaseSchema, PROPERTY_STATUS_LABELS, PropertyStatus, TenantStatus } from "@leaselink/shared";
 import type { Property, Tenant } from "@leaselink/shared";
 
 // Client-side schema that accepts YYYY-MM-DD from date inputs
@@ -103,9 +103,9 @@ export function LeaseForm({
 
   const eligibleProperties = properties.filter(
     (p) =>
-      p.status === "LISTED" || p.status === "VACANT"
+      p.status === PropertyStatus.LISTED || p.status === PropertyStatus.VACANT
   );
-  const activeTenantsOnly = tenants.filter((t) => t.status === "ACTIVE");
+  const activeTenantsOnly = tenants.filter((t) => t.status === TenantStatus.ACTIVE);
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">

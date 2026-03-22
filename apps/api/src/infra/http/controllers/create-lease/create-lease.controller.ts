@@ -66,6 +66,7 @@ export class CreateLeaseController {
 			endDate: body.endDate,
 			monthlyRent: body.monthlyRent,
 			securityDeposit: body.securityDeposit,
+			earlyTerminationFee: body.earlyTerminationFee ?? null,
 		})
 
 		if (response.isLeft()) {

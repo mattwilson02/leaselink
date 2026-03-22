@@ -120,6 +120,64 @@ describe("Lease schema", () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it("rejects lease shorter than 30 days", () => {
+    const start = new Date("2026-04-01T00:00:00.000Z");
+    const end = new Date(start);
+    end.setDate(end.getDate() + 29);
+    const result = createLeaseSchema.safeParse({
+      ...validLease,
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        "Lease duration must be at least 30 days"
+      );
+    }
+  });
+
+  it("accepts lease with exactly 30-day duration", () => {
+    const start = new Date("2026-04-01T00:00:00.000Z");
+    const end = new Date(start);
+    end.setDate(end.getDate() + 30);
+    const result = createLeaseSchema.safeParse({
+      ...validLease,
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts lease with exactly 1825-day (5 year) duration", () => {
+    const start = new Date("2026-04-01T00:00:00.000Z");
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1825);
+    const result = createLeaseSchema.safeParse({
+      ...validLease,
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects lease longer than 5 years (1826 days)", () => {
+    const start = new Date("2026-04-01T00:00:00.000Z");
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1826);
+    const result = createLeaseSchema.safeParse({
+      ...validLease,
+      startDate: start.toISOString(),
+      endDate: end.toISOString(),
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0].message).toBe(
+        "Lease duration cannot exceed 5 years"
+      );
+    }
+  });
 });
 
 describe("MaintenanceRequest schema", () => {

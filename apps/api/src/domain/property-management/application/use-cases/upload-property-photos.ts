@@ -2,6 +2,7 @@ import { Either, left, right } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 import { PropertiesRepository } from '../repositories/properties-repository'
 import { PropertyNotFoundError } from './errors/property-not-found-error'
+import { PhotoLimitExceededError } from './errors/photo-limit-exceeded-error'
 import { StorageRepository } from '@/domain/document/application/repositories/storage-repository'
 import { MAX_PROPERTY_PHOTOS } from '@leaselink/shared'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
@@ -13,7 +14,7 @@ export interface UploadPropertyPhotosUseCaseRequest {
 }
 
 type UploadPropertyPhotosUseCaseResponse = Either<
-	PropertyNotFoundError | Error,
+	PropertyNotFoundError | PhotoLimitExceededError | Error,
 	{ uploadUrls: string[] }
 >
 
@@ -38,8 +39,10 @@ export class UploadPropertyPhotosUseCase {
 		const currentCount = property.photos.length
 		if (currentCount + request.fileNames.length > MAX_PROPERTY_PHOTOS) {
 			return left(
-				new Error(
-					`Cannot exceed ${MAX_PROPERTY_PHOTOS} photos per property. Current: ${currentCount}, attempting to add: ${request.fileNames.length}.`,
+				new PhotoLimitExceededError(
+					currentCount,
+					request.fileNames.length,
+					MAX_PROPERTY_PHOTOS,
 				),
 			)
 		}

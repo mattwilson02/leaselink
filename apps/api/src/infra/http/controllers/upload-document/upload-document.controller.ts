@@ -1,4 +1,5 @@
 import {
+	BadGatewayException,
 	BadRequestException,
 	Body,
 	Controller,
@@ -17,6 +18,7 @@ import { z } from 'zod'
 import { ZodValidationPipe } from 'nestjs-zod'
 import { UploadDocumentUseCase } from '@/domain/document/application/use-cases/upload-document'
 import { DocumentRequestNotFoundError } from '@/domain/document/application/use-cases/errors/document-request-not-found-error'
+import { FileUploadFailedError } from '@/domain/document/application/use-cases/errors/file-upload-failed-error'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { UploadDocumentRequestDTO } from '../../DTOs/document/upload-document-request-dto'
 import { UploadDocumentResponseDTO } from '../../DTOs/document/upload-document-response-dto'
@@ -40,6 +42,7 @@ export class UploadDocumentController {
 
 	private errorMap = {
 		[DocumentRequestNotFoundError.name]: BadRequestException,
+		[FileUploadFailedError.name]: BadGatewayException,
 	}
 
 	@Post()
@@ -61,6 +64,10 @@ export class UploadDocumentController {
 		status: HttpStatus.BAD_REQUEST,
 		description: 'Invalid request body',
 		type: UploadDocumentBadRequestDTO,
+	})
+	@ApiResponse({
+		status: HttpStatus.BAD_GATEWAY,
+		description: 'Blob storage failure',
 	})
 	async handle(
 		@Body(bodyValidationPipe) body: UploadDocumentRequestBodySchema,

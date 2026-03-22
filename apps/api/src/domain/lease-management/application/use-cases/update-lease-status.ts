@@ -11,6 +11,7 @@ import { LeaseActivationFutureStartError } from './errors/lease-activation-futur
 import { LeaseStatusType } from '../../enterprise/entities/value-objects/lease-status'
 import { GenerateLeasePaymentsUseCase } from '@/domain/payment/application/use-cases/generate-lease-payments'
 import { PaymentsRepository } from '@/domain/payment/application/repositories/payments-repository'
+import { CreateAuditLogUseCase } from '@/domain/audit/application/use-cases/create-audit-log'
 
 export interface UpdateLeaseStatusUseCaseRequest {
 	leaseId: string
@@ -32,6 +33,8 @@ export class UpdateLeaseStatusUseCase {
 		private paymentsRepository: PaymentsRepository,
 		@Optional()
 		private generateLeasePaymentsUseCase?: GenerateLeasePaymentsUseCase,
+		@Optional()
+		private createAuditLogUseCase?: CreateAuditLogUseCase,
 	) {}
 
 	async execute({
@@ -98,6 +101,28 @@ export class UpdateLeaseStatusUseCase {
 			}
 
 			await this.paymentsRepository.deleteUnpaidByLeaseId(leaseId)
+
+			// Log early termination fee if the lease is terminated before its end date
+			if (status === 'TERMINATED' && this.createAuditLogUseCase) {
+				const today = new Date()
+				today.setUTCHours(0, 0, 0, 0)
+				const leaseEnd = new Date(lease.endDate)
+				leaseEnd.setUTCHours(0, 0, 0, 0)
+
+				if (leaseEnd > today) {
+					await this.createAuditLogUseCase.execute({
+						actorId: leaseId,
+						actorType: 'SYSTEM',
+						action: 'STATUS_CHANGE',
+						resourceType: 'LEASE',
+						resourceId: leaseId,
+						metadata: {
+							earlyTermination: true,
+							earlyTerminationFee: lease.earlyTerminationFee,
+						},
+					})
+				}
+			}
 		}
 
 		const updatedLease = await this.leasesRepository.update(lease)

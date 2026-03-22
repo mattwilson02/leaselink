@@ -71,7 +71,8 @@ describe('GetSignatureController (E2E)', () => {
 		})
 
 		it('should return the signature after a document is signed', async () => {
-			const { jwt } = await jwtFactory.makeJwt()
+			const { jwt: clientJwt } = await jwtFactory.makeJwt(true)
+			const { jwt: employeeJwt } = await jwtFactory.makeJwt()
 			const client = await clientFactory.makePrismaClient()
 			const document = await documentFactory.makePrismaDocument({
 				clientId: client.id,
@@ -84,18 +85,18 @@ describe('GetSignatureController (E2E)', () => {
 			const blobClient = containerClient.getBlockBlobClient(blobName)
 			await blobClient.upload('fake-png-data', 14)
 
-			// Sign the document first
+			// Sign the document first (CLIENT jwt required — signed_by is FK to clients.id)
 			await request(app.getHttpServer())
 				.post(`/documents/${document.id.toString()}/sign`)
 				// biome-ignore lint/style/useNamingConvention: HTTP header name
-				.set({ Authorization: `Bearer ${jwt}` })
+				.set({ Authorization: `Bearer ${clientJwt}` })
 				.send({ signatureImageKey: blobName })
 
-			// Now get the signature
+			// Now get the signature (EMPLOYEE jwt — no ownership restriction)
 			const response = await request(app.getHttpServer())
 				.get(`/documents/${document.id.toString()}/signature`)
 				// biome-ignore lint/style/useNamingConvention: HTTP header name
-				.set({ Authorization: `Bearer ${jwt}` })
+				.set({ Authorization: `Bearer ${employeeJwt}` })
 
 			expect(response.status).toBe(200)
 			expect(response.body).toHaveProperty('signature')

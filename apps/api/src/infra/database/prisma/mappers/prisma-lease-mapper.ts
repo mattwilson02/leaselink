@@ -13,6 +13,7 @@ export class PrismaLeaseMapper {
 				endDate: raw.endDate,
 				monthlyRent: raw.monthlyRent,
 				securityDeposit: raw.securityDeposit,
+				earlyTerminationFee: raw.earlyTerminationFee ?? null,
 				status: LeaseStatus.create(raw.status),
 				renewedFromLeaseId: raw.renewedFromLeaseId
 					? new UniqueEntityId(raw.renewedFromLeaseId)
@@ -33,6 +34,7 @@ export class PrismaLeaseMapper {
 			endDate: lease.endDate,
 			monthlyRent: lease.monthlyRent,
 			securityDeposit: lease.securityDeposit,
+			earlyTerminationFee: lease.earlyTerminationFee ?? null,
 			status: lease.status as LEASE_STATUS,
 			renewedFromLeaseId: lease.renewedFromLeaseId?.toString() ?? null,
 			createdAt: lease.createdAt,

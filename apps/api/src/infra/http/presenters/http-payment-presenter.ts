@@ -7,7 +7,6 @@ export interface PaymentHttpResponse {
 	amount: number
 	dueDate: string
 	status: string
-	stripeCheckoutSessionId: string | null
 	paidAt: string | null
 	createdAt: string
 	updatedAt: string | null
@@ -22,7 +21,6 @@ export class HttpPaymentPresenter {
 			amount: payment.amount,
 			dueDate: payment.dueDate.toISOString(),
 			status: payment.status,
-			stripeCheckoutSessionId: payment.stripeCheckoutSessionId,
 			paidAt: payment.paidAt ? payment.paidAt.toISOString() : null,
 			createdAt:
 				payment.createdAt instanceof Date

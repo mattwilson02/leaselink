@@ -88,7 +88,7 @@ export default function TenantDetailPage() {
 
   const { data: leaseData, isLoading: leaseLoading } = useLeases({
     tenantId: id,
-    status: "ACTIVE",
+    status: LeaseStatus.ACTIVE,
     pageSize: 1,
   });
 

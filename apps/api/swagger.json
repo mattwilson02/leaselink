@@ -980,6 +980,9 @@
                 }
               }
             }
+          },
+          "502": {
+            "description": "Blob storage failure"
           }
         },
         "security": [
@@ -1951,11 +1954,11 @@
           "200": {
             "description": "Upload URLs generated"
           },
-          "400": {
-            "description": "Invalid request or photo limit exceeded"
-          },
           "404": {
             "description": "Property not found"
+          },
+          "422": {
+            "description": "Photo limit exceeded"
           }
         },
         "security": [

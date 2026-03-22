@@ -24,6 +24,7 @@ export interface CreateLeaseUseCaseRequest {
 	endDate: string
 	monthlyRent: number
 	securityDeposit: number
+	earlyTerminationFee?: number | null
 }
 
 type CreateLeaseUseCaseResponse = Either<
@@ -86,6 +87,7 @@ export class CreateLeaseUseCase {
 			endDate: new Date(request.endDate),
 			monthlyRent: request.monthlyRent,
 			securityDeposit: request.securityDeposit,
+			earlyTerminationFee: request.earlyTerminationFee ?? null,
 		})
 
 		const startDate = new Date(request.startDate)
